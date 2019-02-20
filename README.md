@@ -6,4 +6,4 @@ As a college student in New York City and as a native New Yorker who is always o
 
 
 ### **Installation Guidelines:**
-This section of the file will be updated as per the status of the project. Currently, we are in the initial phase of the project.
+This section of the file will be updated as per the status of the project. Currently, we are in the foundation phase of the project.
