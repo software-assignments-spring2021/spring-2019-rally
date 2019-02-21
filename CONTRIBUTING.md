@@ -6,6 +6,10 @@ The idea of this project is learn and understand the advantages and challenges o
 * Gracefully accepting constructive criticism.
 * Focusing on what is best for the community and the mutual end goal.
 
+**Scrum Meeting Times:**
+- Meet in person: 5:30PM on Mondays, 1:45PM on Tuesdays and Thursdays after class
+- Meet over Slack: 12:30PM on Saturdays
+
 ### **Git Workflow:**
 Every developer should follow the standard procedures of working in a decentralized environment. One person will be tasked in the team to manage the master branch and make sure there are no conflicts between branches.
 
