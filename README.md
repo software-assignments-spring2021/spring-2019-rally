@@ -8,7 +8,6 @@ As a college student in New York City and as a native New Yorker who is always o
 ### **Installation Guidelines:**
 This section of the file will be updated as per the status of the project. Currently, we are in the foundation phase of the project.
 
-
 ### **Team Members:**
 
 * Nanako Chung (nsc309@nyu.edu)
@@ -16,3 +15,7 @@ This section of the file will be updated as per the status of the project. Curre
 * Ryan Chu (rmc567@nyu.edu)
 * Erik Law (el2392@nyu.edu)
 * Muhammad Hassan (mh4722@nyu.edu)
+
+
+### [**License**](https://github.com/nyu-software-engineering/rally/blob/master/LICENSE)
+### [**Contributing**](https://github.com/nyu-software-engineering/rally/blob/master/CONTRIBUTING.md)
