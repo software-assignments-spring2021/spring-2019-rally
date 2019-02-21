@@ -16,6 +16,6 @@ This section of the file will be updated as per the status of the project. Curre
 * Erik Law (el2392@nyu.edu)
 * Muhammad Hassan (mh4722@nyu.edu)
 
-
-### [**License**](https://github.com/nyu-software-engineering/rally/blob/master/LICENSE)
-### [**Contributing**](https://github.com/nyu-software-engineering/rally/blob/master/CONTRIBUTING.md)
+### **Links:**
+* ### [**License**](https://github.com/nyu-software-engineering/rally/blob/master/LICENSE)
+* ### [**Contributing**](https://github.com/nyu-software-engineering/rally/blob/master/CONTRIBUTING.md)
