@@ -1,4 +1,5 @@
-### **Team Norms:** 
+Team Norms:
+=============
 The idea of this project is learn and understand the advantages and challenges of working in collaborative environment along with enhancing skillset. Therefore it would be great if everybody involved can follow these general principles to create a learning and an inclusive environment.
 
 - Using welcoming and inclusive language
