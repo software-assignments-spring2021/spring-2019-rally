@@ -19,3 +19,4 @@ This section of the file will be updated as per the status of the project. Curre
 ### **Links:**
 * ### [**License**](https://github.com/nyu-software-engineering/rally/blob/master/LICENSE)
 * ### [**Contributing**](https://github.com/nyu-software-engineering/rally/blob/master/CONTRIBUTING.md)
+* ### [**Requirements**](https://github.com/nyu-software-engineering/rally/blob/master/REQUIREMENTS.md)
