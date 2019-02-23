@@ -20,7 +20,7 @@ The idea of this project is learn and understand the advantages and challenges o
 
 **What to do when a member is failing to deliver on their obligations to the team:** 
 - Product Manager should reach out to the failing individual and ask about the circumstances, followed by kindly giving them a push to complete the task
-- If the member does not get the task required done by the time the sprint is over, we must report to the professor or the tutor about the member for them to be removed
+- If the member does not get the task required done by the time the sprint is over, we must report to the professor and deal with the situation appropriately.
 
 **How quickly team members are expected to respond to messages directed at them:**
 - Within 24 hours via Slack
