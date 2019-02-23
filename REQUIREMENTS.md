@@ -46,27 +46,47 @@ _Use Case UML diagrams linked next to case number._
 | Team Leader | Jessica | Jessica is the head of the trading team at a 2 sigma and manages 12 traders.  Jessica wants to organize a party for her team for hitting their goals for this month.  Jessica needs everyone to pitch in and bring stuff for the party such as food, drinks, and decorations. Jessica needs a way to make sure that everything that is needed for the party is accounted for and that everyone is doing their part. | Rally would enable Jessica to set up a time and place for the party, but also allow her to have a community to-do list that would allow her to assign tasks to certain people and organize who is responsible for what.  |
 
 ## Functional Requirements
-+The application must allow users to create and delete accounts and Rally events
-+The application must allow users to invite other members to Rally events
-+The application must allow Rally organizers to set restrictions on the Rally itinerary, including ranges of dates, start/end times, and location radius. Rally organizers must also be able to toggle permission for members to suggest Rally locations.
-+The application must require all members to either integrate their calendar (Google, Apple) or insert their availabilities manually once they have accepted a Rally invitation.
-+The application must compare all members' calendars and return all timeslots of at least the predetermined Rally duration.
+* The application must allow users to create and delete accounts and Rally events
+
+* The application must allow users to invite other members to Rally events
+
+* The application must allow Rally organizers to set restrictions on the Rally itinerary, including ranges of dates, start/end times, and location radius. Rally organizers must also be able to toggle permission for members to suggest Rally locations.
+
+* The application must require all members to either integrate their calendar (Google, Apple) or insert their availabilities manually once they have accepted a Rally invitation.
+
+* The application must compare all members' calendars and return all timeslots of at least the predetermined Rally duration.
+
 ..* All members must be able to view the times/dates that maximize Rally attendance.
+
 ..* All members must be able to vote from the top four slots that maximize Rally attendance.
+
 ..* Organizers must be able to confirm vote.
-+The application must allow members to select "Desired Activity" tags from an existing list of activity categories.
+
+* The application must allow members to select "Desired Activity" tags from an existing list of activity categories.
+
 ..* If the location was predetermined by Organizer, the application must not offer this option.
-+The application must allow members to suggest locations and view all suggestions.
+
+* The application must allow members to suggest locations and view all suggestions.
+
 ..* If the location was predetermined by Organizer, the application must not offer this option.
+
 ..* If the location suggestion falls outside of the Organizer's location restrictions, the application must return an error message.
-+The application must allow members to vote on locations or choose "Random Selection," and Organizer can confirm the vote.
-+The application must present members with the option to allow push notifications for event reminders.
+
+* The application must allow members to vote on locations or choose "Random Selection," and Organizer can confirm the vote.
+
+* The application must present members with the option to allow push notifications for event reminders.
 
 ## Non-Functional Requirements
-+The time constraint on the application is the project due date, which is 5/2. 
-+The application must be built on the MERN stack (MongoDB, Express, React, Node)
-+The application must be able to run on iOS and Android platforms.
-+The application must be responsive(work well and adapt to different screen sizes).
-+The application must be able to safely store user data and keep track of user accounts. 
-+The application must only take up a reasonable amount of storage.
-+The application must have an uptime of 99.99%.  
+* The time constraint on the application is the project due date, which is 5/2.
+
+* The application must be built on the MERN stack (MongoDB, Express, React, Node)
+
+* The application must be able to run on iOS and Android platforms.
+
+* The application must be responsive(work well and adapt to different screen sizes).
+
+* The application must be able to safely store user data and keep track of user accounts. 
+
+* The application must only take up a reasonable amount of storage.
+
+* The application must have an uptime of 99.99%.  
