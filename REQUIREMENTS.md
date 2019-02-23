@@ -35,8 +35,7 @@ _Use Case UML diagrams linked next to case number._
 | 12 [(UML)](https://github.com/nyu-software-engineering/rally/blob/master/UML%20Diagrams/Use%20Cases/PNGs/UC_12.png)| Delete account | All users | User deletes account and all of their stored data and calendars are released. | User has an account. |  |
 
 ## Domain Model
-_placeholder image_
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+![alt text](https://github.com/nyu-software-engineering/rally/blob/master/UML%20Diagrams/DomainModel.png "Rally Domain Model")
 
 ## End User Observation
 | Persona | Name | Issue | How Rally Solves the Issue |
