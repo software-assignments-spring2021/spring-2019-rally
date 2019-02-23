@@ -31,7 +31,7 @@ The idea of this project is learn and understand the advantages and challenges o
 - In each sprint the team tries to complete stories from the top of the Backlog, although stories from further down the backlog may be added to a sprint to come up with a level of effort that is achievable
 
 ### **Git Workflow:**
-Every developer should follow the standard procedures of working in a decentralized environment. One person will be tasked in the team to manage the master branch and make sure there are no conflicts between branches.
+Every developer should follow the standard procedures of working in a decentralized environment. One person will be tasked in the team to manage the master branch and make sure there are no conflicts between branches. We will be using trunk based workflow.
 
 ### **Contribution:**
 If you would like to contribute to this project, either by providing feature requests, reporting potential bugs, etc. we will be very happy to take an input from you. Please do so by using the issues, emailing anyone of the team members or directly reaching out in class. Thank you in advance for doing so.
