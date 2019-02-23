@@ -56,21 +56,21 @@ _Use Case UML diagrams linked next to case number._
 
 * The application must compare all members' calendars and return all timeslots of at least the predetermined Rally duration.
 
-..* All members must be able to view the times/dates that maximize Rally attendance.
+   * All members must be able to view the times/dates that maximize Rally attendance.
 
-..* All members must be able to vote from the top four slots that maximize Rally attendance.
+   * All members must be able to vote from the top four slots that maximize Rally attendance.
 
-..* Organizers must be able to confirm vote.
+   * Organizers must be able to confirm vote.
 
 * The application must allow members to select "Desired Activity" tags from an existing list of activity categories.
 
-..* If the location was predetermined by Organizer, the application must not offer this option.
+   * If the location was predetermined by Organizer, the application must not offer this option.
 
 * The application must allow members to suggest locations and view all suggestions.
 
-..* If the location was predetermined by Organizer, the application must not offer this option.
+   * If the location was predetermined by Organizer, the application must not offer this option.
 
-..* If the location suggestion falls outside of the Organizer's location restrictions, the application must return an error message.
+   * If the location suggestion falls outside of the Organizer's location restrictions, the application must return an error message.
 
 * The application must allow members to vote on locations or choose "Random Selection," and Organizer can confirm the vote.
 
