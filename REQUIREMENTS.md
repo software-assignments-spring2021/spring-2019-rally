@@ -90,3 +90,19 @@ _Use Case UML diagrams linked next to case number._
 * The application must only take up a reasonable amount of storage.
 
 * The application must have an uptime of 99.99%.  
+
+## Stakeholder Interview Info
+* How would you typically go about arranging social hangouts with one to two friends (e.g. use social media, calendars/planners, etc.)? How does this process differ for arranging hangouts with three friends or more?
+*Our stakeholders typically used text messaging or another messaging app to arrange hangouts, even if the number of friends differs.*
+
+* What do you usually do during group hangouts with three friends or more? How do you come to a consensus about what you all want to do?
+*Stakeholders usually answered that they go out to eat. They also mentioned that there is typically one person who takes charge and organizes the hangout, as well as the location of the hangout.*
+
+* How would you feel about randomly having your hangout destination chosen given a list of all the suggestions of people within the group? How about voting on a spot and doing a “majority rules” type thing?
+*Stakeholders really seemed to like the random picking idea. It seems it is less stressful for everyone. Feelings towards voting seemed to be more neutral.*
+
+* How do you feel about sharing your availability? How about sharing your general calendar with friends in your itinerary?
+*General calendar sharing seemed uncomfortable for many stakeholders. Availability sharing seemed fine.*
+
+* How do your methods change for planning for different groups, such as colleagues at work for example?
+*Stakeholders stated that methods do not change significantly, but it depends on the context of the relationship.*
