@@ -34,6 +34,10 @@ _Use Case UML diagrams linked next to case number._
 | 11 [(UML)](https://github.com/nyu-software-engineering/rally/blob/master/UML%20Diagrams/Use%20Cases/PNGs/UC_11.png)| Manage Event Reminders | All members | Members are given the choice of receiving push notifications leading up to the event. When Organizer clicks “Send Event Reminder,” a push notification will be sent to all members who have opted into event reminders. Organizer can attach a message. | Event date, time, and location must be confirmed. Only users who have opted into event reminders can receive notifications. |  |
 | 12 [(UML)](https://github.com/nyu-software-engineering/rally/blob/master/UML%20Diagrams/Use%20Cases/PNGs/UC_12.png)| Delete account | All users | User deletes account and all of their stored data and calendars are released. | User has an account. |  |
 
+## Domain Model
+_placeholder image_
+![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+
 ## End User Observation
 | Persona | Name | Issue | How Rally Solves the Issue |
 |---|---|---|---|
@@ -41,6 +45,8 @@ _Use Case UML diagrams linked next to case number._
 | Athlete | Jim | Jim is a Sophomore at NYU studying finance at Stern.  One of Jim’s favorite hobbies is playing soccer and he tries to organize pick up games with his friends as often as possible.  However, trying to organize a game that needs at least 8 people to play is near impossible.  Not only does Jim have to find a time that works, Jim needs to find a place to play that everyone can agree upon. | A key aspect of Rally is allowing communities to meet together in a more efficient manner.  Jim needs a way to organize 8+ people.  Rally would be able to not only set up a time and place, but would allow Jim to save event types such as a pickup soccer game.  Jim just has to set it up once and from then on he would be able to just choose the preset and it would sent out the invite to a chosen list. |
 | Friends | Sally | Sally is a new graduate living in NYC and has just started working at Facebook.  Sally is getting used to life after college and is slightly overwhelmed. Sally wants to reminisce her college days and set up a dinner with all her college friends.  However, all of Sally’s friends are very picky and they cannot agree if they want to eat dinner, go out for drinks, or go out clubbing.  Even if they do decide on an activity, they then have to decide on a place. | Rally tries to settle the age old issue of not being able to decide on what to do by being able to easily set up polls to allow members of the event to vote on what activity they want to do.  Rally would also, potentially through the yelp and groupon api, suggest activities and restaurants that correspond with the time and location. |
 | Team Leader | Jessica | Jessica is the head of the trading team at a 2 sigma and manages 12 traders.  Jessica wants to organize a party for her team for hitting their goals for this month.  Jessica needs everyone to pitch in and bring stuff for the party such as food, drinks, and decorations. Jessica needs a way to make sure that everything that is needed for the party is accounted for and that everyone is doing their part. | Rally would enable Jessica to set up a time and place for the party, but also allow her to have a community to-do list that would allow her to assign tasks to certain people and organize who is responsible for what.  |
+
+## Functional Requirements
 
 ## Non-Functional Requirements
 The time constraint on the application is the project due date, which is 5/2. 
