@@ -1,4 +1,4 @@
-Team Norms:
+Team Norms
 =============
 The idea of this project is learn and understand the advantages and challenges of working in collaborative environment along with enhancing skillset. Therefore it would be great if everybody involved can follow these general principles to create a learning and an inclusive environment.
 
@@ -31,8 +31,10 @@ The idea of this project is learn and understand the advantages and challenges o
 - The more valuable the outcome of the story, the higher it is in the backlog 
 - In each sprint the team tries to complete stories from the top of the Backlog, although stories from further down the backlog may be added to a sprint to come up with a level of effort that is achievable
 
-### **Git Workflow:**
+Git Workflow
+=========
 Every developer should follow the standard procedures of working in a decentralized environment. One person will be tasked in the team to manage the master branch and make sure there are no conflicts between branches. We will be using trunk based workflow.
 
-### **Contribution:**
+Contribution
+=============
 If you would like to contribute to this project, either by providing feature requests, reporting potential bugs, etc. we will be very happy to take an input from you. Please do so by using the issues, emailing anyone of the team members or directly reaching out in class. Thank you in advance for doing so.
