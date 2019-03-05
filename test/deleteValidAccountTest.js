@@ -1,0 +1,1 @@
+// delete a valid account (should remove from database)
