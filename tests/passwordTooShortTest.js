@@ -1,0 +1,1 @@
+// Trying to enter password that is too short (less than 6 characters)
