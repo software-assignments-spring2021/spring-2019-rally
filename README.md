@@ -6,12 +6,26 @@ As college students in New York City who are always on the move, we quite often 
 ### **Project Status:**
 2/20/19: The project is in it's foundational phase right now. The team has started working on requirements engineering, data modeling, end users, user stories, use cases and GitHub Management.  
 
+3/6/19: The server side endpoints for registering a new user (api/users/register), logging in a user (api/users/login), and using JWT to authenticate a user (api/users/current) works with unit testing for some of the POST methods. Get unit tests to be implemented in the next sprint.
+
+
+### **Endpoints:**
+
+api/users/register: Takes a JSON objet containing "name, email, password, password2" and returns a JSON object containing unique id, name, email, date.
+
+api/users/login: Takes a JSON object containing email, passowrd and returns a JSON object containing a boolean property 'success' and a 'token' property containing JWT authentication.
+
+api/users/current: Takes a value 'Authorizartion' in the header of the request containing the JWT token when user logs in.
+
 
 ### **Installation Guidelines:**
 This section of the file will be updated as per the status of the project. Currently, we are in the foundation phase of the project. After cloning, forking, or downloading our repository, run **npm install** in order to install the necessary dependencies. 
 
 ### **Running Unit Tests:**
-Clone, fork, or download the branch "unitTestsSprint0" and install the project dependencies with **npm install**. This branch currently contains the entire project, as the unit tests are not yet ready to be merged into the master branch. To run the tests with code coverage, use **npm test**. Mocha will recurse through the "test" directory and run each test. Authors of each unit test are written in the comments at the beginning of each file.
+Clone, fork, or download the branch "unitTestsSprint0" and install the project dependencies with **npm install**. This branch currently contains the entire project, as the unit tests are not yet ready to be merged into the master branch. To run the tests with code coverage, use **npm run test**. Mocha will recurse through the "test" directory and run each test. Authors of each unit test are written in the comments at the beginning of each file.
+
+### **Running Server:**
+npm run server
 
 ### **Team Members:**
 
