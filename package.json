@@ -1,0 +1,38 @@
+{
+  "name": "rally",
+  "version": "1.0.0",
+  "description": "Let's create a RALLYY!!!",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "test": "mocha --recursive --exit --timeout 1000000000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nyu-software-engineering/rally.git"
+  },
+  "author": "RALLY team",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nyu-software-engineering/rally/issues"
+  },
+  "homepage": "https://github.com/nyu-software-engineering/rally/blob/master/README.md",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "chai": "^4.2.0",
+    "express": "^4.16.4",
+    "jsonwebtoken": "^8.5.0",
+    "mocha": "^6.0.2",
+    "mockgoose": "^8.0.1",
+    "mongoose": "^5.4.17",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "supertest": "^3.4.2",
+    "validator": "^10.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  }
+}
