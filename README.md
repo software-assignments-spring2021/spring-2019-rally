@@ -15,7 +15,7 @@ api/users/register: Takes a JSON objet containing "name, email, password, passwo
 
 api/users/login: Takes a JSON object containing email, passowrd and returns a JSON object containing a boolean property 'success' and a 'token' property containing JWT authentication.
 
-api/users/current: Takes a value 'Authorizartion' in the header of the request containing the JWT token when user logs in.
+api/users/current: Takes a value 'Authorizartion' in the header of the request containing the JWT token when user logs in, returns a JSON object containing the details of the users except for password.
 
 
 ### **Installation Guidelines:**
