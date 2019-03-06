@@ -36,7 +36,7 @@ describe('POST /api/users/register', () => {
   //Trying to register a user with unmatched passwords, expecting an eroor in return
   it('Fail, second password required', (done) => {
     request(app).post('/api/users/register')
-      .send({ name: "foobarbarbar", email: "foobarbarbar@gmail.com", password: "123456"})
+      .send({ name: "foobarbarbar", email: "foobarbarbar@gmail.com", password: "123456", password2: "1234567"})
       .then((res) => {
         const body = res.body;
         expect(body.password2).equals('Passwords must match');
