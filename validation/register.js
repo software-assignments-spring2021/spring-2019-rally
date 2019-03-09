@@ -1,16 +1,21 @@
 const Validator = require('validator');
 const isEmpty = require('./is-empty');
 
-module.exports = function valiateRegisterInput(data) {
+module.exports = function validateRegisterInput(data) {
   let errors = {};
 
   data.name = !isEmpty(data.name) ? data.name : '';
   data.email = !isEmpty(data.email) ? data.email : '';
   data.password = !isEmpty(data.password) ? data.password : '';
   data.password2 = !isEmpty(data.password2) ? data.password2 : '';
-  
+  data.username = !isEmpty(data.username) ? data.username : '';
+
   if(!Validator.isLength(data.name, {min: 2, max: 30 }))  {
     errors.name = 'Name must be between 2 and 30 characters';
+  }
+
+  if(!Validator.isAlpha(data.name)){
+    errors.name = 'Name must only contain alphabetic characters';
   }
 
   if(Validator.isEmpty(data.name)) {
@@ -41,6 +46,31 @@ module.exports = function valiateRegisterInput(data) {
     errors.password2 = 'Passwords must match';
   }
 
+  if(Validator.isAlpha(data.password)){
+    errors.password = 'Password must contain a number';
+  }
+
+  if(Validator.isLowercase(data.password)){
+    errors.password = 'Password must contain a capital letter';
+  }
+
+  if(Validator.equals(data.username, data.password)){
+    errors.password = 'Password field cannot equal username';
+  }
+
+  //Username validation
+  if(!Validator.isAlphanumeric(data.username)){
+    errors.username = 'Username must be alphanumeric';
+  }
+  if(Validator.contains(data.username, " ")){
+    errors.username = 'Username must not contain spaces';
+  }
+  if(Validator.isEmpty(data.username)){
+    errors.username = 'Username field is required';
+  }
+  if(!Validator.isLength(data.username, {min: 6, max: 30 }))  {
+    errors.username = 'Username must contain between 6 and 30 characters'
+  }
 
   return {
     errors,
