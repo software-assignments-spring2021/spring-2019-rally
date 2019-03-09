@@ -5,6 +5,8 @@ const request = require('supertest');
 
 const app = require('../../../server.js');
 const conn = require('../../../db/index.js');
+require("supertest").agent(app.listen());
+
 
 describe('POST /api/users/register', () => {
   before((done) => {
@@ -140,6 +142,39 @@ describe('POST /api/users/register', () => {
       .then((res) => {
         const body = res.body;
         expect(body.password).equals('Password field cannot equal username');
+        done();
+      });
+  });
+
+  //Ryan - username must not contain a space
+  it('Fail, username must not contain a space', (done) => {
+    request(app).post('/api/users/register')
+      .send({ name: "Ryan", username: "Test1 23", email: "foobarbarbar@gmail.com", password: "Test123", password2: "Test123"})
+      .then((res) => {
+        const body = res.body;
+        expect(body.username).equals('Username must not contain spaces');
+        done();
+      });
+  });
+
+  //Ryan - password field is required
+  it('Fail, password field is required', (done) => {
+    request(app).post('/api/users/register')
+      .send({ name: "Ryan", username: "Test123", email: "foobarbarbar@gmail.com", password: "", password2: ""})
+      .then((res) => {
+        const body = res.body;
+        expect(body.password).equals('Password field is required');
+        done();
+      });
+  });
+
+  //Ryan -  username must be between 6 and 30
+  it('Fail, username must be between 6 and 30', (done) => {
+    request(app).post('/api/users/register')
+      .send({ name: "Ryan", username: "Test", email: "foobarbarbar@gmail.com", password: "Test123", password2: "Test123"})
+      .then((res) => {
+        const body = res.body;
+        expect(body.username).equals('Username must contain between 6 and 30 characters');
         done();
       });
   });

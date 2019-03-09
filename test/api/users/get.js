@@ -5,6 +5,8 @@ const request = require('supertest');
 
 const app = require('../../../server.js');
 const conn = require('../../../db/index.js');
+require("supertest").agent(app.listen());
+
 
 describe('GET /notes', () => {
   before((done) => {
@@ -80,6 +82,28 @@ describe('GET /notes', () => {
           expect(body.success).equals(undefined);
           expect(body.email).equals('User not found');
           done();
+        })
+      })
+      .catch((err) => done(err));
+  });
+
+  //Ryan - a dummy user will be registered, a login attempt will be made, and a request to find a user through JWT is sent and expects a user object
+  it('OK, getting user "barbarbar" which will be registered for this unit test', (done) => {
+    request(app).post('/api/users/register')
+      .send({ name: 'barbarbar', username: "foofoo", email: "baroo@gmail.com", password: "Test123", password2: "Test123" })
+      .then((res) => {
+        request(app).post('/api/users/login')
+          .send({ email: "baroo@gmail.com", password: "Test123" })
+          .then((res) => {
+            request(app).get('/api/users/current')
+            .set('Authorization', res.body.token)
+            .then((res) => {
+              const body = res.body;
+              expect(body).to.contain.property('id');
+              expect(body).to.contain.property('email');
+              expect(body).to.contain.property('name');
+              done();
+            });
         })
       })
       .catch((err) => done(err));

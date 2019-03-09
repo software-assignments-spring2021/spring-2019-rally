@@ -34,7 +34,7 @@ module.exports = function validateRegisterInput(data) {
     errors.password = 'Password field is required';
   }
 
-  if(!Validator.isLength(data.password, {min: 6, max: 30})) {
+  if(!Validator.isLength(data.password, {min: 6, max: 30}) && !Validator.isEmpty(data.password)) {
     errors.password = 'Password must be at least 6 characters';
   }
 
@@ -50,7 +50,7 @@ module.exports = function validateRegisterInput(data) {
     errors.password = 'Password must contain a number';
   }
 
-  if(Validator.isLowercase(data.password)){
+  if(Validator.isLowercase(data.password) && !Validator.isEmpty(data.password)){
     errors.password = 'Password must contain a capital letter';
   }
 
