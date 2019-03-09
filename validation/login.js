@@ -11,7 +11,6 @@ module.exports = function valiateLoginInput(data) {
     errors.email = 'Email is invalid';
   }
 
-  
   if(Validator.isEmpty(data.email)) {
     errors.email = 'Email field is required';
   }
