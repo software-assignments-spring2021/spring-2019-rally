@@ -32,7 +32,7 @@ describe('POST /api/users/register', () => {
         done();
       });
   });
-
+  
   // Hassan - trying to register a user with unmatched passwords, expecting an error in return
   it('Fail, second password required', (done) => {
     request(app).post('/api/users/register')
@@ -40,6 +40,17 @@ describe('POST /api/users/register', () => {
       .then((res) => {
         const body = res.body;
         expect(body.password2).equals('Passwords must match');
+        done();
+      });
+  });
+
+  // Erik - trying to register a user with insufficient length of password, expecting an error in return
+  it('Fail, insufficient password length of 6', (done) => {
+    request(app).post('/api/users/register')
+      .send({ name: "foobarbarbar", email: "foobarbarbar@gmail.com", password: "12345", password2: "12345"})
+      .then((res) => {
+        const body = res.body;
+        expect(body.password).equals('Password must be at least 6 characters');
         done();
       });
   });
@@ -62,6 +73,17 @@ describe('POST /api/users/register', () => {
       .then((res) => {
         const body = res.body;
         expect(body.name).equals('Name must be between 2 and 30 characters');
+        done();
+      });
+  });
+  
+  // Erik - trying to register a user with an empty name field, expecting an error in return
+  it('Fail, name is required', (done) => {
+    request(app).post('/api/users/register')
+      .send({ name: "", email: "foobarbarbar@gmail.com", password: "123456", password2: "123456"})
+      .then((res) => {
+        const body = res.body;
+        expect(body.name).equals('Name field is required');
         done();
       });
   });

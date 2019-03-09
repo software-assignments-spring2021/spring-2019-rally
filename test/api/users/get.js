@@ -66,4 +66,55 @@ describe('GET /notes', () => {
       })
       .catch((err) => done(err));
   });
+
+  //A dummy user will be registered for this unit test, and a login attempt will be made, expecting an object with no "success" property and an error concerning the password requirement.
+  it('Fail, trying to login into user "barbarbar" without password field', (done) => {
+    request(app).post('/api/users/register')
+      .send({ name: 'barbarbar', email: "baroo@gmail.com", password: "123456", password2: '123456' })
+      .then((res) => {
+        request(app).post('/api/users/login')
+          .send({ email: "baroo@gmail.com", password: "" })
+          .then((res) => {
+          const body = res.body;
+          expect(body.success).equals(undefined);
+          expect(body.password).equals('Password field is required');
+          done();
+        })
+      })
+      .catch((err) => done(err));
+  });
+
+  //A dummy user will be registered for this unit test, and a login attempt will be made, expecting an object with no "success" property and an error concerning the email requirement.
+  it('Fail, trying to login into user "barbarbar" without email field', (done) => {
+    request(app).post('/api/users/register')
+      .send({ name: 'barbarbar', email: "baroo@gmail.com", password: "123456", password2: '123456' })
+      .then((res) => {
+        request(app).post('/api/users/login')
+          .send({ email: "", password: "123456" })
+          .then((res) => {
+          const body = res.body;
+          expect(body.success).equals(undefined);
+          expect(body.email).equals('Email field is required');
+          done();
+        })
+      })
+      .catch((err) => done(err));
+  });
+
+  //A dummy user will be registered for this unit test, and a login attempt will be made, expecting an object with no "success" property and an error of the user not being found.
+  it('Fail, trying to login into user "barbarbar" with an invalid email', (done) => {
+    request(app).post('/api/users/register')
+      .send({ name: 'barbarbar', email: "baroo@gmail.com", password: "123456", password2: '123456' })
+      .then((res) => {
+        request(app).post('/api/users/login')
+          .send({ email: "bar@gmail.com", password: "123456" })
+          .then((res) => {
+          const body = res.body;
+          expect(body.success).equals(undefined);
+          expect(body.email).equals('User not found');
+          done();
+        })
+      })
+      .catch((err) => done(err));
+  });
 });
