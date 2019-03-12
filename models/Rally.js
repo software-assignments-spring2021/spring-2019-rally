@@ -7,24 +7,18 @@ const Rally = new Schema({
         type: String,
         required: true
     },
-    owner: {
-        type: String,
+    owners: {
+        type: [String],
         required: true
     },
-    members: [
-        String
-    ],
+    members: [String],
     dateCreated: {
-        startTime: String,
-        endTime: String
+        date: String
     },
     dateExpires: {
         name: String
     },
-    dateDef: {
-        start: String,
-        end: String
-    },
+
 })
 
 module.exports = Rally = mongoose.model('rally', RallySchema);
