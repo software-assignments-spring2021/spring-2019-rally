@@ -2,24 +2,23 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 //Create a schema
-const RestrictionSchema = new Schema({ 
-    time: {
-        type: bool,
+const Rally = new Schema({ 
+    name: {
+        type: String,
         required: true
     },
-    location: {
-        type: bool,
+    owner: {
+        type: String,
         required: true
     },
-    date: {
-        type: bool,
-        required: true
-    },
-    timeDef: {
+    members: [
+        String
+    ],
+    dateCreated: {
         startTime: String,
         endTime: String
     },
-    locationDef: {
+    dateExpires: {
         name: String
     },
     dateDef: {
@@ -28,4 +27,4 @@ const RestrictionSchema = new Schema({
     },
 })
 
-module.exports = Restriction = mongoose.model('restriction', RestrictionSchema);
+module.exports = Rally = mongoose.model('rally', RallySchema);
