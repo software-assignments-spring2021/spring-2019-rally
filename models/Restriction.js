@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 //Create a schema
-const RallySchema = new Schema({
+const RestrictionSchema = new Schema({
     time: {
         type: bool,
         required: true
@@ -28,4 +28,4 @@ const RallySchema = new Schema({
     },
 })
 
-module.exports = Rally = mongoose.model('rally', RallySchema);
+module.exports = Restriction = mongoose.model('restriction', RestrictionSchema);
