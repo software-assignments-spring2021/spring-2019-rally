@@ -11,13 +11,13 @@ const Voting = new Schema({
             dates: String,
             startTime: String,
             endTime: String,
-            votes: any //not sure if this is right?
+            votes: int
         }
     ],
     location: [
         {
             location: String,
-            votes: int //not sure if this is right?
+            votes: int
         }
     ]
 })
