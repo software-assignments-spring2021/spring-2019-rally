@@ -2,30 +2,23 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 //Create a schema
-const RallySchema = new Schema({
-    time: {
-        type: bool,
+const Rally = new Schema({ 
+    name: {
+        type: String,
         required: true
     },
-    location: {
-        type: bool
+    owners: {
+        type: [String],
         required: true
     },
-    date: {
-        type: bool
-        required: true
+    members: [String],
+    dateCreated: {
+        date: String
     },
-    timeDef: {
-        startTime: String,
-        endTime: String
-    },
-    locationDef: {
+    dateExpires: {
         name: String
     },
-    dateDef: {
-        start: String,
-        end: String
-    },
+
 })
 
 module.exports = Rally = mongoose.model('rally', RallySchema);
