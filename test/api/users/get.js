@@ -108,4 +108,21 @@ describe('GET /notes', () => {
       })
       .catch((err) => done(err));
   });
+
+  // Erik - a rally will be created and then checked to see if each of the fields is saved correctly
+  it('OK, getting user "barbarbar" which will create a rally for this unit test', (done) => {
+    request(app).post('/api/rally/register')
+      .send({ name: 'Weekend Rally', owners: ['barbarbar'], members: [], dateExpires: ''})
+      // .then((res) => {
+      //   request(app).get('/api/rally/current')
+          .then((res) => {
+            const body = res.body;
+            expect(body.name).equals('Weekend Rally');
+            expect(body.owners).to.eql(['barbarbar']);
+            expect(body.members).to.eql([]);
+            done();
+          })
+      // })
+      .catch((err) => done(err));
+  });
 });
