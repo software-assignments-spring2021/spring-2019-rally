@@ -24,8 +24,11 @@ This section of the file will be updated as per the status of the project. Curre
 ### **Running Unit Tests:**
 Clone, fork, or download the branch "unitTestsSprint0" and install the project dependencies with **npm install**. This branch currently contains the entire project, as the unit tests are not yet ready to be merged into the master branch. To run the tests with code coverage, use **npm run test**. Mocha will recurse through the "test" directory and run each test. Authors of each unit test are written in the comments at the beginning of each file. (Branch names are inconsistent for sprint 0 as we were adjusting to feature branch workflow, but from sprint 1 onwards we will follow the branch naming protocol provided on Professor's website.
 
-### **Running Server:**
+### **Running Only the Server:**
 npm run server
+
+### **Running the Server and Frontend Simultaneously (on localhost:3000/)**
+npm run dev
 
 ### **Team Members:**
 
