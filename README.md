@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/nyu-software-engineering/rally.svg?branch=master)](https://travis-ci.com/nyu-software-engineering/rally)
+
 # Rally
 
 ### **About the project:**
