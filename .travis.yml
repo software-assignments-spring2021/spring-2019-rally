@@ -9,7 +9,10 @@ branches:
 # command to install dependencies
 install:
   - npm install
-  - cd ./client npm install cd ../
+  
+before_install: cd client
+install:  
+    - npm install
 #command to run tests
 script:
   - npm test
