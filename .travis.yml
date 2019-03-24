@@ -6,16 +6,29 @@ node_js:
 branches:
   only:
   - master
+  
+before_install:
+  - npm i -g npm@6.8.0
+
 # command to install dependencies
 install:
-  - npm install
+  - cd client
+  - npm install 
+  - cd ../
+  - npm install 
   
-before_script: 
-  - cd ./client
-  - npm install
+  
+cache:
+  directories:
+    - "./node_modules"
+    - "./client/node_modules"
+services:
+  - mongodb  
+
 
 #command to run tests
 script:
+  - npm client-install
   - npm test
 # option for slack integration
 notifications:
