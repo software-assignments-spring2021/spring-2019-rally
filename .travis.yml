@@ -28,7 +28,6 @@ services:
 
 #command to run tests
 script:
-  - npm client-install
   - npm test
 # option for slack integration
 notifications:
