@@ -7,12 +7,15 @@ const RallySchema = new Schema({
         type: String,
         required: true
     },
-    owners: [{
-        type: String
-    }],
-    members: [{
-        type: String
-    }],
+    owners: {
+        type: [Schema.Types.ObjectId],
+        ref: 'users',
+        required: true
+    },
+    members: {
+        type: [Schema.Types.ObjectId],
+        ref: 'users'
+    },
     dateCreated: {
         type: Date,
         default: Date.now

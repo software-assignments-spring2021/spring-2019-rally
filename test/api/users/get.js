@@ -111,8 +111,8 @@ describe('GET /notes', () => {
 
   // Erik - a rally will be created and then checked to see if each of the fields is saved correctly
   it('OK, getting user "barbarbar" which will create a rally for this unit test', (done) => {
-    request(app).post('/api/rally/register')
-      .send({ name: 'Weekend Rally', owners: ['barbarbar'], members: [], dateExpires: ''})
+    request(app).post('/api/rally/create')
+      .send({ name: 'Weekend Rally', owners: ['barbarbar'], members: []})
       // .then((res) => {
       //   request(app).get('/api/rally/current')
           .then((res) => {
