@@ -87,21 +87,21 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
 // @access   Private
 router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
   const errors = {};
-
+  //gets the token
   const usertoken = req.headers.authorization;
   const token = usertoken.split(' ');
   const decoded = jwt.verify(token[1], 'secret');
-  console.log(decoded.id);
   
   const rallyFields = {};
-  console.log(req.body.owner)
-	//rallyFields.owners = req.body.id;
-	if(req.body.name) rallyFields.name = req.body.name;
-	// if(typeof req.body.members != 'undefined') {
-	// 	rallyFields.members = req.body.members.split(',');
-  // }
+  //rallyFields.owners = req.body.id;
+  
+	// if(req.body.name) rallyFields.name = req.body.name;
+	// // if(typeof req.body.members != 'undefined') {
+	// // 	rallyFields.members = req.body.members.split(',');
+  // // }
+
+  //checks if the id from the jwt and the owner of the rally id matches
   if(decoded.id!==req.body.owner ) {
-    console.log("erhi");
     errors.nologin = 'Please log in.';
     return res.status(404).json(errors);
   }
