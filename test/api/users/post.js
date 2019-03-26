@@ -179,7 +179,19 @@ describe('POST /api/users/register', () => {
       });
   });
 
-
-
-
+  it('OK, user can register, login, then create a rally', (done) => {
+    request(app).post('/api/users/register')
+      .send({ name: 'barbarbar', username: "foofoo", email: "baroo@gmail.com", password: "Test123", password2: "Test123" })
+      .then((res) => {
+        request(app).post('/api/users/login')
+          .send({ email: "baroo@gmail.com", password: "Test123", username: "foofoo" })
+          .then((res) => {
+            const body = res.body;
+            console.log(body.token);
+            expect(body.success).equals(true);
+            done();
+          })
+      })
+      .catch((err) => done(err));
+  });
 });
