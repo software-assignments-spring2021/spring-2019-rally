@@ -2,23 +2,18 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 //Create a schema
-const RallySchema = new Schema({ 
+const Rally = new Schema({ 
     name: {
         type: String,
         required: true
     },
     owners: {
-        type: [Schema.Types.ObjectId],
-        ref: 'users',
+        type: [String],
         required: true
     },
-    members: {
-        type: [Schema.Types.ObjectId],
-        ref: 'users'
-    },
+    members: [String],
     dateCreated: {
-        type: Date,
-        default: Date.now
+        date: String
     },
     dateExpires: {
         name: String
