@@ -5,7 +5,8 @@ node_js:
 # command to only run master branch
 branches:
   only:
-  - master
+  #- master
+  - travisCI
   
 before_install:
   - npm i -g npm@6.8.0
