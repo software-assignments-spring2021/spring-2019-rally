@@ -45,7 +45,10 @@ router.post('/register', (req, res) => {
 
           bcrypt.genSalt(10, (err, salt) => {
             bcrypt.hash(newUser.password, salt, (err, hash) => {
-              if(err) throw err;
+              if(err)
+                //.then()
+                .catch(err => console.log(err));
+                //throw err;
               newUser.password = hash;
               newUser.save()
                 .then(user => res.json(user))
@@ -116,7 +119,7 @@ router.post('/login', (req, res) => {
               //Sign Token
               jwt.sign(
                 payload,
-                keys.secretOrKey,
+                process.env.secretOrKey,
                 { expiresIn: 3600 },
                 (err, token) => {
                   res.json({
