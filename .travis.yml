@@ -6,9 +6,30 @@ node_js:
 branches:
   only:
   - master
+  
+before_install:
+  - npm i -g npm@6.8.0
+
 # command to install dependencies
 install:
-  - npm install
+  - cd client
+  - npm install 
+  - cd ../
+  - npm install 
+  
+  
+cache:
+  directories:
+    - "./node_modules"
+    - "./client/node_modules"
+services:
+  - mongodb  
+  
+env:
+  - NODE_ENV = "test"
+  - NODE_ENV = "production"
+
+
 #command to run tests
 script:
   - npm test

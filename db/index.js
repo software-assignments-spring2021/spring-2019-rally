@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const db = require('../config/keys').mongoURI;
+const db = process.env.mongoURI;//require('../config/keys').mongoURI;
 
 function connect() {
  return new Promise((resolve, reject) => {

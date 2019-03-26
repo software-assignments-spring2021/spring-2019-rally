@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 
 if(!(process.env.NODE_ENV === "test")) {
   //DB COnfig
-  const db = require('./config/keys').mongoURI;
+  const db = process.env.mongoURI;//require('./config/keys').mongoURI;
 
   //Connect to DB
   mongoose
@@ -29,7 +29,7 @@ app.use(passport.initialize());
 //Passport Config
 require('./config/passport')(passport);
 
-//Use routes 
+//Use routes
 app.use('/api/users', users);
 app.use('/api/rally', rally);
 
