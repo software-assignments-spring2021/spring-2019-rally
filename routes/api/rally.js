@@ -86,23 +86,35 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
 // @desc     Create user rally
 // @access   Private
 router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
-	const error = {};
-	
-	const rallyFields = {};
-	rallyFields.owners = req.user.id;
+  const errors = {};
+
+  const usertoken = req.headers.authorization;
+  const token = usertoken.split(' ');
+  const decoded = jwt.verify(token[1], 'secret');
+  console.log(decoded.id);
+  
+  const rallyFields = {};
+  console.log(req.body.owner)
+	//rallyFields.owners = req.body.id;
 	if(req.body.name) rallyFields.name = req.body.name;
 	// if(typeof req.body.members != 'undefined') {
 	// 	rallyFields.members = req.body.members.split(',');
-	// }
+  // }
+  if(decoded.id!==req.body.owner ) {
+    console.log("erhi");
+    errors.nologin = 'Please log in.';
+    return res.status(404).json(errors);
+  }
 
 	Rally.findOne({ user: rallyFields.owners }).then(rally => {
 		if (rally) {
-			//update - fix later
-			Rally.findOneAndUpdate(
-			{ rally: req.rally.id },
-			{ $set: rallyFields },
-			{ new: true }
-			).then(rally => res.json(rally));
+			// //update - fix later
+			// Rally.findOneAndUpdate(
+			// { rally: req.rally.id },
+			// { $set: rallyFields },
+			// { new: true }
+      // ).then(rally => res.json(rally));
+      rally => res.json(rally);
 		} else {
 			//create
 			new Rally(rallyFields).save().then(rally => res.json(rally));
