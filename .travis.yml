@@ -24,6 +24,10 @@ cache:
     - "./client/node_modules"
 services:
   - mongodb  
+  
+env:
+  - NODE_ENV = "test"
+  - NODE_ENV = "production"
 
 
 #command to run tests
