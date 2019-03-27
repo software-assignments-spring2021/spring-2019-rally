@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 
 //Load input validation
-const validateCreationInput = require('../../validation/creation');
+// const validateCreationInput = require('../../validation/creation');
 
 //Load rally model
 const Rally = require('../../models/Rally');
@@ -22,7 +22,7 @@ const User = require('../../models/User');
 		// 	.catch(err => console.log(err));
     //     }
     // });
-})
+// })
 
 
 // @route    GET api/rally/current
