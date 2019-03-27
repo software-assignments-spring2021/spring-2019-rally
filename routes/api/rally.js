@@ -22,7 +22,7 @@ const User = require('../../models/User');
 		// 	.catch(err => console.log(err));
     //     }
     // });
-})
+// })
 
 
 // @route    GET api/rally/current
