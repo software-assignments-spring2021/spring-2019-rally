@@ -16,34 +16,6 @@ const User = require('../../models/User');
 // @route    GET api/rally/test
 // @desc     Test rally route
 // @access   Public
-router.get('/test', (req, res) => res.json({msg: "Rally  works"}));
-
-// @route    GET api/rally/register
-// @desc     Create rally
-// @access   Public
-router.post('/register', (req, res) => {
-	//Validation
-    // const { errors, isValid } = validateCreationInput(req.body);
-
-    //Check validation
-    // if(!isValid) {
-    //     return res.status(400).json(errors);
-    // }
-
-    //Find by name
-    // Rally.findOne({ name: req.body.name })
-    // .then(rally => {
-    //     if(rally) {
-    //       errors.name = 'Rally already exists';
-    //       return res.status(400).json({errors});
-    //     }
-    //     else {
-    //       const newRally = new Rally({
-    //         name: req.body.name,
-    //         owners: req.body.owners.slice(0),
-    //         members: req.body.members.slice(0),
-    //         dateExpires: req.body.dateExpires
-    //       });
 
     //       newRally.save()
 		// 	.then(rally => res.json(rally))
