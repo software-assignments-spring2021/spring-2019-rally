@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 //Create a schema
-const Rally = new Schema({ 
+const RallySchema = new Schema({ 
     name: {
         type: String,
         required: true
