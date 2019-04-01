@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-//const keys = require('../../config/keys');
+//const keys = process.env;//const keys = require('../../config/keys');
 const passport = require('passport');
 
 //Load input validation
-//const validateCreationInput = require('../../validation/creation');
+// const validateCreationInput = require('../../validation/creation');
 
 //Load rally model
 const Rally = require('../../models/Rally');
@@ -16,7 +16,7 @@ const User = require('../../models/User');
 // @route    GET api/rally/test
 // @desc     Test rally route
 // @access   Public
-
+// router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
     //       newRally.save()
 		// 	.then(rally => res.json(rally))
 		// 	.catch(err => console.log(err));
