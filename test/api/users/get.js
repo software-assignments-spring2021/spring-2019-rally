@@ -124,9 +124,8 @@ describe('GET /notes', () => {
               expect(body.members).to.eql([]);
               done();
             })
-      .catch((err) => done(err));
-          
-  // });
+      .catch((err) => done(err));     
+  });
 
   // Ryan - a rally will be created and error expected because wrong user id
   it('Fail, trying to create a rally without being logged in', (done) => {
@@ -142,8 +141,8 @@ describe('GET /notes', () => {
                 done();
               });
             })
-      .catch((err) => done(err));
-          
-              
+      .catch((err) => done(err));     
   });
+
+  
 });
