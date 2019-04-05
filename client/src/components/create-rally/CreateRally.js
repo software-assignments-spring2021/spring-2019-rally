@@ -40,7 +40,7 @@ class CreateRally extends Component {
 
         // duration selection options
         const options = [
-            {label: '* Select event duration', value: 0},
+            {label: 'Select event duration', value: 0},
             {label: '15 minutes', value: '.25'},
             {label: '30 minutes', value: '.5'},
             {label: '1 Hour', value: '1'},
@@ -73,7 +73,7 @@ class CreateRally extends Component {
                                     value={this.state.rallyName}
                                     onChange={this.onChange}
                                     error={errors.rallyName}
-                                    info="This is the event name invited members will see"
+                                    info="* This is the event name invited members will see"
                                 />
 
                                 <SelectListGroup
@@ -83,7 +83,7 @@ class CreateRally extends Component {
                                     onChange={this.onChange}
                                     error={errors.duration}
                                     options={options}
-                                    info="Give an approximation of the event length"
+                                    info="* Give an approximation of the event length"
                                 />
                             </form>
                         </div>
