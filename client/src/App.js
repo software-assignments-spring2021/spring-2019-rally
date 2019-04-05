@@ -5,6 +5,8 @@ import Landing from './components/layout/Landing';
 import Register from './components/auth/Register';
 import Login from './components/auth/Login';
 import Dashboard from './components/dashboard/Dashboard';
+import CreateRally from './components/create-rally/CreateRally';
+
 
 import { Provider } from 'react-redux';
 import store from './store';
@@ -13,7 +15,9 @@ import setAuthToken from './utils/setAuthToken';
 import { setCurrentUser, logoutUser } from './actions/authActions';
 import { clearCurrentProfile } from './actions/profileActions';
 
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import PrivateRoute from './components/common/PrivateRoute';
+
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
 
 //check for jwtToken
@@ -48,7 +52,14 @@ class App extends Component {
             <div className="container">
               <Route exact path="/register" component= {Register} />
               <Route exact path="/login" component= {Login} />
-              <Route exact path="/dashboard" component= {Dashboard} />
+
+              
+              <Switch>
+                <PrivateRoute exact path="/dashboard" component= {Dashboard} />
+              </Switch>
+              <Switch>
+                <CreateRally exact path="/create-rally" component= {CreateRally} />
+              </Switch>
 
             </div>
             <Footer />

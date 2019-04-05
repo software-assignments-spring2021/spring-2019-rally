@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { getCurrentProfile } from '../../actions/profileActions';
+
+//import Spinner from '../common/Spinner';
 
 class Dashboard extends Component {
 
@@ -18,9 +21,26 @@ class Dashboard extends Component {
         let dashboardContent;
 
         if(profile === null || loading){
-            dashboardContent = <h4>Loading...</h4>
+            dashboardContent = <h4>Loading...</h4>;//<Spinner />;
         } else {
-            dashboardContent = <h1>Hello</h1>
+
+            // check if logged in user has rally/profile data
+            if(Object.keys(profile).length > 0){
+                dashboardContent = <h4>TODO: Display Rallies</h4>;
+            }else{
+                //user is logged in but has no rallies: create profile / rally
+                dashboardContent = (
+                    <div>
+                        <p className="lead text-muted">Welcome { user.name }</p>
+                        <p>You do not have any Rallies to display. Try making one!</p>
+                        <Link to="/create-rally" className="btn btn-lg btn-info">
+                            Create a Rally
+                        </Link>
+
+                    </div>
+                )
+
+            }
         }
         return (
             <div className = "dashboard">
