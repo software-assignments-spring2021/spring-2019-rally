@@ -109,40 +109,5 @@ describe('GET /notes', () => {
       .catch((err) => done(err));
   });
 
-  // Erik - a rally will be created and then checked to see if each of the fields is saved correctly
-  it('OK, getting user "barbarbar" which will create a rally for this unit test', (done) => {
-    request(app).post('/api/users/login')
-    .send({ email: "baroo@gmail.com", password: "Test123" })
-    .then((res) => {
-      request(app).post('/api/rally/')
-      .set('Authorization', res.body.token)
-        .send({ name: 'Weekend Rally', owners: ['barbarbar'] })
-          .then((res) => {
-            const body = res.body;
-              expect(body.name).equals('Weekend Rally');
-              expect(body.owners).to.eql(['barbarbar']);
-              expect(body.members).to.eql([]);
-              done();
-            })
-      .catch((err) => done(err));     
-  });
 
-  // Ryan - a rally will be created and error expected because wrong user id
-  it('Fail, trying to create a rally without being logged in', (done) => {
-    request(app).post('/api/users/login')
-    .send({ email: "baroo@gmail.com", password: "Test123" })
-    .then((res) => {
-      request(app).post('/api/rally/create')
-      .set('Authorization', res.body.token)
-          .send({ name: 'Weekend Rally', owners: ['barbarbar'] })
-              .then((res) => {
-                const body = res.body;
-                expect(body.nologin).equals('Please log in.');
-                done();
-              });
-            })
-      .catch((err) => done(err));     
-  });
-
-  
 });
