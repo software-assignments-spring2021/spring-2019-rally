@@ -42,7 +42,7 @@ const User = require('../../models/User');
 // @access   Private
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
 	const errors = {};
-	
+
 	Rally.findOne({ user: req.user.id })
 		.then(rally => {
 			if(!rally) {
@@ -63,10 +63,10 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
   const usertoken = req.headers.authorization;
   const token = usertoken.split(' ');
   const decoded = jwt.verify(token[1], 'secret');
-  
+
   const rallyFields = {};
   //rallyFields.owners = req.body.id;
-  
+
 	// if(req.body.name) rallyFields.name = req.body.name;
 	// // if(typeof req.body.members != 'undefined') {
 	// // 	rallyFields.members = req.body.members.split(',');
@@ -89,7 +89,9 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
       rally => res.json(rally);
 		} else {
 			//create
-			new Rally(rallyFields).save().then(rally => res.json(rally));
+			new Rally(rallyFields)
+                .save()
+                .then(rally => res.json(rally));
 		}
 	})
 });
