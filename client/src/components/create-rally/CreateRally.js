@@ -19,6 +19,13 @@ class CreateRally extends Component {
             //TODO: remove later
             members: '',
             owners: '',
+
+            earliestTime: '',
+            latestTime: '',
+            location: '',
+            locationSuggRadius: '',
+            only: '',
+
             errors: {}
         }
 
@@ -36,9 +43,9 @@ class CreateRally extends Component {
     }
 
     render() {
-        const {errors} = this.state;
+        const {errors, displayRestrictions} = this.state;
 
-        // duration selection options
+        let restrictions;
         const options = [
             {label: 'Select event duration', value: 0},
             {label: '15 minutes', value: '.25'},
@@ -54,6 +61,119 @@ class CreateRally extends Component {
             {label: '5 Hours', value: '5'},
             {label: 'Longer than 5 Hours', value: '5+'}
         ];
+
+        const radiusOptions = [
+
+            {label: 'Select location suggestion radius', value: 0},
+            {label: '0.5 miles', value: '0.5'},
+            {label: '1 miles', value: '1'},
+            {label: '2 miles', value: '2'},
+            {label: '5 miles', value: '5'},
+            {label: '10 miles', value: '10'},
+            {label: '15 miles', value: '15'},
+
+        ];
+
+        const timeOptions = [
+
+            // TODO: separate drop down for AM/PM
+            {label: 'Select time', value: 0},
+            {label: '12 AM', value: '0'},
+            {label: '1 AM', value: '1'},
+            {label: '2 AM', value: '2'},
+            {label: '3 AM', value: '3'},
+            {label: '4 AM', value: '4'},
+            {label: '5 AM', value: '5'},
+            {label: '6 AM', value: '6'},
+            {label: '7 AM', value: '7'},
+            {label: '8 AM', value: '8'},
+            {label: '9 AM', value: '9'},
+            {label: '10 AM', value: '10'},
+            {label: '11 AM', value: '11'},
+            {label: '12 PM', value: '12'},
+            {label: '1 PM', value: '13'},
+            {label: '2 PM', value: '14'},
+            {label: '3 PM', value: '15'},
+            {label: '4 PM', value: '16'},
+            {label: '5 PM', value: '17'},
+            {label: '6 PM', value: '18'},
+            {label: '7 PM', value: '19'},
+            {label: '8 PM', value: '20'},
+            {label: '9 PM', value: '21'},
+            {label: '10 PM', value: '22'},
+            {label: '11 PM', value: '23'},
+        ];
+
+        const onlyOptions = [
+            {label: 'Only consider these days', value: 0},
+            {label: 'Weekends', value: 'weekends'},
+            {label: 'Weekdays', value: 'weekdays'},
+        ];
+
+        if(displayRestrictions){
+            restrictions = (
+
+                /* earliestTime: '',
+                latestTime: '',
+                location: '',
+                locationSuggRadius: '',
+                only: '',*/
+                // duration selection options
+
+
+                <div>
+                <TextFieldGroup
+                    placeholder="Predetermined Location"
+                    name="name"
+                    type="name"
+                    value={this.state.rallyName}
+                    onChange={this.onChange}
+                    error={errors.rallyName}
+                    info="If the location is not up for voting, please add it here"
+                />
+                <SelectListGroup
+                    placeholder="Location suggestion radius"
+                    name="locationSuggRadius"
+                    value={this.state.locationSuggRadius}
+                    onChange={this.onChange}
+                    error={errors.locationSuggRadius}
+                    options={radiusOptions}
+                    info="Rally members may only suggest event locations within X distance"
+                />
+                <SelectListGroup
+                    placeholder="Start time restriction"
+                    name="earliestTime"
+                    value={this.state.earliestTime}
+                    onChange={this.onChange}
+                    error={errors.earliestTime}
+                    options={timeOptions}
+                    info="The event should start NO EARLIER than this time of day"
+                />
+
+                <SelectListGroup
+                    placeholder="End time restriction"
+                    name="latestTime"
+                    value={this.state.latestTime}
+                    onChange={this.onChange}
+                    error={errors.latestTime}
+                    options={timeOptions}
+                    info="The event should end NO LATER than this time of day"
+                />
+
+                <SelectListGroup
+                    placeholder="Only consider this part of the week when scheduling"
+                    name="only"
+                    value={this.state.only}
+                    onChange={this.onChange}
+                    error={errors.only}
+                    options={onlyOptions}
+                    info="Only consider this part of the week when scheduling this Rally"
+                />
+
+                </div>
+            )
+        }
+
         return (
             <div className="create-rally">
                 <div className="container">
@@ -85,6 +205,19 @@ class CreateRally extends Component {
                                     options={options}
                                     info="* Give an approximation of the event length"
                                 />
+
+                                <div className="mb-3">
+                                    <button onClick={() => {
+                                        this.setState(prevState => ({
+                                            displayRestrictions: !prevState.displayRestrictions
+                                        }))
+                                    }} className="btn btn-light">
+                                        Add Event Restrictions
+                                    </button>
+                                    <span className="text-muted">  Optional</span>
+                                </div>
+                                { restrictions }
+                                <input type="submit" value="Submit" className="btn btn-info btn-block mt-4"/>
                             </form>
                         </div>
                     </div>
