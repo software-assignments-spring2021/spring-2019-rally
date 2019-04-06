@@ -38,12 +38,12 @@ const User = require('../../models/User');
 // })
 
 // @route    GET api/rally
-// @desc     Return user rally
+// @desc     Return user rallies
 // @access   Private
-router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
+router.get('/get', passport.authenticate('jwt', { session: false }), (req, res) => {
 	const errors = {};
 	
-	Rally.findOne({ user: req.user.id })
+	Rally.find({ owners: req.body.owners })
 		.then(rally => {
 			if(!rally) {
 				errors.norally = 'There is no rally for this user';
@@ -76,16 +76,16 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
 	  rallyFields.owners.push(req.body.owners);
 	  if(req.body.name) rallyFields.name = req.body.name;
 
-	  Rally.findOne({ owners: rallyFields.owners }).then(rally => {
-	  	if (rally && rally.name===rallyFields.name) {
-	  		//throw an error that a rally with the same name already exists
-	  		errors.rallyexists = 'A rally with the same name already exists';
-	  		return res.status(400).json(errors);
-	  	} else {
+	  // Rally.findOne({ owners: rallyFields.owners }).then(rally => {
+	  // 	if (rally && rally.name===rallyFields.name) {
+	  // 		//throw an error that a rally with the same name already exists
+	  // 		errors.rallyexists = 'A rally with the same name already exists';
+	  // 		return res.status(400).json(errors);
+	  // 	} else {
 	  		//create a new rally
 	  		new Rally(rallyFields).save().then(rally => res.json(rally));
-	  }
-	})
+	//   }
+	// })
 });
 
 // @route    POST api/rally/update
