@@ -43,10 +43,27 @@ const User = require('../../models/User');
 router.get('/get', passport.authenticate('jwt', { session: false }), (req, res) => {
 	const errors = {};
 	
-	Rally.find({ owners: req.body.owners })
+	Rally.find({ members: req.body.user})
 		.then(rally => {
-			if(!rally) {
+			if(rally.owners===[]) {
 				errors.norally = 'There is no rally for this user';
+				return res.status(404).json(errors);
+			}
+			res.json(rally);
+		})
+		.catch(err => res.status(404).json(err));
+});
+
+// @route    GET api/rally/information
+// @desc     Return rally information
+// @access   Private
+router.get('/information', passport.authenticate('jwt', { session: false }), (req, res) => {
+	const errors = {};
+	
+	Rally.findOne({ _id: req.body._id})
+		.then(rally => {
+			if(rally.owners===[]) {
+				errors.norally = 'No rally was found';
 				return res.status(404).json(errors);
 			}
 			res.json(rally);
@@ -75,6 +92,8 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
 	  rallyFields.owners = [];
 	  rallyFields.owners.push(req.body.owners);
 	  if(req.body.name) rallyFields.name = req.body.name;
+	  rallyFields.members = [];
+	  rallyFields.members.push(req.body.owners);
 
 	  // Rally.findOne({ owners: rallyFields.owners }).then(rally => {
 	  // 	if (rally && rally.name===rallyFields.name) {
@@ -104,8 +123,8 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 		return res.status(400).json(errors);
 	}
 
-	//find a rally to change based on owner and name
-	  Rally.findOne({ owners: { $all: req.body.owners }, name: req.body.name }).then(rally => {
+	//find a rally to change based on id
+	  Rally.findOne({ _id: req.body._id }).then(rally => {
 	  	if (rally) {
 	  		//set rally fields to be changed
 	  		const rallyFields = {};
@@ -113,16 +132,12 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 		  	if(!rally.owners.includes(req.body.owners)) {
 		  		rallyFields.owners = rally.owners.slice();
 		  		rallyFields.owners.push(req.body.owners);
+		  		rallyFields.members.push(req.body.owners);
 		  	}
-			if(typeof req.body.members != 'undefined' && !rally.members.includes(req.body.members)) {
-				if(typeof rally.members != 'object') {
-					rallyFields.members = [];
-				}
-				else {
-					rallyFields.members = rally.members.slice();
-				}
-				rallyFields.members.push(req.body.members);
-			}
+		  	if(!rally.members.includes(req.body.members)) {
+		  		rallyFields.members = rally.members.slice();
+		  		rallyFields.members.push(req.body.members);
+		  	}
 
 			//find rally and update it
 	  		Rally.findOneAndUpdate(
