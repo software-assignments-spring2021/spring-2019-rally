@@ -49,6 +49,17 @@ class Dashboard extends Component {
                         <div className= "col-md-12">
                             <h1 className="display-4">My Rallies</h1>
                             {dashboardContent}
+
+                        </div>
+                    </div>
+                    <div className = "row">
+                        <div className= "col-md-12">
+                            <div>
+                            <p></p>
+                                <p className="lead text-muted">{ user.name }'s Invitations</p>
+                                <p>Rallies you are part of or have been invited to will show here!</p>
+                            </div>
+
                         </div>
                     </div>
                 </div>

@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 import TextFieldGroup from '../common/TextFieldGroup';
 import TextAreaFieldGroup from '../common/TextAreaFieldGroup';
 import SelectListGroup from '../common/SelectListGroup';
-
+import { createRally } from '../../actions/profileActions';
+import { withRouter } from 'react-router-dom';
 
 class CreateRally extends Component {
 
@@ -32,10 +33,32 @@ class CreateRally extends Component {
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
     }
+
+    componentWillReceiveProps(nextProps){
+        if(nextProps.errors){
+            this.setState({errors: nextProps.errors});
+        }
+    }
+
     onSubmit(e) {
         e.preventDefault();
 
-        console.log("submit");
+        const rallyData = {
+
+            displayRestrictions: this.state.displayRestrictions,
+            rallyName: this.state.rallyName,
+            duration: this.state.duration,
+            members: this.state.members,
+            owners: this.state.owners,
+            earliestTime: this.state.earliestTime,
+            latestTime: this.state.latestTime,
+            location: this.state.location,
+            locationSuggRadius: this.state.locationSuggRadius,
+            only: this.state.only,
+        }
+
+        this.props.createRally(rallyData, this.props.history);
+
     }
 
     onChange(e){
@@ -74,10 +97,39 @@ class CreateRally extends Component {
 
         ];
 
-        const timeOptions = [
+        const timeStartOptions = [
 
             // TODO: separate drop down for AM/PM
-            {label: 'Select time', value: 0},
+            {label: 'Select start time restriction', value: 0},
+            {label: '12 AM', value: '0'},
+            {label: '1 AM', value: '1'},
+            {label: '2 AM', value: '2'},
+            {label: '3 AM', value: '3'},
+            {label: '4 AM', value: '4'},
+            {label: '5 AM', value: '5'},
+            {label: '6 AM', value: '6'},
+            {label: '7 AM', value: '7'},
+            {label: '8 AM', value: '8'},
+            {label: '9 AM', value: '9'},
+            {label: '10 AM', value: '10'},
+            {label: '11 AM', value: '11'},
+            {label: '12 PM', value: '12'},
+            {label: '1 PM', value: '13'},
+            {label: '2 PM', value: '14'},
+            {label: '3 PM', value: '15'},
+            {label: '4 PM', value: '16'},
+            {label: '5 PM', value: '17'},
+            {label: '6 PM', value: '18'},
+            {label: '7 PM', value: '19'},
+            {label: '8 PM', value: '20'},
+            {label: '9 PM', value: '21'},
+            {label: '10 PM', value: '22'},
+            {label: '11 PM', value: '23'},
+        ];
+        const timeEndOptions = [
+
+            // TODO: separate drop down for AM/PM
+            {label: 'Select end time restriction', value: 0},
             {label: '12 AM', value: '0'},
             {label: '1 AM', value: '1'},
             {label: '2 AM', value: '2'},
@@ -146,7 +198,7 @@ class CreateRally extends Component {
                     value={this.state.earliestTime}
                     onChange={this.onChange}
                     error={errors.earliestTime}
-                    options={timeOptions}
+                    options={timeStartOptions}
                     info="The event should start NO EARLIER than this time of day"
                 />
 
@@ -156,7 +208,7 @@ class CreateRally extends Component {
                     value={this.state.latestTime}
                     onChange={this.onChange}
                     error={errors.latestTime}
-                    options={timeOptions}
+                    options={timeEndOptions}
                     info="The event should end NO LATER than this time of day"
                 />
 
@@ -238,4 +290,4 @@ const mapStateToProps = state => ({
     errors: state.errors
 });
 
-export default connect(mapStateToProps)(CreateRally);
+export default connect(mapStateToProps, { createRally })(withRouter(CreateRally));
