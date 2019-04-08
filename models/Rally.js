@@ -18,6 +18,23 @@ const RallySchema = new Schema({
     dateExpires: {
         name: String
     },
+    duration: {
+        type: Number
+    },
+    restrictions: {
+        earliestTime: {
+            type: String
+        },
+        latestTime: {
+            type: String
+        },
+        locationSuggRadius: {
+            type: Number
+        },
+        timeOfWeek: {
+            type: String
+        }
+    }
 
 })
 
