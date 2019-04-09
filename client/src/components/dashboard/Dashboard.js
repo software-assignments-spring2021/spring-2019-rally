@@ -17,7 +17,7 @@ class Dashboard extends Component {
         //make sure profile is not null before rendering
         const { user } = this.props.auth;
         const { profile, loading } = this.props.profile;
-
+        console.log(profile);
         let dashboardContent;
 
         if(profile === null || loading){

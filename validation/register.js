@@ -16,6 +16,7 @@ module.exports = function validateRegisterInput(data) {
 
   if(!Validator.isAlpha(Validator.blacklist(data.name, " "))) {
     errors.name = 'Name must only contain alphabetic characters or spaces';
+  }
 
   if(Validator.isEmpty(data.name)) {
     errors.name = 'Name field is required';

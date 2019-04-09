@@ -78,9 +78,9 @@ router.get('/information', passport.authenticate('jwt', { session: false }), (re
 // @desc     Create user rally
 // @access   Private
 // route through which Rally Creation UI form connects to DB
-router.post('/post', passport.authenticate('jwt', { session: false }), (req, res) => {
+router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
 
-    console.log("inside post")
+    //console.log("inside post")
 	const {errors, isValid} = validateRallyInput(req.body);
 
     if(!isValid){
@@ -101,10 +101,13 @@ router.post('/post', passport.authenticate('jwt', { session: false }), (req, res
 	  const rallyFields = {};
 	  rallyFields.owners = [];
 	  rallyFields.owners.push(req.body.owners);
+      rallyFields.owners.push(req.user.id);
 	  if(req.body.name) rallyFields.name = req.body.name;
 	  rallyFields.members = [];
 	  rallyFields.members.push(req.body.owners);
 
+      rallyFields.restrictions = {};
+      //if(req.body.displayRestrictions) rallyFields.displayRestrictions = req.body.displayRestrictions;
       if(req.body.duration) rallyFields.duration = req.body.duration;
       if(req.body.earliestTime) rallyFields.restrictions.earliestTime = req.body.earliestTime;
       if(req.body.latestTime) rallyFields.restrictions.latestTime = req.body.latestTime;

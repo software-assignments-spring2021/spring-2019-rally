@@ -21,12 +21,12 @@ export const getCurrentProfile = () => dispatch => {
                 payload: {}
             })
         );
-        
+
 };
 
 export const createRally = (rallyData, history) => dispatch => {
     axios
-        .post('api/rally/post', rallyData)
+        .post('api/rally/create', rallyData)
         .then (res => history.push('/profile'))
         .catch(err =>
             dispatch({

@@ -42,7 +42,7 @@ class CreateRally extends Component {
 
         const rallyData = {
 
-            displayRestrictions: this.state.displayRestrictions,
+            //displayRestrictions: this.state.displayRestrictions,
             name: this.state.name,
             duration: this.state.duration,
             members: this.state.members,
@@ -53,7 +53,7 @@ class CreateRally extends Component {
             locationSuggRadius: this.state.locationSuggRadius,
             timeOfWeek: this.state.timeOfWeek,
         }
-
+        // call redux action for passing this rallyData into post
         this.props.createRally(rallyData, this.props.history);
 
     }
@@ -173,11 +173,11 @@ class CreateRally extends Component {
                 <div>
                 <TextFieldGroup
                     placeholder="Predetermined Location"
-                    name="name"
-                    type="name"
-                    value={this.state.name}
+                    name="location"
+                    type="location"
+                    value={this.state.location}
                     onChange={this.onChange}
-                    error={errors.name}
+                    error={errors.location}
                     info="If the location is not up for voting, please add it here"
                 />
                 <SelectListGroup
@@ -211,8 +211,8 @@ class CreateRally extends Component {
 
                 <SelectListGroup
                     placeholder="Only consider this part of the week when scheduling"
-                    name="only"
-                    value={this.state.only}
+                    name="timeOfWeek"
+                    value={this.state.timeOfWeek}
                     onChange={this.onChange}
                     error={errors.timeOfWeek}
                     options={onlyOptions}
@@ -234,6 +234,7 @@ class CreateRally extends Component {
                             <p className="lead text-center">
                             Fill in the information below to get started! </p>
                             <small className="d-block pb-3">* = required fields</small>
+
                             <form onSubmit={this.onSubmit}>
                                 <TextFieldGroup
                                     placeholder="Rally event title"
@@ -256,9 +257,10 @@ class CreateRally extends Component {
                                 />
 
                                 <div className="mb-3">
-                                    <button onClick={() => {
+                                    <button type="button" onClick={() => {
                                         this.setState(prevState => ({
-                                            displayRestrictions: !prevState.displayRestrictions
+                                            displayRestrictions: !prevState.displayRestrictions,
+
                                         }))
                                     }} className="btn btn-light">
                                         Add Event Restrictions
@@ -268,6 +270,7 @@ class CreateRally extends Component {
                                 { restrictions }
                                 <input type="submit" value="Submit" className="btn btn-info btn-block mt-4"/>
                             </form>
+
                         </div>
                     </div>
                 </div>
