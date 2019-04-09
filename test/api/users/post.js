@@ -199,7 +199,7 @@ describe('POST /api/users/register', () => {
   // });
 
   // // Ryan - a rally will be created and error expected because wrong user id
-  // it('Fail, trying to create a rally without being logged in', (done) => {
+    // it('Fail, trying to create a rally without being logged in', (done) => {
   //   request(app).post('/api/users/login')
   //   .send({ email: "baroo@gmail.com", password: "Test123" })
   //   .then((res) => {

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 //Create a schema
-const RallySchema = new Schema({ 
+const RallySchema = new Schema({
     name: {
         type: String,
         required: true
@@ -18,6 +18,23 @@ const RallySchema = new Schema({
     dateExpires: {
         name: String
     },
+    duration: {
+        type: Number
+    },
+    restrictions: {
+        earliestTime: {
+            type: String
+        },
+        latestTime: {
+            type: String
+        },
+        locationSuggRadius: {
+            type: Number
+        },
+        timeOfWeek: {
+            type: String
+        }
+    }
 
 })
 
