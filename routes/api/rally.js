@@ -106,10 +106,10 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 	const decoded = jwt.verify(token[1], 'secret');
 
 	//checks if the id from the jwt and the owner of the rally id matches
-	if(decoded.id!==req.body.owners ) {
-		errors.nologin = 'Please log in.';
-		return res.status(400).json(errors);
-	}
+	// if(decoded.id!==req.body.owners ) {
+	// 	errors.nologin = 'Please log in.';
+	// 	return res.status(400).json(errors);
+	// }
 
 	//find a rally to change based on owner and name
 	  Rally.findOne({ owners: { $all: req.body.owners }, name: req.body.name }).then(rally => {
