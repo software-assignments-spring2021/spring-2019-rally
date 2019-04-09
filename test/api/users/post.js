@@ -179,7 +179,41 @@ describe('POST /api/users/register', () => {
       });
   });
 
+  // Erik - a rally will be created and then checked to see if each of the fields is saved correctly
+  // it('OK, logging in and creating a rally', (done) => {
+  //   request(app).post('/api/users/login')
+  //   .send({ email: "erik.law@nyu.edu", password: "Test123" })
+  //   .then((res) => {
+  //     request(app).post('/api/rally/create')
+  //     .set('Authorization', res.body.token)
+  //       .send({ name: 'Weekend Rally', owners: "5ca6ce10542f1f246054a708" })
+  //         .then((res) => {
+  //           const body = res.body;
+  //             expect(body.name).equals('Weekend Rally');
+  //             expect(body.owners).to.eql(["5ca6ce10542f1f246054a708"]);
+  //             expect(body.members).to.eql([]);
+  //             done();
+  //           })
+  //     .catch((err) => done(err));     
+  //   });
+  // });
 
+  // Ryan - a rally will be created and error expected because wrong user id
+  it('Fail, trying to create a rally without being logged in', (done) => {
+    request(app).post('/api/users/login')
+    .send({ email: "baroo@gmail.com", password: "Test123" })
+    .then((res) => {
+      request(app).post('/api/rally/create')
+      .set('Authorization', res.body.token)
+          .send({ name: 'Weekend Rally', owners: ['barbarbar'] })
+              .then((res) => {
+                const body = res.body;
+                expect(body.nologin).equals('Please log in.');
+                done();
+              });
+            })
+      .catch((err) => done(err));     
+  });
 
 
 });
