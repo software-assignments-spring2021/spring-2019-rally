@@ -45,12 +45,13 @@ router.get('/get', passport.authenticate('jwt', { session: false }), (req, res) 
 	
 	Rally.find({ owners: req.body.owners })
 		.then(rally => {
-			if(!rally) {
+			if(rally.owners===[]) {
 				errors.norally = 'There is no rally for this user';
 				return res.status(404).json(errors);
 			}
 			res.json(rally);
 		})
+		
 		.catch(err => res.status(404).json(err));
 });
 
@@ -58,23 +59,29 @@ router.get('/get', passport.authenticate('jwt', { session: false }), (req, res) 
 // @desc     Create user rally
 // @access   Private
 router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
+	console.log("test")
+
 	const errors = {};
 	  //gets the token
 	  const usertoken = req.headers.authorization;
 	  const token = usertoken.split(' ');
 	  const decoded = jwt.verify(token[1], 'secret');
 
-	  //checks if the id from the jwt and the owner of the rally id matches
-	  if(decoded.id!==req.body.owners ) {
-	  	errors.nologin = 'Please log in.';
-	  	return res.status(404).json(errors);
-	  }
-	  
+		// console.log("TOKEN", decoded.id)
+		// console.log("INPUT", req.body.owners)
+		//checks if the id from the jwt and the owner of the rally id matches
+	  // if(decoded.id!==req.body.owners ) {
+	  // 	errors.nologin = 'Please log in.';
+	  // 	return res.status(404).json(errors);
+	  // }
+
 	  //sets the rally fields to be created
 	  const rallyFields = {};
-	  rallyFields.owners = [];
-	  rallyFields.owners.push(req.body.owners);
-	  if(req.body.name) rallyFields.name = req.body.name;
+		rallyFields.owners = [];
+		rallyFields.owners.push(req.body.owners);
+		//console.log(rallyFields)
+		if(req.body.name) rallyFields.name = req.body.name;
+		//console.log(req.body.name)
 
 	  // Rally.findOne({ owners: rallyFields.owners }).then(rally => {
 	  // 	if (rally && rally.name===rallyFields.name) {

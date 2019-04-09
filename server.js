@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 
 if(!(process.env.NODE_ENV === "test")) {
   //DB COnfig
-  const db = process.env.mongoURI;//require('./config/keys').mongoURI;
+  const db = require('./config/keys').mongoURI;
 
   //Connect to DB
   mongoose
