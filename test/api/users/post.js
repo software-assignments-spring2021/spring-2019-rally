@@ -198,24 +198,24 @@ describe('POST /api/users/register', () => {
   //   });
   // });
 
-  // Ryan - a rally will be created and error expected because wrong user id
-  it('Fail, trying to create a rally without being logged in', (done) => {
-    request(app).post('/api/users/login')
-    .send({ email: "baroo@gmail.com", password: "Test123" })
-    .then((res) => {
-      request(app).post('/api/rally/create')
-      .set('Authorization', res.body.token)
-    //  console.log(res.body.token)
+  // // Ryan - a rally will be created and error expected because wrong user id
+  // it('Fail, trying to create a rally without being logged in', (done) => {
+  //   request(app).post('/api/users/login')
+  //   .send({ email: "baroo@gmail.com", password: "Test123" })
+  //   .then((res) => {
+  //     request(app).post('/api/rally/create')
+  //     .set('Authorization', res.body.token)
+  //   //  console.log(res.body.token)
 
-          .send({ name: 'Weekend Rally', owners: ['barbarbar'] })
-              .then((res) => {
-                const body = res.body;
-                expect(body.nologin).equals('Please log in.');
-                done();
-              });
-            })
-      .catch((err) => done(err));     
-  });
+  //         .send({ name: 'Weekend Rally', owners: ['barbarbar'] })
+  //             .then((res) => {
+  //               const body = res.body;
+  //               expect(body.nologin).equals('Please log in.');
+  //               done();
+  //             });
+  //           })
+  //     .catch((err) => done(err));     
+  // });
 
    // Ryan - a rally will be created and expect rally object
    it('Ok, creating a new rally works', (done) => {
@@ -224,22 +224,21 @@ describe('POST /api/users/register', () => {
     .then((res) => {
       request(app).get('/api/users/current')
       .set('Authorization', res.body.token)
-      .then((res) => {
-      request(app).post('/api/rally/create')
-        //.set('Authorization', res.body.token)
-       // console.log(res.body.token)
-          // const token = res.body.token.split(' ')
-          // const decoded = jwt.verify(token[1], 'secret')
-        .send({ owners: res.body._id, name: 'Weekend Rally' })
-          .then((res) => {
-            const body = res.body;
-            //console.log(res.body)
-            expect(body).to.contain.property('owners');
-            expect(body).to.contain.property('members');
-            expect(body).to.contain.property('_id');
-            expect(body).to.contain.property('name');
-            expect(body).to.contain.property('__v');
-            done();
+      .then((res2) => {
+        request(app).post('/api/rally/create')
+        .set('Authorization', res.body.token)
+
+        //console.log(res.body.id)
+        .send({ owners: res2.body.id, name: 'Test' })
+            .then((res3) => {
+             const body = res3.body;
+             //console.log(body)
+             expect(body).to.contain.property('owners');
+             expect(body).to.contain.property('members');
+             expect(body).to.contain.property('_id');
+             expect(body).to.contain.property('name');
+             expect(body).to.contain.property('__v');
+             done();
           });
         })
       })
