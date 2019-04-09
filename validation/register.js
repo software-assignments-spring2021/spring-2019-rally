@@ -14,9 +14,8 @@ module.exports = function validateRegisterInput(data) {
     errors.name = 'Name must be between 2 and 30 characters';
   }
 
-  if(!(Validator.isAlpha(data.name))){
-    errors.name = 'Name must only contain alphabetic characters';
-  }
+  if(!Validator.isAlpha(Validator.blacklist(data.name, " "))) {
+    errors.name = 'Name must only contain alphabetic characters or spaces';
 
   if(Validator.isEmpty(data.name)) {
     errors.name = 'Name field is required';
