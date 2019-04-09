@@ -2,7 +2,7 @@ process.env.NODE_ENV = 'test';
 
 const expect = require('chai').expect;
 const request = require('supertest');
-
+const jwt = require('jsonwebtoken');
 const app = require('../../../server.js');
 const conn = require('../../../db/index.js');
 require("supertest").agent(app.listen());
@@ -205,6 +205,8 @@ describe('POST /api/users/register', () => {
     .then((res) => {
       request(app).post('/api/rally/create')
       .set('Authorization', res.body.token)
+    //  console.log(res.body.token)
+
           .send({ name: 'Weekend Rally', owners: ['barbarbar'] })
               .then((res) => {
                 const body = res.body;
@@ -212,6 +214,35 @@ describe('POST /api/users/register', () => {
                 done();
               });
             })
+      .catch((err) => done(err));     
+  });
+
+   // Ryan - a rally will be created and expect rally object
+   it('Ok, creating a new rally works', (done) => {
+    request(app).post('/api/users/login')
+    .send({ email: "baroo@gmail.com", password: "Test123" })
+    .then((res) => {
+      request(app).get('/api/users/current')
+      .set('Authorization', res.body.token)
+      .then((res) => {
+      request(app).post('/api/rally/create')
+        //.set('Authorization', res.body.token)
+       // console.log(res.body.token)
+          // const token = res.body.token.split(' ')
+          // const decoded = jwt.verify(token[1], 'secret')
+        .send({ owners: res.body._id, name: 'Weekend Rally' })
+          .then((res) => {
+            const body = res.body;
+            //console.log(res.body)
+            expect(body).to.contain.property('owners');
+            expect(body).to.contain.property('members');
+            expect(body).to.contain.property('_id');
+            expect(body).to.contain.property('name');
+            expect(body).to.contain.property('__v');
+            done();
+          });
+        })
+      })
       .catch((err) => done(err));     
   });
 
