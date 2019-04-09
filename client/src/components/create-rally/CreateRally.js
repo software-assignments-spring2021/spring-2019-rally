@@ -15,18 +15,15 @@ class CreateRally extends Component {
         //component state: rally form fields
         this.state = {
             displayRestrictions: false,
-            rallyName: '',
+            name: '',
             duration: '',
-            //TODO: remove later
-            members: '',
-            owners: '',
-
+            members: [],
+            owners: [],
             earliestTime: '',
             latestTime: '',
             location: '',
             locationSuggRadius: '',
-            only: '',
-
+            timeOfWeek: '',
             errors: {}
         }
 
@@ -46,7 +43,7 @@ class CreateRally extends Component {
         const rallyData = {
 
             displayRestrictions: this.state.displayRestrictions,
-            rallyName: this.state.rallyName,
+            name: this.state.name,
             duration: this.state.duration,
             members: this.state.members,
             owners: this.state.owners,
@@ -54,7 +51,7 @@ class CreateRally extends Component {
             latestTime: this.state.latestTime,
             location: this.state.location,
             locationSuggRadius: this.state.locationSuggRadius,
-            only: this.state.only,
+            timeOfWeek: this.state.timeOfWeek,
         }
 
         this.props.createRally(rallyData, this.props.history);
@@ -88,12 +85,12 @@ class CreateRally extends Component {
         const radiusOptions = [
 
             {label: 'Select location suggestion radius', value: 0},
-            {label: '0.5 miles', value: '0.5'},
-            {label: '1 miles', value: '1'},
-            {label: '2 miles', value: '2'},
-            {label: '5 miles', value: '5'},
-            {label: '10 miles', value: '10'},
-            {label: '15 miles', value: '15'},
+            {label: '0.5 miles', value: 0.5},
+            {label: '1 miles', value: 1},
+            {label: '2 miles', value: 2},
+            {label: '5 miles', value: 5},
+            {label: '10 miles', value: 10},
+            {label: '15 miles', value: 15},
 
         ];
 
@@ -178,9 +175,9 @@ class CreateRally extends Component {
                     placeholder="Predetermined Location"
                     name="name"
                     type="name"
-                    value={this.state.rallyName}
+                    value={this.state.name}
                     onChange={this.onChange}
-                    error={errors.rallyName}
+                    error={errors.name}
                     info="If the location is not up for voting, please add it here"
                 />
                 <SelectListGroup
@@ -217,7 +214,7 @@ class CreateRally extends Component {
                     name="only"
                     value={this.state.only}
                     onChange={this.onChange}
-                    error={errors.only}
+                    error={errors.timeOfWeek}
                     options={onlyOptions}
                     info="Only consider this part of the week when scheduling this Rally"
                 />
@@ -242,9 +239,9 @@ class CreateRally extends Component {
                                     placeholder="Rally event title"
                                     name="name"
                                     type="name"
-                                    value={this.state.rallyName}
+                                    value={this.state.name}
                                     onChange={this.onChange}
-                                    error={errors.rallyName}
+                                    error={errors.name}
                                     info="* This is the event name invited members will see"
                                 />
 

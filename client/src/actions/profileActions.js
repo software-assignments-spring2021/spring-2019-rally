@@ -7,8 +7,9 @@ export const getCurrentProfile = () => dispatch => {
 
     dispatch(setProfileLoading());
 
-    axios.get('/api/profile')
+    axios.get('api/rally/get')
         .then(res =>
+
             dispatch({
                 type: GET_PROFILE,
                 payload: res.data
@@ -20,12 +21,13 @@ export const getCurrentProfile = () => dispatch => {
                 payload: {}
             })
         );
+        
 };
 
 export const createRally = (rallyData, history) => dispatch => {
     axios
-        .post('/api/rally', rallyData)
-        .then (res => history.push('/dashboard'))
+        .post('api/rally/post', rallyData)
+        .then (res => history.push('/profile'))
         .catch(err =>
             dispatch({
                 type: GET_ERRORS,
