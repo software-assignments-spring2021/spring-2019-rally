@@ -5,37 +5,10 @@ const jwt = require('jsonwebtoken');
 //const keys = process.env;//const keys = require('../../config/keys');
 const passport = require('passport');
 
-//Load input validation
-// const validateCreationInput = require('../../validation/creation');
-
 //Load rally model
 const Rally = require('../../models/Rally');
 //Load user model
 const User = require('../../models/User');
-
-// @route    GET api/rally/test
-// @desc     Test rally route
-// @access   Public
-// router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
-    //       newRally.save()
-		// 	.then(rally => res.json(rally))
-		// 	.catch(err => console.log(err));
-    //     }
-    // });
-// })
-
-
-// @route    GET api/rally/current
-// @desc     Return current rally
-// @access   Private
-// router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
-// 	res.json({
-//     	name: req.rally.name,
-//     	owners: req.rally.owners,
-//     	members: req.rally.members,
-//     	dateExpires: req.rally.dateExpires
-//     });
-// })
 
 // @route    GET api/rally
 // @desc     Return user rallies
@@ -95,16 +68,7 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
 	  rallyFields.members = [];
 	  rallyFields.members.push(req.body.owners);
 
-	  // Rally.findOne({ owners: rallyFields.owners }).then(rally => {
-	  // 	if (rally && rally.name===rallyFields.name) {
-	  // 		//throw an error that a rally with the same name already exists
-	  // 		errors.rallyexists = 'A rally with the same name already exists';
-	  // 		return res.status(400).json(errors);
-	  // 	} else {
-	  		//create a new rally
-	  		new Rally(rallyFields).save().then(rally => res.json(rally));
-	//   }
-	// })
+	  new Rally(rallyFields).save().then(rally => res.json(rally));
 });
 
 // @route    POST api/rally/update
@@ -118,7 +82,7 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 	const decoded = jwt.verify(token[1], 'secret');
 
 	//checks if the id from the jwt and the owner of the rally id matches
-	if(decoded.id!==req.body.owners ) {
+	if(decoded.id!==req.body.user ) {
 		errors.nologin = 'Please log in.';
 		return res.status(400).json(errors);
 	}
@@ -129,14 +93,14 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 	  		//set rally fields to be changed
 	  		const rallyFields = {};
 	  		if(req.body.name) rallyFields.name = req.body.name;
-		  	if(!rally.owners.includes(req.body.owners)) {
+	  		rallyFields.members = rally.members.slice();
+	  		if(!rally.members.includes(req.body.members) && req.body.members !== undefined) {
+		  		rallyFields.members.push(req.body.members);
+		  	}
+		  	if(!rally.owners.includes(req.body.owners) && req.body.owners !== undefined) {
 		  		rallyFields.owners = rally.owners.slice();
 		  		rallyFields.owners.push(req.body.owners);
 		  		rallyFields.members.push(req.body.owners);
-		  	}
-		  	if(!rally.members.includes(req.body.members)) {
-		  		rallyFields.members = rally.members.slice();
-		  		rallyFields.members.push(req.body.members);
 		  	}
 
 			//find rally and update it
