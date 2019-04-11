@@ -9,23 +9,24 @@ import { getCurrentProfile } from '../../actions/profileActions';
 class Dashboard extends Component {
 
     //use lifecycle method because we want it to be called right away
-    componentDidMount() {
-        this.props.getCurrentProfile();
-    }
+    // componentDidMount() {
+    //     this.props.getCurrentProfile();
+    // }
     render() {
+
 
         //make sure profile is not null before rendering
         const { user } = this.props.auth;
-        const { profile, loading } = this.props.profile;
-        console.log(profile);
+        const { rally, loading } = this.props.rally;
+        console.log(rally);
         let dashboardContent;
 
-        if(profile === null || loading){
+        if(rally === null || loading){
             dashboardContent = <h4>Loading...</h4>;//<Spinner />;
         } else {
 
             // check if logged in user has rally/profile data
-            if(Object.keys(profile).length > 0){
+            if(Object.keys(rally).length > 0){
                 dashboardContent = <h4>TODO: Display Rallies</h4>;
             }else{
                 //user is logged in but has no rallies: create profile / rally
@@ -72,11 +73,12 @@ class Dashboard extends Component {
 Dashboard.propTypes = {
     getCurrentProfile: PropTypes.func.isRequired,
     auth: PropTypes.object.isRequired,
-    profile: PropTypes.object.isRequired
+    rally: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
     profile: state.profile,
+    rally: state.rally,
     auth: state.auth
 });
 

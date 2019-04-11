@@ -6,6 +6,7 @@ import Register from './components/auth/Register';
 import Login from './components/auth/Login';
 import Dashboard from './components/dashboard/Dashboard';
 import CreateRally from './components/create-rally/CreateRally';
+import Rallies from './components/rallies/Rallies';
 
 
 import { Provider } from 'react-redux';
@@ -55,10 +56,10 @@ class App extends Component {
 
 
               <Switch>
-                <PrivateRoute exact path="/profile" component= {Dashboard} />
+                <PrivateRoute exact path="/profile" component= {Rallies} />
               </Switch>
               <Switch>
-                <CreateRally exact path="/create-rally" component= {CreateRally} />
+                <PrivateRoute exact path="/create-rally" component= {CreateRally} />
               </Switch>
 
             </div>

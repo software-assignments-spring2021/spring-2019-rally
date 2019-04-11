@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { GET_PROFILE, PROFILE_LOADING,  CLEAR_CURRENT_PROFILE, GET_ERRORS} from './types';
+import { GET_PROFILE, PROFILE_LOADING,  CLEAR_CURRENT_PROFILE, GET_ERRORS, GET_PROFILES} from './types';
 
 //get current profile
 export const getCurrentProfile = () => dispatch => {
@@ -23,6 +23,25 @@ export const getCurrentProfile = () => dispatch => {
         );
 
 };
+
+export const getRallies = () => dispatch => {
+  dispatch(setProfileLoading());
+
+  axios.get('api/rally/get')
+      .then(res =>
+
+          dispatch({
+              type: GET_PROFILES,
+              payload: res.data
+          })
+      )
+      .catch(err =>
+          dispatch({
+              type: GET_PROFILES,
+              payload: null
+          })
+      );
+}
 
 export const createRally = (rallyData, history) => dispatch => {
     axios

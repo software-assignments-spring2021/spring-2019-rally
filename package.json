@@ -34,10 +34,13 @@
     "nyc": "^13.3.0",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
+    "react-datepicker": "^2.3.0",
     "supertest": "^3.4.2",
     "validator": "^10.11.0"
   },
   "devDependencies": {
+    "datepicker-moment": "^2.0.2",
+    "moment": "^2.24.0",
     "nodemon": "^1.18.10"
   }
 }

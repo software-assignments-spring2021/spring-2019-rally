@@ -1,7 +1,7 @@
 const Validator = require('validator');
 const isEmpty = require('./is-empty');
 
-module.exports = function valiateRallyInput(data) {
+module.exports = function validateRallyInput(data) {
   let errors = {};
 
   data.name = !isEmpty(data.name) ? data.name : '';

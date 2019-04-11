@@ -114,9 +114,17 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
       if(req.body.location) rallyFields.restrictions.location = req.body.location;
       if(req.body.timeOfWeek) rallyFields.restrictions.timeOfWeek = req.body.timeOfWeek;
       if(req.body.locationSuggRadius) rallyFields.restrictions.locationSuggRadius = req.body.locationSuggRadius;
+      if(req.body.startDate) rallyFields.restrictions.startDate = req.body.startDate;
+      if(req.body.endDate) rallyFields.restrictions.endDate = req.body.endDate;
+
+      //TODO: get MongoDB _id of the rally and push it into the user's rally array
+
+
+
 
       //create a new rally
 	  new Rally(rallyFields).save().then(rally => res.json(rally));
+    req.user.rallies.push(res.id);
 
 });
 
