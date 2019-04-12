@@ -227,12 +227,9 @@ describe('POST /api/users/register', () => {
       .then((res2) => {
         request(app).post('/api/rally/create')
         .set('Authorization', res.body.token)
-
-        //console.log(res.body.id)
-        .send({ owners: res2.body.id, name: 'Test' })
+        .send({ owners: res2.body.id, name: 'Test', duration: "10" })
             .then((res3) => {
              const body = res3.body;
-             console.log(body)
              expect(body).to.contain.property('owners');
              expect(body).to.contain.property('members');
              expect(body).to.contain.property('_id');
@@ -245,5 +242,34 @@ describe('POST /api/users/register', () => {
       .catch((err) => done(err));     
   });
 
-
+   // Nanako - a rally will be created and expect rally object
+   it('Ok, creating a new rally and adding a new member works', (done) => {
+    request(app).post('/api/users/login')
+    .send({ email: "baroo@gmail.com", password: "Test123" })
+    .then((res) => {
+      request(app).get('/api/users/current')
+      .set('Authorization', res.body.token)
+      .then((res2) => {
+        request(app).post('/api/rally/create')
+        .set('Authorization', res.body.token)
+        .send({ owners: res2.body.id, name: 'Test', duration: "10" })
+            .then((res3) => {
+             request(app).post('/api/rally/update')
+             .set('Authorization', res.body.token)
+             .send({ id: res2.body.id, members: res3.body.id })
+                .then((res4) => {
+                  console.log(res4.body)
+                  const body = res4.body;
+                  expect(body).to.contain.property('owners');
+                  expect(body).to.contain.property('members');
+                  expect(body).to.contain.property('_id');
+                  expect(body).to.contain.property('name');
+                  expect(body).to.contain.property('__v');
+                  done();
+                })
+            })
+      })
+      .catch((err) => done(err));  
+    }); 
+  });  
 });
