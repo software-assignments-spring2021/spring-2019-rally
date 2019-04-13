@@ -107,14 +107,14 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
 	  rallyFields.members = [];
 	  rallyFields.members.push(req.body.owners);
 
-    //   rallyFields.restrictions = {};
+      rallyFields.restrictions = {};
       //if(req.body.displayRestrictions) rallyFields.displayRestrictions = req.body.displayRestrictions;
-    //   if(req.body.duration) rallyFields.duration = req.body.duration;
-    //   if(req.body.earliestTime) rallyFields.restrictions.earliestTime = req.body.earliestTime;
-    //   if(req.body.latestTime) rallyFields.restrictions.latestTime = req.body.latestTime;
-    //   if(req.body.location) rallyFields.restrictions.location = req.body.location;
-    //   if(req.body.timeOfWeek) rallyFields.restrictions.timeOfWeek = req.body.timeOfWeek;
-    //   if(req.body.locationSuggRadius) rallyFields.restrictions.locationSuggRadius = req.body.locationSuggRadius;
+      if(req.body.duration) rallyFields.duration = req.body.duration;
+      if(req.body.earliestTime) rallyFields.restrictions.earliestTime = req.body.earliestTime;
+      if(req.body.latestTime) rallyFields.restrictions.latestTime = req.body.latestTime;
+      if(req.body.location) rallyFields.restrictions.location = req.body.location;
+      if(req.body.timeOfWeek) rallyFields.restrictions.timeOfWeek = req.body.timeOfWeek;
+      if(req.body.locationSuggRadius) rallyFields.restrictions.locationSuggRadius = req.body.locationSuggRadius;
 
       //create a new rally
 	  new Rally(rallyFields).save().then(rally => res.json(rally));
@@ -164,7 +164,7 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 
 	  	} else {
 	  		//throw an error that a rally with name does not exist
-	  		errors.rallyexists = 'A rally with this name does not exist';
+	  		errors.rallyexists = 'A rally with this id does not exist';
 	  		return res.status(400).json(errors);
 	  }
   	})
