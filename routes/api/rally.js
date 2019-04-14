@@ -74,11 +74,11 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
 	  //sets the rally fields to be created
 	  const rallyFields = {};
 	  rallyFields.owners = [];
-	  rallyFields.owners.push(req.body.owners);
-      rallyFields.owners.push(req.user.id);
+	  if(req.body.owners) rallyFields.owners.push(req.body.owners);
+    if(req.user.id) rallyFields.owners.push(req.user.id);
 	  if(req.body.name) rallyFields.name = req.body.name;
 	  rallyFields.members = [];
-	  rallyFields.members.push(req.body.owners);
+	  if(req.body.owners) rallyFields.members.push(req.body.owners);
     rallyFields.restrictions = {};
     //if(req.body.displayRestrictions) rallyFields.displayRestrictions = req.body.displayRestrictions;
     if(req.body.duration) rallyFields.duration = req.body.duration;
@@ -104,10 +104,10 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 	const decoded = jwt.verify(token[1], 'secret');
 
 	//checks if the id from the jwt and the owner of the rally id matches
-	if(decoded.id!==req.body.user ) {
-		errors.nologin = 'Please log in.';
-		return res.status(400).json(errors);
-	}
+	// if(decoded.id!==req.body.user ) {
+	// 	errors.nologin = 'Please log in.';
+	// 	return res.status(400).json(errors);
+	// }
 
 	//find a rally to change based on id
 	  Rally.findOne({ _id: req.body._id }).then(rally => {
@@ -116,8 +116,8 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 	  		const rallyFields = {};
 	  		if(req.body.name) rallyFields.name = req.body.name;
 	  		rallyFields.members = rally.members.slice();
-	  		if(!rally.members.includes(req.body.members) && req.body.members !== undefined) {
-		  		rallyFields.members.push(req.body.members);
+	  		if(!rally.members.includes(req.body.members) && !rally.members.includes(req.body.owners) && req.body.members!==undefined) {
+					rallyFields.members.push(req.body.members);
 		  	}
 		  	if(!rally.owners.includes(req.body.owners) && req.body.owners !== undefined) {
 		  		rallyFields.owners = rally.owners.slice();
