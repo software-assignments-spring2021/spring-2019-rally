@@ -2,7 +2,7 @@ process.env.NODE_ENV = 'test';
 
 const expect = require('chai').expect;
 const request = require('supertest');
-
+const jwt = require('jsonwebtoken');
 const app = require('../../../server.js');
 const conn = require('../../../db/index.js');
 require("supertest").agent(app.listen());
@@ -198,13 +198,15 @@ describe('POST /api/users/register', () => {
   //   });
   // });
 
-  // Ryan - a rally will be created and error expected because wrong user id
-  // it('Fail, trying to create a rally without being logged in', (done) => {
+  // // Ryan - a rally will be created and error expected because wrong user id
+    // it('Fail, trying to create a rally without being logged in', (done) => {
   //   request(app).post('/api/users/login')
   //   .send({ email: "baroo@gmail.com", password: "Test123" })
   //   .then((res) => {
   //     request(app).post('/api/rally/create')
   //     .set('Authorization', res.body.token)
+  //   //  console.log(res.body.token)
+
   //         .send({ name: 'Weekend Rally', owners: ['barbarbar'] })
   //             .then((res) => {
   //               const body = res.body;
@@ -215,5 +217,123 @@ describe('POST /api/users/register', () => {
   //     .catch((err) => done(err));     
   // });
 
+  // Ryan - a rally will be created and expect rally object
+  it('Ok, creating a new rally works', (done) => {
+    request(app).post('/api/users/login')
+    .send({ email: "baroo@gmail.com", password: "Test123" })
+    .then((res) => {
+      request(app).get('/api/users/current')
+      .set('Authorization', res.body.token)
+      .then((res2) => {
+        request(app).post('/api/rally/create')
+        .set('Authorization', res.body.token)
+        .send({ owners: res2.body.id, name: 'Test' })
+            .then((res3) => {
+              const body = res3.body;
+              expect(body).to.contain.property('owners');
+              expect(body).to.contain.property('members');
+              expect(body).to.contain.property('_id');
+              expect(body).to.contain.property('name');
+              expect(body).to.contain.property('__v');
+              done();
+          });
+        })
+      })
+      .catch((err) => done(err));     
+  });
 
+  // Ryan - a rally will be created and expect rally object, then update the rally by adding an owner
+  it('Ok, updating a new rally by adding an owner works', (done) => {
+    request(app).post('/api/users/login')
+    .send({ email: "baroo@gmail.com", password: "Test123" })
+    .then((res) => {
+      request(app).get('/api/users/current')
+      .set('Authorization', res.body.token)
+      .then((res2) => {
+        request(app).post('/api/rally/create')
+        .set('Authorization', res.body.token)
+        .send({ owners: res2.body._id, name: 'Test' })
+          .then((res3) => {
+          request(app).get('/api/rally/get')
+          .set('Authorization', res.body.token)
+          .send(res3.body._id)
+          .then((res4) => {
+            request(app).post('/api/rally/update')
+            .set('Authorization', res.body.token)
+            .send({ _id: res3.body._id, owners: 'new owner' })
+              .then((res5) => {
+                const body = res5.body;
+                console.log(res5.body)
+                done();
+              });
+            })
+          })
+      })
+    })
+      .catch((err) => done(err));     
+  });
+
+  // Nanako - a rally will be created and expect rally object, then update the rally by adding a member
+  it('Ok, updating a new rally by adding a new member works', (done) => {
+    request(app).post('/api/users/login')
+    .send({ email: "baroo@gmail.com", password: "Test123" })
+    .then((res) => {
+      request(app).get('/api/users/current')
+      .set('Authorization', res.body.token)
+      .then((res2) => {
+        request(app).post('/api/rally/create')
+        .set('Authorization', res.body.token)
+        .send({ owners: res2.body._id, name: 'Test' })
+          .then((res3) => {
+          request(app).get('/api/rally/get')
+          .set('Authorization', res.body.token)
+          .send(res3.body._id)
+          .then((res4) => {
+            request(app).post('/api/rally/update')
+            .set('Authorization', res.body.token)
+            .send({ _id: res3.body._id, members: 'new member' })
+              .then((res5) => {
+                const body = res5.body;
+                expect(body.members).contains("new member");
+                done();
+              });
+            })
+          })
+      })
+    })
+      .catch((err) => done(err));     
+  });
+
+
+  // Ryan - a rally will be created and expect rally object, then update the rally changing its name
+  it('Ok, updating a new rally by changing the name works', (done) => {
+    request(app).post('/api/users/login')
+    .send({ email: "baroo@gmail.com", password: "Test123" })
+    .then((res) => {
+      request(app).get('/api/users/current')
+      .set('Authorization', res.body.token)
+      .then((res2) => {
+        request(app).post('/api/rally/create')
+        .set('Authorization', res.body.token)
+        .send({ owners: res2.body._id, name: 'Test' })
+          .then((res3) => {
+          request(app).get('/api/rally/get')
+          .set('Authorization', res.body.token)
+          .send(res3.body._id)
+          .then((res4) => {
+            request(app).post('/api/rally/update')
+            .set('Authorization', res.body.token)
+            .send({ _id: res3.body._id, name: "Test2" })
+              .then((res5) => {
+                const body = res5.body;
+                console.log(res5.body)
+                expect(body.name).contains("Test2");
+                done();
+              });
+            })
+          })
+      })
+    })
+      .catch((err) => done(err));     
+  });
 });

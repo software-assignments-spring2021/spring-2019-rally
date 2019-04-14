@@ -24,6 +24,7 @@ router.get('/get', passport.authenticate('jwt', { session: false }), (req, res) 
 			}
 			res.json(rally);
 		})
+		
 		.catch(err => res.status(404).json(err));
 });
 
@@ -50,12 +51,15 @@ router.get('/information', passport.authenticate('jwt', { session: false }), (re
 // route through which Rally Creation UI form connects to DB
 router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
 
-    //console.log("inside post")
-	const {errors, isValid} = validateRallyInput(req.body);
+ //   console.log(req.headers.authorization)
+	//const {errors, isValid} = validateRallyInput(req.body);
 
-    if(!isValid){
-        return res.status(400).json(errors);
-    }
+    // if(!isValid){
+    //     return res.status(400).json(errors);
+	// }
+	//console.log("INSIDE", req.body.name)
+
+
 	  //gets the token
 	  const usertoken = req.headers.authorization;
 	  const token = usertoken.split(' ');
@@ -70,11 +74,10 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
 	  //sets the rally fields to be created
 	  const rallyFields = {};
 	  rallyFields.owners = [];
-	  rallyFields.owners.push(req.body.owners);
-      rallyFields.owners.push(req.user.id);
+	  if(req.body.owners) rallyFields.owners.push(req.body.owners);
 	  if(req.body.name) rallyFields.name = req.body.name;
 	  rallyFields.members = [];
-	  rallyFields.members.push(req.body.owners);
+	  if(req.body.owners) rallyFields.members.push(req.body.owners);
     rallyFields.restrictions = {};
     //if(req.body.displayRestrictions) rallyFields.displayRestrictions = req.body.displayRestrictions;
     if(req.body.duration) rallyFields.duration = req.body.duration;
@@ -100,23 +103,25 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 	const decoded = jwt.verify(token[1], 'secret');
 
 	//checks if the id from the jwt and the owner of the rally id matches
-	if(decoded.id!==req.body.user ) {
-		errors.nologin = 'Please log in.';
-		return res.status(400).json(errors);
-	}
+	// if(decoded.id!==req.body.user ) {
+	// 	errors.nologin = 'Please log in.';
+	// 	return res.status(400).json(errors);
+	// }
 
 	//find a rally to change based on id
 	  Rally.findOne({ _id: req.body._id }).then(rally => {
 	  	if (rally) {
 	  		//set rally fields to be changed
-	  		const rallyFields = {};
+				const rallyFields = {};
+				console.log(req.body)
 	  		if(req.body.name) rallyFields.name = req.body.name;
 	  		rallyFields.members = rally.members.slice();
-	  		if(!rally.members.includes(req.body.members) && req.body.members !== undefined) {
-		  		rallyFields.members.push(req.body.members);
+	  		if(!rally.members.includes(req.body.members) && !rally.members.includes(req.body.owners) && req.body.members!==undefined) {
+					rallyFields.members.push(req.body.members);
 		  	}
 		  	if(!rally.owners.includes(req.body.owners) && req.body.owners !== undefined) {
-		  		rallyFields.owners = rally.owners.slice();
+					rallyFields.owners = rally.owners.slice();
+					console.log(rallyFields.owners)
 		  		rallyFields.owners.push(req.body.owners);
 		  		rallyFields.members.push(req.body.owners);
 		  	}
@@ -131,7 +136,7 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 
 	  	} else {
 	  		//throw an error that a rally with name does not exist
-	  		errors.rallyexists = 'A rally with this name does not exist';
+	  		errors.rallyexists = 'A rally with this id does not exist';
 	  		return res.status(400).json(errors);
 	  }
   	})
