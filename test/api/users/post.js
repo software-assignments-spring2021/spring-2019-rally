@@ -223,12 +223,13 @@ describe('POST /api/users/register', () => {
     .send({ email: "baroo@gmail.com", password: "Test123" })
     .then((res) => {
       request(app).get('/api/users/current')
+     // console.log(res.body.token)
       .set('Authorization', res.body.token)
       .then((res2) => {
         request(app).post('/api/rally/create')
         .set('Authorization', res.body.token)
 
-        //console.log(res.body.id)
+       // console.log(res2.body.id)
         .send({ owners: res2.body.id, name: 'Test' })
             .then((res3) => {
              const body = res3.body;
@@ -245,5 +246,38 @@ describe('POST /api/users/register', () => {
       .catch((err) => done(err));     
   });
 
+
+
+  //  // Ryan - a rally will be created and expect rally object, then update the rally by adding an owner
+  //  it('Ok, updating a new rally by adding an owner works', (done) => {
+  //   request(app).post('/api/users/login')
+  //   .send({ email: "baroo@gmail.com", password: "Test123" })
+  //   .then((res) => {
+  //     request(app).get('/api/users/current')
+  //     .set('Authorization', res.body.token)
+  //     .then((res2) => {
+  //       request(app).post('/api/rally/create')
+  //       .set('Authorization', res.body.token)
+  //       .send({ owners: res2.body.id, name: 'Test' })
+  //            .then((res3) => {
+  //             request(app).post('/api/rally/get')
+  //             .send(res3.body.id)
+  //             .then((res4) => {
+  //               request(app).post('/api/rally/update')
+  //               .set('Authorization', res.body.token)
+  //               //console.log(res.body.id)
+  //               .send({ name: 'Test', user: res2.body.id, _id: res4.body._id, members: 'wefoin2349', owners: 'wep4fo34tp34tm3' })
+  //                   .then((res) => {
+  //                    const body = res4.body;
+  //                    console.log(body)
+  //                    done();
+  //         });
+  //       })
+  //     })
+          
+  //       })
+  //     })
+  //     .catch((err) => done(err));     
+  // });
 
 });
