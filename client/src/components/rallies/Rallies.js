@@ -4,25 +4,35 @@ import PropTypes from 'prop-types';
 import { getRallies } from '../../actions/profileActions';
 import { Link } from 'react-router-dom';
 
+import RallyItem from './RallyItem';
+
 class Rallies extends Component {
 
+
   componentDidMount(){
-    this.props.getRallies();
+    const { user } = this.props.auth;
+    this.props.getRallies(user);
   }
 
   render() {
     //const { user } = this.props.auth;
+    //console.log(this.props.rally);
     const { rallies, loading } = this.props.rally;
     let rallyItems;
+    const rallyIDs = [];
 
-    console.log(rallies);
+    //console.log(rallies);
     if( rallies === null || loading ) {
       rallyItems = <h4>Loading...</h4>
     }
     else{
-
         if(rallies.length > 0){
-          rallyItems = <h1>PROFILES HERE</h1>
+
+
+          rallyItems = rallies.map(rally => (
+              <RallyItem key={rally._id} rally={rally}/>
+          ));
+
         }else{
           //rallyItems = <h4>No Profiles Found</h4>
           rallyItems = (
@@ -61,12 +71,14 @@ class Rallies extends Component {
 Rallies.propTypes = {
   getRallies: PropTypes.func.isRequired,
   rally: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired
   //profile: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
-  profile: state.profile,
-  rally: state.rally
+  //profile: state.profile,
+  rally: state.rally,
+  auth: state.auth
 })
 
 export default connect(mapStateToProps, {getRallies})(Rallies);

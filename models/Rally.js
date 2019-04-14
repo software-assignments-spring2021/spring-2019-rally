@@ -14,7 +14,7 @@ const RallySchema = new Schema({
     members: {
       type: [String]
     },
-    
+
     dateCreated: {
         date: String
     },
@@ -30,6 +30,9 @@ const RallySchema = new Schema({
         },
         latestTime: {
             type: Date
+        },
+        location: {
+          type: String
         },
         locationSuggRadius: {
             type: Number

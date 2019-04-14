@@ -24,12 +24,12 @@ export const getCurrentProfile = () => dispatch => {
 
 };
 
-export const getRallies = () => dispatch => {
+export const getRallies = (user) => dispatch => {
   dispatch(setProfileLoading());
 
-  axios.get('api/rally/get')
+  axios
+      .post('api/rally/get', user)
       .then(res =>
-
           dispatch({
               type: GET_PROFILES,
               payload: res.data
@@ -43,10 +43,43 @@ export const getRallies = () => dispatch => {
       );
 }
 
+export const getRallyByID = (rallyID) => dispatch => {
+  dispatch(setProfileLoading());
+
+  axios
+      .get(`api/rally/rallyID/${rallyID}`)
+      .then(res =>
+          dispatch({
+              type: GET_PROFILES,
+              payload: res.data
+          })
+      )
+      .catch(err =>
+          dispatch({
+              type: GET_PROFILES,
+              payload: null
+          })
+      );
+  // axios
+  //     .post(`api/rally/information`, rallyID)
+  //     .then(res =>
+  //         dispatch({
+  //             type: GET_PROFILE,
+  //             payload: res.data
+  //         })
+  //     )
+  //     .catch(err =>
+  //         dispatch({
+  //             type: GET_PROFILE,
+  //             payload: null
+  //         })
+  //     );
+}
+
 export const createRally = (rallyData, history) => dispatch => {
     axios
         .post('api/rally/create', rallyData)
-        .then (res => history.push('/profile'))
+        .then (res => history.push('/rally'))
         .catch(err =>
             dispatch({
                 type: GET_ERRORS,
