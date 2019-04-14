@@ -75,7 +75,6 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
 	  const rallyFields = {};
 	  rallyFields.owners = [];
 	  if(req.body.owners) rallyFields.owners.push(req.body.owners);
-    if(req.user.id) rallyFields.owners.push(req.user.id);
 	  if(req.body.name) rallyFields.name = req.body.name;
 	  rallyFields.members = [];
 	  if(req.body.owners) rallyFields.members.push(req.body.owners);
@@ -113,14 +112,16 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 	  Rally.findOne({ _id: req.body._id }).then(rally => {
 	  	if (rally) {
 	  		//set rally fields to be changed
-	  		const rallyFields = {};
+				const rallyFields = {};
+				console.log(req.body)
 	  		if(req.body.name) rallyFields.name = req.body.name;
 	  		rallyFields.members = rally.members.slice();
 	  		if(!rally.members.includes(req.body.members) && !rally.members.includes(req.body.owners) && req.body.members!==undefined) {
 					rallyFields.members.push(req.body.members);
 		  	}
 		  	if(!rally.owners.includes(req.body.owners) && req.body.owners !== undefined) {
-		  		rallyFields.owners = rally.owners.slice();
+					rallyFields.owners = rally.owners.slice();
+					console.log(rallyFields.owners)
 		  		rallyFields.owners.push(req.body.owners);
 		  		rallyFields.members.push(req.body.owners);
 		  	}
