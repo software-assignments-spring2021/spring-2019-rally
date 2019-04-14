@@ -51,12 +51,15 @@ router.get('/information', passport.authenticate('jwt', { session: false }), (re
 // route through which Rally Creation UI form connects to DB
 router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
 
-    //console.log("inside post")
-	const {errors, isValid} = validateRallyInput(req.body);
+ //   console.log(req.headers.authorization)
+	//const {errors, isValid} = validateRallyInput(req.body);
 
-    if(!isValid){
-        return res.status(400).json(errors);
-    }
+    // if(!isValid){
+    //     return res.status(400).json(errors);
+	// }
+	//console.log("INSIDE", req.body.name)
+
+
 	  //gets the token
 	  const usertoken = req.headers.authorization;
 	  const token = usertoken.split(' ');
@@ -101,17 +104,10 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 	const decoded = jwt.verify(token[1], 'secret');
 
 	//checks if the id from the jwt and the owner of the rally id matches
-<<<<<<< HEAD
-	// if(decoded.id!==req.body.owners ) {
-	// 	errors.nologin = 'Please log in.';
-	// 	return res.status(400).json(errors);
-	// }
-=======
 	if(decoded.id!==req.body.user ) {
 		errors.nologin = 'Please log in.';
 		return res.status(400).json(errors);
 	}
->>>>>>> a8349a785f491c8a7c2f5df96f556435af05f520
 
 	//find a rally to change based on id
 	  Rally.findOne({ _id: req.body._id }).then(rally => {
