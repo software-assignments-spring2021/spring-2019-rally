@@ -135,7 +135,7 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 
 	  	} else {
 	  		//throw an error that a rally with name does not exist
-	  		errors.rallyexists = 'A rally with this name does not exist';
+	  		errors.rallyexists = 'A rally with this id does not exist';
 	  		return res.status(400).json(errors);
 	  }
   	})

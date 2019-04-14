@@ -248,36 +248,36 @@ describe('POST /api/users/register', () => {
 
 
 
-  //  // Ryan - a rally will be created and expect rally object, then update the rally by adding an owner
-  //  it('Ok, updating a new rally by adding an owner works', (done) => {
-  //   request(app).post('/api/users/login')
-  //   .send({ email: "baroo@gmail.com", password: "Test123" })
-  //   .then((res) => {
-  //     request(app).get('/api/users/current')
-  //     .set('Authorization', res.body.token)
-  //     .then((res2) => {
-  //       request(app).post('/api/rally/create')
-  //       .set('Authorization', res.body.token)
-  //       .send({ owners: res2.body.id, name: 'Test' })
-  //            .then((res3) => {
-  //             request(app).post('/api/rally/get')
-  //             .send(res3.body.id)
-  //             .then((res4) => {
-  //               request(app).post('/api/rally/update')
-  //               .set('Authorization', res.body.token)
-  //               //console.log(res.body.id)
-  //               .send({ name: 'Test', user: res2.body.id, _id: res4.body._id, members: 'wefoin2349', owners: 'wep4fo34tp34tm3' })
-  //                   .then((res) => {
-  //                    const body = res4.body;
-  //                    console.log(body)
-  //                    done();
-  //         });
-  //       })
-  //     })
+   // Ryan - a rally will be created and expect rally object, then update the rally by adding an owner
+   it('Ok, updating a new rally by adding an owner works', (done) => {
+    request(app).post('/api/users/login')
+    .send({ email: "baroo@gmail.com", password: "Test123" })
+    .then((res) => {
+      request(app).get('/api/users/current')
+      .set('Authorization', res.body.token)
+      .then((res2) => {
+        request(app).post('/api/rally/create')
+        .set('Authorization', res.body.token)
+        .send({ owners: res2.body.id, name: 'Test' })
+             .then((res3) => {
+              request(app).post('/api/rally/get')
+              .send(res3.body.id)
+              .then((res4) => {
+                request(app).post('/api/rally/update')
+                .set('Authorization', res.body.token)
+                //console.log(res.body.id)
+                .send({ name: 'Test', user: res2.body.id, _id: res4.body._id, members: 'wefoin2349', owners: 'wep4fo34tp34tm3' })
+                    .then((res) => {
+                     const body = res4.body;
+                     console.log(body)
+                     done();
+          });
+        })
+      })
           
-  //       })
-  //     })
-  //     .catch((err) => done(err));     
-  // });
+        })
+      })
+      .catch((err) => done(err));     
+  });
 
 });
