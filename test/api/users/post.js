@@ -233,7 +233,7 @@ describe('POST /api/users/register', () => {
         .send({ owners: res2.body.id, name: 'Test' })
             .then((res3) => {
              const body = res3.body;
-             console.log(body)
+            // console.log(body)
              expect(body).to.contain.property('owners');
              expect(body).to.contain.property('members');
              expect(body).to.contain.property('_id');
@@ -258,18 +258,18 @@ describe('POST /api/users/register', () => {
       .then((res2) => {
         request(app).post('/api/rally/create')
         .set('Authorization', res.body.token)
-        .send({ owners: res2.body.id, name: 'Test' })
+        .send({ owners: res2.body.id, name: 'Test', duration: "10" })
              .then((res3) => {
-              request(app).post('/api/rally/get')
-              .send(res3.body.id)
+              request(app).get('/api/rally/get')
+              .set('Authorization', res.body.token)
+              .send(res2.body.id)
               .then((res4) => {
                 request(app).post('/api/rally/update')
                 .set('Authorization', res.body.token)
-                //console.log(res.body.id)
                 .send({ name: 'Test', user: res2.body.id, _id: res4.body._id, members: 'wefoin2349', owners: 'wep4fo34tp34tm3' })
-                    .then((res) => {
-                     const body = res4.body;
-                     console.log(body)
+                    .then((res5) => {
+                     const body = res5.body;
+                     console.log("WHJA", res4.body)
                      done();
           });
         })
