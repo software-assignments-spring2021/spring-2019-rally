@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import { getRallyByID, clearCurrentProfile } from '../../actions/profileActions';
 import { Link } from 'react-router-dom';
 import TextFieldGroup from '../common/TextFieldGroup';
+import moment from 'moment';
+import { withRouter } from 'react-router-dom';
 class RallyEventPage extends Component {
 
   constructor(props) {
@@ -42,9 +44,11 @@ class RallyEventPage extends Component {
   }
 
   componentWillReceiveProps(nextProps){
+
       if(nextProps.errors){
           this.setState({errors: nextProps.errors});
       }
+      console.log(nextProps)
 
   }
 
@@ -53,8 +57,9 @@ class RallyEventPage extends Component {
     // this relies on getRallyByID returning props (rally) that
     // get mapped to the component for later use in div
 
-    //console.log("rally params: ",this.props.match.params.rallyID);
+
     this.props.clearCurrentProfile();
+    //console.log("rally params: ",this.props.match.params.rallyID);
     if(this.props.match.params.rallyID){
       this.props.getRallyByID(this.props.match.params.rallyID);
       console.log("rallyID: ", this.props.match.params.rallyID);
@@ -65,7 +70,7 @@ class RallyEventPage extends Component {
       // the RallyEventPage component's props
 
     }else{
-      console.log("didnt match");
+      return;
     }
   }
 
@@ -95,11 +100,191 @@ class RallyEventPage extends Component {
       // 4. Add Member button hooked to backend
       // 5. Displaying members names instead of IDs
       // 6. Showing only the restrictions that are non-empty
-      // 7.
+
+      let memberInfo;
+      if(this.props.rally.rallies.members){
+
+        memberInfo = (
+          <div>
+          {this.props.rally.rallies.members.slice().map((person, index) => (
+            <li key={index} className="list-group-item">
+              <small className="text-muted">{person}</small>
+            </li>
+          ))}
+          </div>
+        )
+      }
+      else{
+        memberInfo = <h6>no member array</h6>
+      }
+
+      let ownerInfo;
+      if(this.props.rally.rallies.owners){
+
+        ownerInfo = (
+          <div>
+            <div className="row">
+              <div className="col-md-2">
+                <h5>Organizers</h5>
+              </div>
+
+              <div className="col-md-10">
+                {this.props.rally.rallies.owners.slice().map((person, index) => (
+                  <small className="text-muted">{person}, </small>
+                ))}
+              </div>
+
+            </div>
+          </div>
+        )
+      }
+      else{
+        ownerInfo = <h6>no owner array</h6>
+      }
+      let restrictions;
+      let restrictionData;
+      if(this.props.rally.rallies.restrictions){
+          restrictions = this.props.rally.rallies.restrictions;
+          //console.log(restrictions);
+          console.log("eln: ",this.props.rally.rallies.restrictions);
+          // for(let i = 0; i < restrictions.length; i++){
+          //   //console.log("res: ",restrictions[i]);
+          // }
+          // if(restrictions.earliestTime){
+          //   console.log(restrictions.earliestTime);
+          // }
+
+
+          Object.keys(restrictions).map(function(key, index) {
+            console.log(restrictions[key], key);
+          });
+          let earliestTime;
+          let latestTime;
+          let location;
+          let locationSuggRadius;
+          let timeOfWeek;
+          let startDate;
+          let endDate;
+
+
+          if(restrictions.earliestTime){
+            //console.log("earlis:", restrictions.earliestTime);
+              earliestTime = (
+                <div>
+                  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossOrigin="anonymous"/>
+
+                    <div className="row">
+                      <div className="col-md-1">
+                        <i className="far fa-clock"></i>
+                      </div>
+                      <div className="col-md-10">
+                        <p>Earliest Start Time: <b>{moment(restrictions.earliestTime).format('HH:mm A')}</b></p>
+                      </div>
+                    </div>
+
+                </div>
+              )
+          }else{earliestTime = null;}
+
+          if(restrictions.latestTime){
+            latestTime = (
+              <div>
+                <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossOrigin="anonymous"/>
+
+                  <div className="row">
+                    <div className="col-md-1">
+                      <i className="far fa-clock"></i>
+                    </div>
+                    <div className="col-md-10">
+                      <p>Latest End Time: <b>{moment(restrictions.latestTime).format('HH:mm A')}</b></p>
+                    </div>
+                  </div>
+
+              </div>
+            )
+          }else{latestTime = null;}
+          if(restrictions.location){
+            location = (
+              <div><p>Predetermined Location: <b>{restrictions.location}</b></p></div>
+            )
+          }else{location=null;}
+          if(restrictions.timeOfWeek){
+            timeOfWeek = (
+              <div><p>Only schedule on: <b>{restrictions.timeOfWeek}</b></p></div>
+            )
+          }else{timeOfWeek = null;}
+          if(restrictions.startDate){
+
+
+
+            startDate = (
+
+              <div>
+                <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossOrigin="anonymous"/>
+
+                  <div className="row">
+                    <div className="col-md-1">
+                      <i className="far fa-calendar-check"></i>
+                    </div>
+                    <div className="col-md-10">
+                      <p>Date Range Start: <b>{moment(restrictions.startDate).format('MM-DD-YYYY')}</b></p>
+                    </div>
+                  </div>
+
+              </div>
+
+            )
+          }else{startDate = null;}
+          if(restrictions.endDate){
+            endDate = (
+
+              <div>
+                <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossOrigin="anonymous"/>
+
+                  <div className="row">
+                    <div className="col-md-1">
+                      <i className="far fa-calendar-check"></i>
+                    </div>
+                    <div className="col-md-10">
+                      <p>Date Range End: <b>{moment(restrictions.endDate).format('MM-DD-YYYY')}</b></p>
+                    </div>
+                  </div>
+
+              </div>
+
+            )
+          }else{endDate=null;}
+
+          //let restrictionData;
+
+          restrictionData = (
+            <div>
+              {location}
+              {startDate}
+              {endDate}
+              {earliestTime}
+              {latestTime}
+              {timeOfWeek}
+
+            </div>
+          )
+
+
+
+      }else{
+        restrictionData = <h5>No restrictions set. Take the reigns!</h5>;
+      }
 
       pageData = (
                 <div>
                 <h1 className="display-4">{this.props.rally.rallies.name}</h1>
+
+
+                  <div className="card card-body bg-light mb-12">
+
+                    {ownerInfo}
+                  </div>
+                  <br></br>
 
                 <div className="row">
 
@@ -107,17 +292,13 @@ class RallyEventPage extends Component {
                     <div className="well">
                       <div className="card card-body bg-light mb-3">
                         <h3>Details</h3>
-                        <p>These are the scheduling details and restrictions we have from you so far.</p>
-                        <h6>Duration: {this.props.rally.rallies.duration} hour(s)</h6>
 
-                          <h6>Restrictions:</h6>
-                          <p>Predetermined Location: </p>
-                          <p>Start Time: </p>
-                          <p>End Time: </p>
-                          <p>LocationSuggRadius: </p>
-                          <p>Start Date: </p>
-                          <p>End Date: </p>
-                          <p>Time of Week: </p>
+                        <h5>Duration: ~ {this.props.rally.rallies.duration} hour(s)</h5>
+                        <p>These are the scheduling details and restrictions we have from you so far.</p>
+                          <div className="hr"/>
+                          <br></br>
+                          <h5>Restrictions:</h5>
+                          {restrictionData}
 
 
                       </div>
@@ -195,24 +376,15 @@ class RallyEventPage extends Component {
                         </div>
                       </div>
 
+
                       <div className="col-md-6">
                         <div className="well">
                           <div className="card card-body bg-light mb-3">
                             <h3>Members</h3>
                             <p fontSize="20px">Those who can attend the number one time slot are italicized.</p>
-                            {this.props.rally.rallies.members.slice().map((person, index) => (
-                              <li key={index} className="list-group-item">
-                                <small className="text-muted">{person}</small>
-                              </li>
-                            ))}
+                              {memberInfo}
 
-                            <br/>
-                            <br/>
-                            <br/>
-                            <br/>
-                            <br/>
-                            <br></br>
-                            <br></br>
+                          <br></br>
 
                             <TextFieldGroup
                                 placeholder="Add members by email"
@@ -236,39 +408,9 @@ class RallyEventPage extends Component {
 
                   </div>
               </div>
-              <div className="row">
-                <div className="col-md-4">
-                    <div className="well">
-                      <div className="card card-body bg-light mb-3">
-                        <h5>Organizers</h5>
 
-                        {this.props.rally.rallies.members.slice().map((person, index) => (
-
-                            <small className="text-muted">{person}</small>
-
-                        ))}
-
-
-
-                      </div>
-                    </div>
-                </div>
-                <div className="col-md-4">
-                    <div className="well">
-
-                        <h6>7.</h6>
-
-                    </div>
-                </div>
-                <div className="col-md-4">
-                    <div className="well">
-
-                      <h6>8.</h6>
-
-                    </div>
-                </div>
-              </div>
             </div>
+
       )
       //const { duration, name, members, owners, restrictions } = rallies;
     }else{
@@ -300,4 +442,4 @@ const mapStateToProps = state => ({
 // connects the props of the state returned from getRallyByID
 // and those in the component, then exports the component
 // with these props and state
-export default connect(mapStateToProps, {getRallyByID, clearCurrentProfile})(RallyEventPage);
+export default connect(mapStateToProps, {getRallyByID, clearCurrentProfile})(withRouter(RallyEventPage));

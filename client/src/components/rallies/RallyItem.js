@@ -6,10 +6,16 @@ import isEmpty from '../../validation/is-empty';
 class RallyItem extends Component {
   render() {
 
+    //TODO: change "border-info" in div to "border-primary" based on
+    //      Rally ownership
+    
     const { rally } = this.props;
     return (
       <div>
-        <div className="card card-body bg-light mb-3">
+
+
+
+        <div className="card border-info card-body bg-light mb-3 max-width: 18rem">
           <div className="row">
 
             <div className="col-md-10 d-md-block">

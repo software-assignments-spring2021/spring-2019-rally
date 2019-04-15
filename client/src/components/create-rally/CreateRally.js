@@ -10,9 +10,9 @@ import { withRouter } from 'react-router-dom';
 //import moment from 'moment';
 
 import DatePicker from 'react-datepicker';
-//const picker = require('react-datepicker/dist/react-datepicker.css');
-//import {datetimepicker} from 'datepicker-moment';
 
+import {datetimepicker} from 'datepicker-moment';
+const picker = require('react-datepicker/dist/react-datepicker.css');
 
 class CreateRally extends Component {
 
@@ -57,6 +57,13 @@ class CreateRally extends Component {
     componentDidMount(){
 
       this.props.clearCurrentProfile();
+    
+      this.setState({
+        earliestTime: null,
+        latestTime: null,
+        startDate: null,
+        endDate: null
+      });
     }
 
     onSubmit(e) {
@@ -203,14 +210,15 @@ class CreateRally extends Component {
 
         const onlyOptions = [
             {label: 'Only consider these days', value: 0},
-            {label: 'Weekends', value: 'weekends'},
-            {label: 'Weekdays', value: 'weekdays'},
+            {label: 'Weekends', value: 'Weekends'},
+            {label: 'Weekdays', value: 'Weekdays'},
         ];
 
         if(displayRestrictions){
             restrictions = (
 
                 <div>
+
                   <TextFieldGroup
                       placeholder="Predetermined Location"
                       name="location"
@@ -282,6 +290,7 @@ class CreateRally extends Component {
                             name="earliestTime"
                             error={errors.earliestTime}
                             placeholderText="Select Time"
+                            isClearable={true}
                         />
                         { <small className="form-text text-muted" border="20" >Set start time restriction</small>}
                         {errors.earliestTime && (<div className='invalid-feedback'>{errors.earliestTime}</div>)}
@@ -300,6 +309,7 @@ class CreateRally extends Component {
                             name="startDate"
                             error={errors.latestTime}
                             placeholderText="Select Time"
+                            isClearable={true}
                         />
                         { <small className="form-text text-muted" border="20" >Set end time restriction</small>}
                         {errors.startDate && (<div className='invalid-feedback'>{errors.latestTime}</div>)}

@@ -31,7 +31,8 @@ export default function(state = initialState, action) {
         case CLEAR_CURRENT_PROFILE:
             return {
                 ...state,
-                rally: null
+                rally: null,
+                rallies: null
             }
         default:
             return state;

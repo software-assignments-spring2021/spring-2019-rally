@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getRallies } from '../../actions/profileActions';
+import { getRallies, clearCurrentProfile } from '../../actions/profileActions';
 import { Link } from 'react-router-dom';
 
 import RallyItem from './RallyItem';
@@ -10,9 +10,11 @@ class Rallies extends Component {
 
 
   componentDidMount(){
+    this.props.clearCurrentProfile();
     const { user } = this.props.auth;
     this.props.getRallies(user);
   }
+  
 
   render() {
     //const { user } = this.props.auth;
@@ -70,6 +72,7 @@ class Rallies extends Component {
 
 Rallies.propTypes = {
   getRallies: PropTypes.func.isRequired,
+  clearCurrentProfile: PropTypes.func.isRequired,
   rally: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired
   //profile: PropTypes.object.isRequired
@@ -81,4 +84,4 @@ const mapStateToProps = state => ({
   auth: state.auth
 })
 
-export default connect(mapStateToProps, {getRallies})(Rallies);
+export default connect(mapStateToProps, {getRallies, clearCurrentProfile})(Rallies);
