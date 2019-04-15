@@ -72,41 +72,45 @@ router.get('/rallyID/:rallyID', passport.authenticate('jwt', { session: false })
 // @access   Private
 // route through which Rally Creation UI form connects to DB
 router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
-   if(!isValid){
-       return res.status(400).json(errors);
-   }
-      //gets the token
-      const usertoken = req.headers.authorization;
-      const token = usertoken.split(' ');
-      const decoded = jwt.verify(token[1], 'secret');
+	 
+		// const {errors, isValid} = validateRallyInput(req.body);
+	
+		// if(!isValid){
+		// 	return res.status(400).json(errors);
+		// }
 
-      //checks if the id from the jwt and the owner of the rally id matches
-      // if(decoded.id!==req.body.owners ) {
-      //     errors.nologin = 'Please log in.';
-      //     return res.status(404).json(errors);
-      // }
+		//gets the token
+		const usertoken = req.headers.authorization;
+		const token = usertoken.split(' ');
+		const decoded = jwt.verify(token[1], 'secret');
 
-      //sets the rally fields to be created
-      const rallyFields = {};
-      rallyFields.owners = [];
-      // rallyFields.owners.push(req.body.owners);
-      rallyFields.owners.push(req.user.id);
-      if(req.body.name) rallyFields.name = req.body.name;
-      rallyFields.members = [];
+		//checks if the id from the jwt and the owner of the rally id matches
+		// if(decoded.id!==req.body.owners ) {
+		//     errors.nologin = 'Please log in.';
+		//     return res.status(404).json(errors);
+		// }
 
-      //TODO: put array of members from form into this array
-      rallyFields.members.push(req.user.id);
-      rallyFields.restrictions = {};
-      //if(req.body.displayRestrictions) rallyFields.displayRestrictions = req.body.displayRestrictions;
-      if(req.body.duration) rallyFields.duration = req.body.duration;
-      if(req.body.earliestTime) rallyFields.restrictions.earliestTime = req.body.earliestTime;
-      if(req.body.latestTime) rallyFields.restrictions.latestTime = req.body.latestTime;
-      if(req.body.location) rallyFields.restrictions.location = req.body.location;
-      if(req.body.timeOfWeek) rallyFields.restrictions.timeOfWeek = req.body.timeOfWeek;
-      if(req.body.locationSuggRadius) rallyFields.restrictions.locationSuggRadius = req.body.locationSuggRadius;
+		//sets the rally fields to be created
+		const rallyFields = {};
+		rallyFields.owners = [];
+		// rallyFields.owners.push(req.body.owners);
+		rallyFields.owners.push(req.user.id);
+		if(req.body.name) rallyFields.name = req.body.name;
+		rallyFields.members = [];
 
-     //create a new rally
-      new Rally(rallyFields).save().then(rally => res.json(rally));
+		//TODO: put array of members from form into this array
+		rallyFields.members.push(req.user.id);
+		rallyFields.restrictions = {};
+		//if(req.body.displayRestrictions) rallyFields.displayRestrictions = req.body.displayRestrictions;
+		if(req.body.duration) rallyFields.duration = req.body.duration;
+		if(req.body.earliestTime) rallyFields.restrictions.earliestTime = req.body.earliestTime;
+		if(req.body.latestTime) rallyFields.restrictions.latestTime = req.body.latestTime;
+		if(req.body.location) rallyFields.restrictions.location = req.body.location;
+		if(req.body.timeOfWeek) rallyFields.restrictions.timeOfWeek = req.body.timeOfWeek;
+		if(req.body.locationSuggRadius) rallyFields.restrictions.locationSuggRadius = req.body.locationSuggRadius;
+
+		//create a new rally
+		new Rally(rallyFields).save().then(rally => res.json(rally));
 });
 
 // @route    POST api/rally/update
@@ -131,7 +135,6 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 	  	if (rally) {
 	  		//set rally fields to be changed
 				const rallyFields = {};
-				console.log(req.body)
 	  		if(req.body.name) rallyFields.name = req.body.name;
 	  		rallyFields.members = rally.members.slice();
 	  		if(!rally.members.includes(req.body.members) && !rally.members.includes(req.body.owners) && req.body.members!==undefined) {
@@ -139,7 +142,6 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 		  	}
 		  	if(!rally.owners.includes(req.body.owners) && req.body.owners !== undefined) {
 					rallyFields.owners = rally.owners.slice();
-					console.log(rallyFields.owners)
 		  		rallyFields.owners.push(req.body.owners);
 		  		rallyFields.members.push(req.body.owners);
 		  	}

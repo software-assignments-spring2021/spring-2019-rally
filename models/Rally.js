@@ -11,6 +11,10 @@ const RallySchema = new Schema({
         type: [String],
         required: true
     },
+    duration: {
+        type: Number,
+        required: true
+    },
     members: {
       type: [String]
     },
@@ -20,9 +24,6 @@ const RallySchema = new Schema({
     },
     dateExpires: {
         name: String
-    },
-    duration: {
-        type: Number
     },
     restrictions: {
         earliestTime: {
