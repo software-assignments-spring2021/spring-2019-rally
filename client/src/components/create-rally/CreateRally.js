@@ -2,10 +2,17 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import TextFieldGroup from '../common/TextFieldGroup';
-import TextAreaFieldGroup from '../common/TextAreaFieldGroup';
+//import TextAreaFieldGroup from '../common/TextAreaFieldGroup';
 import SelectListGroup from '../common/SelectListGroup';
-import { createRally } from '../../actions/profileActions';
+import { createRally, clearCurrentProfile } from '../../actions/profileActions';
 import { withRouter } from 'react-router-dom';
+
+//import moment from 'moment';
+
+import DatePicker from 'react-datepicker';
+
+import {datetimepicker} from 'datepicker-moment';
+const picker = require('react-datepicker/dist/react-datepicker.css');
 
 class CreateRally extends Component {
 
@@ -19,22 +26,44 @@ class CreateRally extends Component {
             duration: '',
             members: [],
             owners: [],
-            earliestTime: '',
-            latestTime: '',
+            earliestTime: new Date(),
+            latestTime: new Date(),
             location: '',
             locationSuggRadius: '',
             timeOfWeek: '',
-            errors: {}
+            startDate: new Date(),
+            endDate: new Date(),
+            errors: {},
+            date: new Date(),
+            time: new Date()
         }
 
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.onStartChange = this.onStartChange.bind(this);
+        this.onEndChange = this.onEndChange.bind(this);
+        this.onStartTimeChange = this.onStartTimeChange.bind(this);
+        this.onEndTimeChange = this.onEndTimeChange.bind(this);
+
+
     }
 
     componentWillReceiveProps(nextProps){
         if(nextProps.errors){
             this.setState({errors: nextProps.errors});
         }
+    }
+
+    componentDidMount(){
+
+      this.props.clearCurrentProfile();
+    
+      this.setState({
+        earliestTime: null,
+        latestTime: null,
+        startDate: null,
+        endDate: null
+      });
     }
 
     onSubmit(e) {
@@ -52,6 +81,10 @@ class CreateRally extends Component {
             location: this.state.location,
             locationSuggRadius: this.state.locationSuggRadius,
             timeOfWeek: this.state.timeOfWeek,
+
+            startDate: this.state.startDate,
+            endDate: this.state.endDate,
+            date: this.state.date
         }
         // call redux action for passing this rallyData into post
         this.props.createRally(rallyData, this.props.history);
@@ -60,6 +93,28 @@ class CreateRally extends Component {
 
     onChange(e){
         this.setState({[e.target.name]: e.target.value});
+    }
+
+    onStartChange(date) {
+      this.setState({
+        startDate: date
+      })
+    }
+
+    onEndChange(date) {
+      this.setState({
+        endDate: date
+      })
+    }
+    onStartTimeChange(time) {
+      this.setState({
+        earliestTime: time
+      })
+    }
+    onEndTimeChange(time) {
+      this.setState({
+        latestTime: time
+      })
     }
 
     render() {
@@ -94,132 +149,175 @@ class CreateRally extends Component {
 
         ];
 
-        const timeStartOptions = [
-
-            // TODO: separate drop down for AM/PM
-            {label: 'Select start time restriction', value: 0},
-            {label: '12 AM', value: '0'},
-            {label: '1 AM', value: '1'},
-            {label: '2 AM', value: '2'},
-            {label: '3 AM', value: '3'},
-            {label: '4 AM', value: '4'},
-            {label: '5 AM', value: '5'},
-            {label: '6 AM', value: '6'},
-            {label: '7 AM', value: '7'},
-            {label: '8 AM', value: '8'},
-            {label: '9 AM', value: '9'},
-            {label: '10 AM', value: '10'},
-            {label: '11 AM', value: '11'},
-            {label: '12 PM', value: '12'},
-            {label: '1 PM', value: '13'},
-            {label: '2 PM', value: '14'},
-            {label: '3 PM', value: '15'},
-            {label: '4 PM', value: '16'},
-            {label: '5 PM', value: '17'},
-            {label: '6 PM', value: '18'},
-            {label: '7 PM', value: '19'},
-            {label: '8 PM', value: '20'},
-            {label: '9 PM', value: '21'},
-            {label: '10 PM', value: '22'},
-            {label: '11 PM', value: '23'},
-        ];
-        const timeEndOptions = [
-
-            // TODO: separate drop down for AM/PM
-            {label: 'Select end time restriction', value: 0},
-            {label: '12 AM', value: '0'},
-            {label: '1 AM', value: '1'},
-            {label: '2 AM', value: '2'},
-            {label: '3 AM', value: '3'},
-            {label: '4 AM', value: '4'},
-            {label: '5 AM', value: '5'},
-            {label: '6 AM', value: '6'},
-            {label: '7 AM', value: '7'},
-            {label: '8 AM', value: '8'},
-            {label: '9 AM', value: '9'},
-            {label: '10 AM', value: '10'},
-            {label: '11 AM', value: '11'},
-            {label: '12 PM', value: '12'},
-            {label: '1 PM', value: '13'},
-            {label: '2 PM', value: '14'},
-            {label: '3 PM', value: '15'},
-            {label: '4 PM', value: '16'},
-            {label: '5 PM', value: '17'},
-            {label: '6 PM', value: '18'},
-            {label: '7 PM', value: '19'},
-            {label: '8 PM', value: '20'},
-            {label: '9 PM', value: '21'},
-            {label: '10 PM', value: '22'},
-            {label: '11 PM', value: '23'},
-        ];
+        // const timeStartOptions = [
+        //
+        //     // TODO: separate drop down for AM/PM
+        //     {label: 'Select start time restriction', value: 0},
+        //     {label: '12 AM', value: '0'},
+        //     {label: '1 AM', value: '1'},
+        //     {label: '2 AM', value: '2'},
+        //     {label: '3 AM', value: '3'},
+        //     {label: '4 AM', value: '4'},
+        //     {label: '5 AM', value: '5'},
+        //     {label: '6 AM', value: '6'},
+        //     {label: '7 AM', value: '7'},
+        //     {label: '8 AM', value: '8'},
+        //     {label: '9 AM', value: '9'},
+        //     {label: '10 AM', value: '10'},
+        //     {label: '11 AM', value: '11'},
+        //     {label: '12 PM', value: '12'},
+        //     {label: '1 PM', value: '13'},
+        //     {label: '2 PM', value: '14'},
+        //     {label: '3 PM', value: '15'},
+        //     {label: '4 PM', value: '16'},
+        //     {label: '5 PM', value: '17'},
+        //     {label: '6 PM', value: '18'},
+        //     {label: '7 PM', value: '19'},
+        //     {label: '8 PM', value: '20'},
+        //     {label: '9 PM', value: '21'},
+        //     {label: '10 PM', value: '22'},
+        //     {label: '11 PM', value: '23'},
+        // ];
+        // const timeEndOptions = [
+        //
+        //     // TODO: separate drop down for AM/PM
+        //     {label: 'Select end time restriction', value: 0},
+        //     {label: '12 AM', value: '0'},
+        //     {label: '1 AM', value: '1'},
+        //     {label: '2 AM', value: '2'},
+        //     {label: '3 AM', value: '3'},
+        //     {label: '4 AM', value: '4'},
+        //     {label: '5 AM', value: '5'},
+        //     {label: '6 AM', value: '6'},
+        //     {label: '7 AM', value: '7'},
+        //     {label: '8 AM', value: '8'},
+        //     {label: '9 AM', value: '9'},
+        //     {label: '10 AM', value: '10'},
+        //     {label: '11 AM', value: '11'},
+        //     {label: '12 PM', value: '12'},
+        //     {label: '1 PM', value: '13'},
+        //     {label: '2 PM', value: '14'},
+        //     {label: '3 PM', value: '15'},
+        //     {label: '4 PM', value: '16'},
+        //     {label: '5 PM', value: '17'},
+        //     {label: '6 PM', value: '18'},
+        //     {label: '7 PM', value: '19'},
+        //     {label: '8 PM', value: '20'},
+        //     {label: '9 PM', value: '21'},
+        //     {label: '10 PM', value: '22'},
+        //     {label: '11 PM', value: '23'},
+        // ];
 
         const onlyOptions = [
             {label: 'Only consider these days', value: 0},
-            {label: 'Weekends', value: 'weekends'},
-            {label: 'Weekdays', value: 'weekdays'},
+            {label: 'Weekends', value: 'Weekends'},
+            {label: 'Weekdays', value: 'Weekdays'},
         ];
 
         if(displayRestrictions){
             restrictions = (
 
-                /* earliestTime: '',
-                latestTime: '',
-                location: '',
-                locationSuggRadius: '',
-                only: '',*/
-                // duration selection options
-
-
                 <div>
-                <TextFieldGroup
-                    placeholder="Predetermined Location"
-                    name="location"
-                    type="location"
-                    value={this.state.location}
-                    onChange={this.onChange}
-                    error={errors.location}
-                    info="If the location is not up for voting, please add it here"
-                />
-                <SelectListGroup
-                    placeholder="Location suggestion radius"
-                    name="locationSuggRadius"
-                    value={this.state.locationSuggRadius}
-                    onChange={this.onChange}
-                    error={errors.locationSuggRadius}
-                    options={radiusOptions}
-                    info="Rally members may only suggest event locations within X distance"
-                />
-                <SelectListGroup
-                    placeholder="Start time restriction"
-                    name="earliestTime"
-                    value={this.state.earliestTime}
-                    onChange={this.onChange}
-                    error={errors.earliestTime}
-                    options={timeStartOptions}
-                    info="The event should start NO EARLIER than this time of day"
-                />
 
-                <SelectListGroup
-                    placeholder="End time restriction"
-                    name="latestTime"
-                    value={this.state.latestTime}
-                    onChange={this.onChange}
-                    error={errors.latestTime}
-                    options={timeEndOptions}
-                    info="The event should end NO LATER than this time of day"
-                />
+                  <TextFieldGroup
+                      placeholder="Predetermined Location"
+                      name="location"
+                      type="location"
+                      value={this.state.location}
+                      onChange={this.onChange}
+                      error={errors.location}
+                      info="If the location is not up for voting, please add it here"
+                  />
+                  <SelectListGroup
+                      placeholder="Location suggestion radius"
+                      name="locationSuggRadius"
+                      value={this.state.locationSuggRadius}
+                      onChange={this.onChange}
+                      error={errors.locationSuggRadius}
+                      options={radiusOptions}
+                      info="Rally members may only suggest event locations within X distance"
+                  />
 
-                <SelectListGroup
-                    placeholder="Only consider this part of the week when scheduling"
-                    name="timeOfWeek"
-                    value={this.state.timeOfWeek}
-                    onChange={this.onChange}
-                    error={errors.timeOfWeek}
-                    options={onlyOptions}
-                    info="Only consider this part of the week when scheduling this Rally"
-                />
+                  <SelectListGroup
+                      placeholder="Only consider this part of the week when scheduling"
+                      name="timeOfWeek"
+                      value={this.state.timeOfWeek}
+                      onChange={this.onChange}
+                      error={errors.timeOfWeek}
+                      options={onlyOptions}
+                      info="Only consider this part of the week when scheduling this Rally"
+                  />
+
+                    <p className="lead text-muted">Date range selection</p>
+                    <p></p>
+                    <DatePicker
+                        selected={this.state.startDate}
+                        selectsStart
+                        startDate={this.state.startDate}
+                        endDate={this.state.endDate}
+                        onChange={this.onStartChange}
+                        name="startDate"
+                        error={errors.startDate}
+                        isClearable={true}
+                        placeholderText="Click to select a date"
+                    />
+
+                    <DatePicker
+                        selected={this.state.endDate}
+                        selectsEnd
+                        startDate={this.state.startDate}
+                        endDate={this.state.endDate}
+                        onChange={this.onEndChange}
+                        name="endDate"
+                        error={errors.endDate}
+                        isClearable={true}
+                        placeholderText="Click to select a date"
+                    />
+                    <p></p>
+                    <p className="lead text-muted">Time restrictions</p>
+                    <p></p>
+
+
+                    <div className="column">
+                        <DatePicker
+                            selected={this.state.earliestTime}
+                            onChange={this.onStartTimeChange}
+                            showTimeSelect
+                            showTimeSelectOnly
+                            timeIntervals={30}
+                            dateFormat="h:mm aa"
+                            timeCaption="Time"
+                            name="earliestTime"
+                            error={errors.earliestTime}
+                            placeholderText="Select Time"
+                            isClearable={true}
+                        />
+                        { <small className="form-text text-muted" border="20" >Set start time restriction</small>}
+                        {errors.earliestTime && (<div className='invalid-feedback'>{errors.earliestTime}</div>)}
+                        <p></p>
+                    </div>
+
+                    <div className="column">
+                        <DatePicker
+                            selected={this.state.latestTime}
+                            onChange={this.onEndTimeChange}
+                            showTimeSelect
+                            showTimeSelectOnly
+                            timeIntervals={30}
+                            dateFormat="h:mm aa"
+                            timeCaption="Time"
+                            name="startDate"
+                            error={errors.latestTime}
+                            placeholderText="Select Time"
+                            isClearable={true}
+                        />
+                        { <small className="form-text text-muted" border="20" >Set end time restriction</small>}
+                        {errors.startDate && (<div className='invalid-feedback'>{errors.latestTime}</div>)}
+                        <p></p>
+                    </div>
 
                 </div>
+
             )
         }
 
@@ -281,13 +379,16 @@ class CreateRally extends Component {
 }
 
 CreateRally.propTypes = {
-    profile: PropTypes.object.isRequired,
-    errors: PropTypes.object.isRequired
+
+    rally: PropTypes.object.isRequired,
+    errors: PropTypes.object.isRequired,
+    clearCurrentProfile: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
-    profile: state.profile,
+
+    rally: state.rally,
     errors: state.errors
 });
 
-export default connect(mapStateToProps, { createRally })(withRouter(CreateRally));
+export default connect(mapStateToProps, { createRally, clearCurrentProfile })(withRouter(CreateRally));
