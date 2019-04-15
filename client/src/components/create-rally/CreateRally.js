@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import TextFieldGroup from '../common/TextFieldGroup';
 //import TextAreaFieldGroup from '../common/TextAreaFieldGroup';
 import SelectListGroup from '../common/SelectListGroup';
-import { createRally } from '../../actions/profileActions';
+import { createRally, clearCurrentProfile } from '../../actions/profileActions';
 import { withRouter } from 'react-router-dom';
 
 //import moment from 'moment';
@@ -52,6 +52,11 @@ class CreateRally extends Component {
         if(nextProps.errors){
             this.setState({errors: nextProps.errors});
         }
+    }
+
+    componentDidMount(){
+
+      this.props.clearCurrentProfile();
     }
 
     onSubmit(e) {
@@ -366,7 +371,8 @@ class CreateRally extends Component {
 CreateRally.propTypes = {
 
     rally: PropTypes.object.isRequired,
-    errors: PropTypes.object.isRequired
+    errors: PropTypes.object.isRequired,
+    clearCurrentProfile: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -375,4 +381,4 @@ const mapStateToProps = state => ({
     errors: state.errors
 });
 
-export default connect(mapStateToProps, { createRally })(withRouter(CreateRally));
+export default connect(mapStateToProps, { createRally, clearCurrentProfile })(withRouter(CreateRally));

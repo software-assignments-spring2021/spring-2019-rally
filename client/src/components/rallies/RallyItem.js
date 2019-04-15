@@ -17,7 +17,7 @@ class RallyItem extends Component {
 
             </div>
             <div className="col-md-2 d-md-block">
-              <Link to ={`rally/${rally._id}`} className="btn btn-info">
+              <Link to ={`/${rally._id}`} className="btn btn-info">
                 View Rally
               </Link>
 

@@ -85,7 +85,7 @@ router.post('/information', passport.authenticate('jwt', { session: false }), (r
 router.get('/rallyID/:rallyID', passport.authenticate('jwt', { session: false }), (req, res) => {
 	const errors = {};
   console.log("request params: ", req.params.rallyID);
-	Rally.findOne({ _id: req.params._id})
+	Rally.findOne({ _id: req.params.rallyID})
 		.then(rally => {
 			if(rally.owners===[]) {
 				errors.norally = 'This Rally cannot be found';

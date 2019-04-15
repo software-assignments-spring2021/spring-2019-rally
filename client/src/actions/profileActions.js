@@ -53,6 +53,7 @@ export const getRallyByID = (rallyID) => dispatch => {
               type: GET_PROFILES,
               payload: res.data
           })
+
       )
       .catch(err =>
           dispatch({
