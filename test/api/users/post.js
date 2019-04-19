@@ -230,6 +230,7 @@ describe('POST /api/users/register', () => {
         .send({ owners: res2.body.id, name: 'Test' })
             .then((res3) => {
               const body = res3.body;
+              console.log("YO", body)
               expect(body).to.contain.property('owners');
               expect(body).to.contain.property('members');
               expect(body).to.contain.property('_id');

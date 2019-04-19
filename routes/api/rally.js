@@ -13,16 +13,12 @@ const User = require('../../models/User');
 // @route    GET api/rally
 // @desc     Return user rallies
 // @access   Private
-router.post('/get', passport.authenticate('jwt', { session: false }), (req, res) => {
+router.get('/get', passport.authenticate('jwt', { session: false }), (req, res) => {
+	const errors = {};
 
-
-  const errors = {};
-  //console.log("user: ", req.body.id);
-	Rally.find({ members: req.body.id})
+	Rally.find({ members: req.body.user})
 		.then(rally => {
 			if(rally.owners===[]) {
-
-        console.log('There is no rally for this user');
 				errors.norally = 'There is no rally for this user';
 				return res.status(404).json(errors);
 			}
@@ -35,31 +31,13 @@ router.post('/get', passport.authenticate('jwt', { session: false }), (req, res)
 // @route    GET api/rally/information
 // @desc     Return rally information
 // @access   Private
-router.post('/information', passport.authenticate('jwt', { session: false }), (req, res) => {
+router.get('/information', passport.authenticate('jwt', { session: false }), (req, res) => {
 	const errors = {};
 
-  console.log("body in GET info",req.body);
-	Rally.findOne({ _id: req.body})
+	Rally.findOne({ _id: req.body._id})
 		.then(rally => {
 			if(rally.owners===[]) {
 				errors.norally = 'No rally was found';
-				return res.status(404).json(errors);
-			}
-			res.json(rally);
-		})
-		.catch(err => res.status(404).json(err));
-});
-
-// @route    GET api/rally/rallyID/:rallyID
-// @desc     Return a rally event page
-// @access   Private
-router.get('/rallyID/:rallyID', passport.authenticate('jwt', { session: false }), (req, res) => {
-	const errors = {};
-  console.log("request params: ", req.params.rallyID);
-	Rally.findOne({ _id: req.params.rallyID})
-		.then(rally => {
-			if(rally.owners===[]) {
-				errors.norally = 'This Rally cannot be found';
 				return res.status(404).json(errors);
 			}
 			res.json(rally);
@@ -72,41 +50,48 @@ router.get('/rallyID/:rallyID', passport.authenticate('jwt', { session: false })
 // @access   Private
 // route through which Rally Creation UI form connects to DB
 router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
-   if(!isValid){
-       return res.status(400).json(errors);
-   }
-      //gets the token
-      const usertoken = req.headers.authorization;
-      const token = usertoken.split(' ');
-      const decoded = jwt.verify(token[1], 'secret');
 
-      //checks if the id from the jwt and the owner of the rally id matches
-      // if(decoded.id!==req.body.owners ) {
-      //     errors.nologin = 'Please log in.';
-      //     return res.status(404).json(errors);
-      // }
+   //console.log(req.headers.authorization)
+	const {errors, isValid} = validateRallyInput(req.body);
 
-      //sets the rally fields to be created
-      const rallyFields = {};
-      rallyFields.owners = [];
-      // rallyFields.owners.push(req.body.owners);
-      rallyFields.owners.push(req.user.id);
-      if(req.body.name) rallyFields.name = req.body.name;
-      rallyFields.members = [];
+    if(!isValid){
+		console.log("YEP ITS STUCK")
+        return res.status(400).json(errors);
+	}
+	//console.log("CREATE", req.body.name)
+	console.log("STUCK AFTER")
 
-      //TODO: put array of members from form into this array
-      rallyFields.members.push(req.user.id);
-      rallyFields.restrictions = {};
-      //if(req.body.displayRestrictions) rallyFields.displayRestrictions = req.body.displayRestrictions;
-      if(req.body.duration) rallyFields.duration = req.body.duration;
-      if(req.body.earliestTime) rallyFields.restrictions.earliestTime = req.body.earliestTime;
-      if(req.body.latestTime) rallyFields.restrictions.latestTime = req.body.latestTime;
-      if(req.body.location) rallyFields.restrictions.location = req.body.location;
-      if(req.body.timeOfWeek) rallyFields.restrictions.timeOfWeek = req.body.timeOfWeek;
-      if(req.body.locationSuggRadius) rallyFields.restrictions.locationSuggRadius = req.body.locationSuggRadius;
+	  //gets the token
+	  const usertoken = req.headers.authorization;
+	  const token = usertoken.split(' ');
+	  const decoded = jwt.verify(token[1], 'secret');
 
-     //create a new rally
-      new Rally(rallyFields).save().then(rally => res.json(rally));
+	  //checks if the id from the jwt and the owner of the rally id matches
+	  if(decoded.id!==req.body.owners ) {
+	  	errors.nologin = 'Please log in.';
+	  	return res.status(404).json(errors);
+	  }
+	  console.log("INSIDE", req.body.name)
+
+
+	  //sets the rally fields to be created
+	  const rallyFields = {};
+	  rallyFields.owners = [];
+	  if(req.body.owners) rallyFields.owners.push(req.body.owners);
+	  if(req.body.name) rallyFields.name = req.body.name;
+	  rallyFields.members = [];
+	  if(req.body.owners) rallyFields.members.push(req.body.owners);
+    rallyFields.restrictions = {};
+    //if(req.body.displayRestrictions) rallyFields.displayRestrictions = req.body.displayRestrictions;
+    if(req.body.duration) rallyFields.duration = req.body.duration;
+    if(req.body.earliestTime) rallyFields.restrictions.earliestTime = req.body.earliestTime;
+    if(req.body.latestTime) rallyFields.restrictions.latestTime = req.body.latestTime;
+    if(req.body.location) rallyFields.restrictions.location = req.body.location;
+    if(req.body.timeOfWeek) rallyFields.restrictions.timeOfWeek = req.body.timeOfWeek;
+    if(req.body.locationSuggRadius) rallyFields.restrictions.locationSuggRadius = req.body.locationSuggRadius;
+
+      //create a new rally
+	  new Rally(rallyFields).save().then(rally => res.json(rally));
 });
 
 // @route    POST api/rally/update
@@ -131,7 +116,7 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 	  	if (rally) {
 	  		//set rally fields to be changed
 				const rallyFields = {};
-				console.log(req.body)
+				console.log("UPDATE", req.body)
 	  		if(req.body.name) rallyFields.name = req.body.name;
 	  		rallyFields.members = rally.members.slice();
 	  		if(!rally.members.includes(req.body.members) && !rally.members.includes(req.body.owners) && req.body.members!==undefined) {
