@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const {google} = require('googleapis');
 const jwt = require('jsonwebtoken');
 //const keys = process.env;//const keys = require('../../config/keys');
 const passport = require('passport');
@@ -159,8 +160,86 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 	  		errors.rallyexists = 'A rally with this id does not exist';
 	  		return res.status(400).json(errors);
 	  }
-  	})
+  	})	
 
 });
 
+router.get('/google', passport.authenticate('google', {
+    scope: ['https://www.googleapis.com/auth/calendar.readonly']
+}));
+
+// callback route for google to redirect to
+// hand control to passport to use code to grab profile info
+router.get('/google/redirect', (req, res) => {
+	//console.log('you reached the redirect URI');
+	//console.log(req.query.code);	
+	
+	//Parameters for creating oAuthClient
+  const clientSecret = process.env.clientSecret;
+	const clientId = process.env.clientId;
+  const redirectUris =['http://localhost:5000/api/rally/google/redirect'];
+	
+	//Create oAutClient
+	const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUris[0]);
+	
+	//Authenticate
+	google.options({auth: oauth2Client});
+ 
+	//Get an access token using the code google sent us.
+	oauth2Client.getToken(req.query.code, function (err, tokens) {
+		// Now tokens contains an access_token and an optional refresh_token. Save them.
+		if (!err) {
+			oauth2Client.setCredentials(tokens);
+			const authorizeUrl = oauth2Client.generateAuthUrl({
+				access_type: 'offline',
+				scope: ['https://www.googleapis.com/auth/calendar.readonly']
+			});
+
+			//Outh client set up, now implement basic google calendar call.
+			const calendar = google.calendar({version: 'v3', oauth2Client});
+			
+			calendar.events.list({
+				calendarId: 'primary',
+				timeMin: (new Date()).toISOString(),
+				maxResults: 10,
+				singleEvents: true,
+				orderBy: 'startTime',
+			}, (err, res) => {
+				if (err) return console.log('The API returned an error: ' + err);
+				const events = res.data.items;
+				if (events.length) {
+					//console.log('Upcoming 10 events:');
+					events.map((event, i) => {
+						const start = event.start.dateTime || event.start.date;
+						console.log(`${start} - ${event.summary}`);
+					});
+					} else {
+					console.log('No upcoming events found.');
+				}
+			});
+		} else {
+			console.log(err);
+		}
+	});
+
+	res.send('from api rally');
+});
+
 module.exports = router;
+
+
+/*
+User's access token.
+Credentials.json
+
+
+WHAT WE NEED - A snapshot of user's calendar.
+WHERE IS THE SNAPSHOT STORED - As an array of calendar objects under that specific rally.
+HOW DO WE ACCESS THE SNAPSHOT - Program Flow Mentioned Below.
+
+
+* A button in the frontend asking user to authorize Rally to integrate their calendar.
+* User clicks button which redirects them to the url which google generates, user authorizes, Google redirects to a URI we mention,
+	so that means we can mention a unique endpoint in the backendm, we recieve that code back from Google, 
+	which is then sent back to 'setCredentials' that access token in the userSchema, then makes the call to Calendar API using that access token.
+*/

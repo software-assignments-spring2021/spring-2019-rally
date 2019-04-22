@@ -18,7 +18,6 @@ const RallySchema = new Schema({
     members: {
       type: [String]
     },
-
     dateCreated: {
         date: String
     },
