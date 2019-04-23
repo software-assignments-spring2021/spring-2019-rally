@@ -265,6 +265,8 @@ describe('POST /api/users/register', () => {
             .send({ _id: res3.body._id, owners: 'new owner' })
               .then((res5) => {
                 const body = res5.body;
+                expect(body.owners).contains("new owner");
+                expect(body.members).contains("new owner");
                 done();
               });
             })
