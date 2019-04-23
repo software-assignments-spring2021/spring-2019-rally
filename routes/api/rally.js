@@ -49,6 +49,7 @@ router.post('/get', passport.authenticate('jwt', { session: false }), (req, res)
   const errors = {};
   //console.log("user: ", req.body.id);
 	Rally.find({ members: req.body.id})
+
 		.then(rally => {
 			if(rally.owners===[]) {
 
@@ -84,7 +85,7 @@ router.post('/information', passport.authenticate('jwt', { session: false }), (r
 // @access   Private
 router.get('/rallyID/:rallyID', passport.authenticate('jwt', { session: false }), (req, res) => {
 	const errors = {};
-  console.log("request params: ", req.params.rallyID);
+    //console.log("request params: ", req.params.rallyID);
 	Rally.findOne({ _id: req.params.rallyID})
 		.then(rally => {
 			if(rally.owners===[]) {
@@ -163,6 +164,9 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
       //sets the rally fields to be created
       const rallyFields = {};
       rallyFields.owners = [];
+      rallyFields.voting = {};
+      rallyFields.voting.locations = new Map();
+      if(req.body.locations) rallyFields.voting.locations.set(req.body.locations, 0);
       // rallyFields.owners.push(req.body.owners);
      rallyFields.owners.push(req.user.id);
       if(req.body.name) rallyFields.name = req.body.name;
@@ -178,6 +182,7 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
       if(req.body.location) rallyFields.restrictions.location = req.body.location;
       if(req.body.timeOfWeek) rallyFields.restrictions.timeOfWeek = req.body.timeOfWeek;
       if(req.body.locationSuggRadius) rallyFields.restrictions.locationSuggRadius = req.body.locationSuggRadius;
+
 
      //create a new rally
       new Rally(rallyFields).save().then(rally => res.json(rally));

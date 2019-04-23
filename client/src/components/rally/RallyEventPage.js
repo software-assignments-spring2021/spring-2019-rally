@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getRallyByID, clearCurrentProfile } from '../../actions/profileActions';
+import { getRallyByID, clearCurrentProfile, addLocations } from '../../actions/profileActions';
 import { Link } from 'react-router-dom';
 import TextFieldGroup from '../common/TextFieldGroup';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
+
+import Poll from 'react-polls';
+
 class RallyEventPage extends Component {
 
   constructor(props) {
@@ -14,33 +17,41 @@ class RallyEventPage extends Component {
       //component state: rally form fields
       this.state = {
 
+        // Location suggestion state fields
         locationSuggestion: '',
-        locationVote: ''
+        pollAnswers: [],
 
+        // Member addition fields
+        addMembers: '',
       }
 
       this.onChange = this.onChange.bind(this);
       this.onSubmit = this.onSubmit.bind(this);
+      this.handleVote = this.handleVote.bind(this);
+
   }
 
+  // Used for location submission
   onChange(e){
       this.setState({[e.target.name]: e.target.value});
+
+      // Debug location suggesting
+      console.log("location val: ",this.state.locationSuggestion);
   }
 
   onSubmit(e) {
       e.preventDefault();
 
-      const votingData = {
+      const {locationSuggestion, pollAnswers} = this.state;
+      console.log("submitting: ", locationSuggestion);
 
-          //displayRestrictions: this.state.displayRestrictions,
-          name: this.state.name,
+      this.props.addLocations(locationSuggestion, this.props.history);
+      //this.state.pollAnswers.push({ option: {locationSuggestion}, votes: 0});
+      console.log("poll answers on sub: ",pollAnswers);
 
-      }
-      // call redux action for passing this rallyData into post
-
-      //TODO: create vote submission
-      //this.props.submitVote(votingData, this.props.history);
-
+  }
+  componentWillUnmount() {
+   this._ismounted = false;
   }
 
   componentWillReceiveProps(nextProps){
@@ -48,35 +59,49 @@ class RallyEventPage extends Component {
       if(nextProps.errors){
           this.setState({errors: nextProps.errors});
       }
-      console.log(nextProps)
+      console.log("nextProps:", nextProps)
+  }
+
+  // Handling user vote
+  // Increments the votes count of answer when the user votes
+  handleVote = voteAnswer => {
+
+
+    const { pollAnswers } = this.state;
+    console.log("poll answers: ",pollAnswers);
+
+    //iterate through locations and increment vote count where necessary
+    const newPollAnswers = pollAnswers.map(answer => {
+      if (answer.option === voteAnswer) answer.votes++
+      return answer
+    })
+
+    // set the poll answers to be the updated info
+    this.setState({
+      pollAnswers: newPollAnswers
+    })
+
+  }
+
+  onMembersChange(e){
 
   }
 
   componentDidMount(){
 
-    // this relies on getRallyByID returning props (rally) that
-    // get mapped to the component for later use in div
-
-
     this.props.clearCurrentProfile();
+    this.state.pollAnswers.push({option: 'Suggest locations below!', votes: 0});
+
     //console.log("rally params: ",this.props.match.params.rallyID);
     if(this.props.match.params.rallyID){
       this.props.getRallyByID(this.props.match.params.rallyID);
       console.log("rallyID: ", this.props.match.params.rallyID);
 
-      // this finishes successfully but the correct rally prop does
-      // not get mapped to the state / component by getRallyByID.
-      // TODO: figure out how getRallyByID is actually setting
-      // the RallyEventPage component's props
-
-    }else{
-      return;
-    }
+    }else{return;}
   }
 
   render() {
 
-    //console.log(this.props.rally.rallies);
     const {loading} = this.props.rally;
 
     if( this.props.rally.rallies === null || loading ) {
@@ -90,8 +115,6 @@ class RallyEventPage extends Component {
     // TODO: THIS IS NOT WORKING RIGHT NOW.. is this checking that the url id matches rally ID?
     if(this.props.rally.rallies && this.props.match.params.rallyID){
 
-      console.log("da name: ", this.props.rally.rallies.name);
-
       // TODO:
       // 1. Implement checking whether user has already voted
       //    in order to determine which Voting card to display
@@ -99,8 +122,15 @@ class RallyEventPage extends Component {
       // 3. Backend for storing arrays from CSV entries for members
       // 4. Add Member button hooked to backend
       // 5. Displaying members names instead of IDs
-      // 6. Showing only the restrictions that are non-empty
 
+      const pollQuestion = null;
+
+      if(this.props.rally.rallies.pollAnswers){
+          const {pollAnswers} = this.props.rally.rallies;//.pollAnswers;
+          console.log("poll ans: ", pollAnswers);
+      }
+
+      // Display the members if they exist
       let memberInfo;
       if(this.props.rally.rallies.members){
 
@@ -113,11 +143,9 @@ class RallyEventPage extends Component {
           ))}
           </div>
         )
-      }
-      else{
-        memberInfo = <h6>no member array</h6>
-      }
+      }else{memberInfo = <h6>no member array</h6>}
 
+      // Display the organizers if they exist
       let ownerInfo;
       if(this.props.rally.rallies.owners){
 
@@ -129,34 +157,25 @@ class RallyEventPage extends Component {
               </div>
 
               <div className="col-md-10">
-                {this.props.rally.rallies.owners.slice().map((person, index) => (
-                  <small className="text-muted">{person}, </small>
+                {this.props.rally.rallies.owners.slice().map((key, index) => (
+                  <small className="text-muted">{key}, </small>
                 ))}
               </div>
-
             </div>
           </div>
         )
       }
-      else{
-        ownerInfo = <h6>no owner array</h6>
-      }
+      else{ownerInfo = <h6>no owner array</h6>}
+
+      // Display restrictions if they exist
       let restrictions;
       let restrictionData;
       if(this.props.rally.rallies.restrictions){
-          restrictions = this.props.rally.rallies.restrictions;
-          //console.log(restrictions);
-          console.log("eln: ",this.props.rally.rallies.restrictions);
-          // for(let i = 0; i < restrictions.length; i++){
-          //   //console.log("res: ",restrictions[i]);
-          // }
-          // if(restrictions.earliestTime){
-          //   console.log(restrictions.earliestTime);
-          // }
 
+          restrictions = this.props.rally.rallies.restrictions;
 
           Object.keys(restrictions).map(function(key, index) {
-            console.log(restrictions[key], key);
+            //console.log(restrictions[key], key);
           });
           let earliestTime;
           let latestTime;
@@ -166,9 +185,9 @@ class RallyEventPage extends Component {
           let startDate;
           let endDate;
 
-
+          // Display earliestTime restriction
           if(restrictions.earliestTime){
-            //console.log("earlis:", restrictions.earliestTime);
+
               earliestTime = (
                 <div>
                   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossOrigin="anonymous"/>
@@ -186,6 +205,7 @@ class RallyEventPage extends Component {
               )
           }else{earliestTime = null;}
 
+          // Display latestTime restriction
           if(restrictions.latestTime){
             latestTime = (
               <div>
@@ -203,20 +223,23 @@ class RallyEventPage extends Component {
               </div>
             )
           }else{latestTime = null;}
+
+          // Display location restriction
           if(restrictions.location){
             location = (
               <div><p>Predetermined Location: <b>{restrictions.location}</b></p></div>
             )
           }else{location=null;}
+
+          // Display timeOfWeek restriction
           if(restrictions.timeOfWeek){
             timeOfWeek = (
               <div><p>Only schedule on: <b>{restrictions.timeOfWeek}</b></p></div>
             )
           }else{timeOfWeek = null;}
+
+          // Display startDate restriction
           if(restrictions.startDate){
-
-
-
             startDate = (
 
               <div>
@@ -230,17 +253,16 @@ class RallyEventPage extends Component {
                       <p>Date Range Start: <b>{moment(restrictions.startDate).format('MM-DD-YYYY')}</b></p>
                     </div>
                   </div>
-
               </div>
-
             )
           }else{startDate = null;}
+
+          // Display endDate restriction
           if(restrictions.endDate){
             endDate = (
 
               <div>
                 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossOrigin="anonymous"/>
-
                   <div className="row">
                     <div className="col-md-1">
                       <i className="far fa-calendar-check"></i>
@@ -249,14 +271,12 @@ class RallyEventPage extends Component {
                       <p>Date Range End: <b>{moment(restrictions.endDate).format('MM-DD-YYYY')}</b></p>
                     </div>
                   </div>
-
               </div>
-
             )
           }else{endDate=null;}
 
-          //let restrictionData;
-
+          // Object to hold the html/css that we've assigned to each
+          // field according to the logic above
           restrictionData = (
             <div>
               {location}
@@ -265,157 +285,106 @@ class RallyEventPage extends Component {
               {earliestTime}
               {latestTime}
               {timeOfWeek}
-
             </div>
           )
+      }else{ restrictionData = <h6>No restrictions set. Take the reigns!</h6>;}
 
-
-
-      }else{
-        restrictionData = <h5>No restrictions set. Take the reigns!</h5>;
-      }
+      let votingAnswers;
 
       pageData = (
-                <div>
-                <h1 className="display-4">{this.props.rally.rallies.name}</h1>
 
+        <div>
+          <h1 className="display-4">{this.props.rally.rallies.name}</h1>
+          <div className="card card-body bg-light mb-12">
+            {ownerInfo}
+          </div>
+          <br></br>
 
-                  <div className="card card-body bg-light mb-12">
+          <div className="row">
 
-                    {ownerInfo}
-                  </div>
+            <div className="col-md-4">
+              <div className="well">
+                <div className="card card-body bg-light mb-3">
+                  <h3>Details</h3>
+                  <h5>Duration: ~ {this.props.rally.rallies.duration} hour(s)</h5>
+                  <p>These are the scheduling details and restrictions we have from you so far.</p>
+                  <div className="hr"/>
                   <br></br>
+                  <h5>Restrictions:</h5>
 
-                <div className="row">
+                  {restrictionData}
 
-                  <div className="col-md-4">
-                    <div className="well">
-                      <div className="card card-body bg-light mb-3">
-                        <h3>Details</h3>
-
-                        <h5>Duration: ~ {this.props.rally.rallies.duration} hour(s)</h5>
-                        <p>These are the scheduling details and restrictions we have from you so far.</p>
-                          <div className="hr"/>
-                          <br></br>
-                          <h5>Restrictions:</h5>
-                          {restrictionData}
+                </div>
+              </div>
+            </div>
 
 
-                      </div>
-                    </div>
-                  </div>
+            <div className="col-md-8">
+              <div className="row">
 
-                  <div className="col-md-8">
-                    <div className="row">
+                <div className="col-md-6">
+                  <div className="well">
+                    <div className="card card-body bg-light mb-3">
+                      <h3>Location Voting</h3>
+                      <p>Vote on a location or suggest your own!</p>
 
-                      <div className="col-md-6">
-                        <div className="well">
-                          <div className="card card-body bg-light mb-3">
-                            <h3>
-                              Location Voting
-                            </h3>
-                            <p>Vote on a location or suggest your own!</p>
+                      <Poll question='' answers={this.state.pollAnswers} onVote={this.handleVote} />
 
-                            <li key="1" className="list-group-item">
-                            <div className="row">
-                              <div className="col-md-8">
-                                Central Park
-                              </div>
-                              <div className="col-md-3">
-                                <div className="btn btn-info btn-xs">
-                                  Vote
-                                </div>
-                              </div>
-                            </div>
-                            </li>
-                            <li key="2" className="list-group-item">
-                            <div className="row">
-                              <div className="col-md-8">
-                                Dunkin Donuts
-                              </div>
-                              <div className="col-md-3">
-                                <div className="btn btn-info btn-xs">
-                                  Vote
-                                </div>
-                              </div>
-                            </div>
-                            </li>
-                            <li key="3" className="list-group-item">
-
-                            <div className="row">
-                              <div className="col-md-8">
-                                Six Flags
-                              </div>
-                              <div className="col-md-3">
-                                <div className="btn btn-info btn-xs">
-                                  Vote
-                                </div>
-                              </div>
-                            </div>
-                            </li>
-
-                            <br></br>
-
-                            <TextFieldGroup
+                      <TextFieldGroup
                                 placeholder="Location suggestion"
                                 name="locationSuggestion"
                                 type="locationSuggestion"
                                 value={this.state.locationSuggestion}
                                 onChange={this.onChange}
-                                info="If you do not see an option you like, suggest one!"
-                            />
-                            <small className="form-text text-muted">* This counts as your vote!</small>
-                            <span className="btn btn-info">
-                              Submit Suggestion
-                            </span>
+                                info="If you do not see an option you like, submit a suggestion then vote on it in the poll above!"
+                      />
+
+                      <button type="button" onClick={this.onSubmit} className="btn btn-info">
+                        <span>Submit Suggestion</span>
+                      </button>
+
+                    </div>
+                  </div>
+                </div>
 
 
+                <div className="col-md-6">
+                  <div className="well">
+                    <div className="card card-body bg-light mb-3">
+                      <h3>Members</h3>
+                      <p fontSize="20px">Those who can attend the number one time slot are italicized.</p>
+                      {memberInfo}
+                      <br></br>
 
-
-                          </div>
-                        </div>
-                      </div>
-
-
-                      <div className="col-md-6">
-                        <div className="well">
-                          <div className="card card-body bg-light mb-3">
-                            <h3>Members</h3>
-                            <p fontSize="20px">Those who can attend the number one time slot are italicized.</p>
-                              {memberInfo}
-
-                          <br></br>
-
-                            <TextFieldGroup
+                      <TextFieldGroup
                                 placeholder="Add members by email"
                                 name="addMembers"
                                 type="addMembers"
                                 value={this.state.addMembers}
                                 onChange={this.onMembersChange}
                                 info="Enter emails separated by commas."
-                            />
-                            <span className="btn btn-info">
-                              Invite
-                            </span>
+                      />
 
-
-                          </div>
-                        </div>
-                      </div>
+                      <button type="button" onClick={this.onMemberSubmit} className="btn btn-info">
+                        <span>Invite</span>
+                      </button>
 
                     </div>
-
-
                   </div>
+                </div>
+
               </div>
-
             </div>
-
+          </div>
+        </div>
       )
       //const { duration, name, members, owners, restrictions } = rallies;
     }else{
       pageData = null
     }
+
+
+
 
     return (
       <div className="rallies">
@@ -428,7 +397,11 @@ class RallyEventPage extends Component {
 RallyEventPage.propTypes = {
   getRallyByID: PropTypes.func.isRequired,
   clearCurrentProfile: PropTypes.func.isRequired,
+  //addLocations: PropTypes.func.isRequired,
   rally: PropTypes.object.isRequired,
+
+  //locationSuggestion: PropTypes.object.isRequired,
+  //pollAnswers: PropTypes.object.isRequired
   //auth: PropTypes.object.isRequired
 
 }
@@ -436,10 +409,14 @@ RallyEventPage.propTypes = {
 const mapStateToProps = state => ({
 
   rally: state.rally,
+
+  //locationSuggestion: state.locationSuggestion,
+  //pollAnswers: state.pollAnswers
+
   //auth: state.auth
 })
 
 // connects the props of the state returned from getRallyByID
 // and those in the component, then exports the component
 // with these props and state
-export default connect(mapStateToProps, {getRallyByID, clearCurrentProfile})(withRouter(RallyEventPage));
+export default connect(mapStateToProps, {getRallyByID, addLocations, clearCurrentProfile})(withRouter(RallyEventPage));

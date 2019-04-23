@@ -89,6 +89,26 @@ export const createRally = (rallyData, history) => dispatch => {
         );
 }
 
+// add location
+export const addLocations = (locationData, history) => dispatch => {
+    axios
+        .post('api/rally/addLocations', locationData)
+        .then(res =>
+            dispatch({
+                type: GET_PROFILES,
+                payload: res.data
+            })
+        )
+        .catch(err =>
+
+            //TODO: Change??
+            dispatch({
+                type: GET_ERRORS,
+                payload: err.response.data
+            })
+        );
+}
+
 // profile LOADING
 export const setProfileLoading = () => {
     return {

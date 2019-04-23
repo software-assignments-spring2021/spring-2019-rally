@@ -38,6 +38,7 @@ class CreateRally extends Component {
             time: new Date()
         }
 
+        // bind the use of "this" to all of the following functions
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.onStartChange = this.onStartChange.bind(this);
@@ -57,7 +58,7 @@ class CreateRally extends Component {
     componentDidMount(){
 
       this.props.clearCurrentProfile();
-    
+
       this.setState({
         earliestTime: null,
         latestTime: null,
@@ -123,7 +124,7 @@ class CreateRally extends Component {
         let restrictions;
         const options = [
             {label: 'Select event duration', value: 0},
-            {label: '15 minutes', value: '.25'},
+            {label: '15 minutes', value: .25},
             {label: '30 minutes', value: '.5'},
             {label: '1 Hour', value: '1'},
             {label: '1.5 Hours', value: '1.5'},
