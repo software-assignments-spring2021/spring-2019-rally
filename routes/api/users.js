@@ -10,6 +10,8 @@ const validateRegisterInput = require('../../validation/register');
 const validateLoginInput = require('../../validation/login');
 //Load user model
 const User = require('../../models/User');
+//Load rally model
+const Rally = require('../../models/Rally');
 
 // @route    GET api/users/test
 // @desc     Test post route
@@ -145,5 +147,10 @@ router.get('/current', passport.authenticate('jwt', { session: false }), (req, r
   });
 })
 
+router.post('/deleteAccount', passport.authenticate('jwt', { session: false }), (req, res) => {
+  var thisID = req.user.id;
+  //User.findOneAndDelete({ _id: thisID });
+  Rally.update({ members: thisID }, { $pull: {owners: thisID, members: thisID}}, {multi: true}).then(rally => res.json(rally));
+})
 
 module.exports = router;
