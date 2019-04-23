@@ -46,6 +46,13 @@ const RallySchema = new Schema({
         endDate: {
             type: Date
         }
+    },
+
+    voting: {
+       locations: {
+           type: Map,
+           of: Number
+       },
     }
 
 })
