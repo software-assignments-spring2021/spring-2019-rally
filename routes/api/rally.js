@@ -74,11 +74,11 @@ router.get('/rallyID/:rallyID', passport.authenticate('jwt', { session: false })
 // @access   Private
 // route through which Rally Creation UI form connects to DB
 router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
-   const {errors, isValid} = validateRallyInput(req.body);
+//    const {errors, isValid} = validateRallyInput(req.body);
 
-   if(!isValid){
-       return res.status(400).json(errors);
-   }
+//    if(!isValid){
+//        return res.status(400).json(errors);
+//    }
       //gets the token
       const usertoken = req.headers.authorization;
       const token = usertoken.split(' ');
