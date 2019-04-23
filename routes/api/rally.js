@@ -164,9 +164,11 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 
 });
 
+/*
 router.get('/google', passport.authenticate('google', {
     scope: ['https://www.googleapis.com/auth/calendar.readonly']
 }));
+*/
 
 // callback route for google to redirect to
 // hand control to passport to use code to grab profile info
