@@ -2,7 +2,7 @@ const Validator = require('validator');
 const isEmpty = require('./is-empty');
 
 module.exports = function validateRallyInput(data) {
-  let errors = {};
+  const errors = {};
 
   data.name = !isEmpty(data.name) ? data.name : '';
   data.duration = !isEmpty(data.duration) ? data.duration : '';
@@ -14,12 +14,11 @@ module.exports = function validateRallyInput(data) {
   data.timeOfWeek = !isEmpty(data.timeOfWeek) ? data.timeOfWeek : '';
 
 
-
-  if(Validator.isEmpty(data.name)) {
+  if (Validator.isEmpty(data.name)) {
     errors.name = 'Rally name is required';
   }
 
-  if(Validator.isEmpty(data.duration)) {
+  if (Validator.isEmpty(data.duration)) {
     errors.duration = 'Approximate duration is required';
   }
 
@@ -35,6 +34,6 @@ module.exports = function validateRallyInput(data) {
 
   return {
     errors,
-    isValid: isEmpty(errors)
-  }
-}
+    isValid: isEmpty(errors),
+  };
+};
