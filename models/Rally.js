@@ -18,6 +18,7 @@ const RallySchema = new Schema({
     members: {
       type: [String]
     },
+
     dateCreated: {
         date: String
     },
@@ -47,12 +48,11 @@ const RallySchema = new Schema({
             type: Date
         }
     },
-
     voting: {
-       locations: {
-           type: Map,
-           of: Number
-       },
+        locations: {
+            type: Map,
+            of: Number
+        },
     }
 
 })
