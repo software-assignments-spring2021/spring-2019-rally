@@ -13,15 +13,16 @@ class Rallies extends Component {
     this.props.clearCurrentProfile();
     const { user } = this.props.auth;
     this.props.getRallies(user);
+
   }
-  
+
 
   render() {
     //const { user } = this.props.auth;
     //console.log(this.props.rally);
     const { rallies, loading } = this.props.rally;
     let rallyItems;
-    const rallyIDs = [];
+    //const rallyIDs = [];
 
     //console.log(rallies);
     if( rallies === null || loading ) {
