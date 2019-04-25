@@ -88,7 +88,7 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
 		if(req.body.locationSuggRadius) rallyFields.restrictions.locationSuggRadius = req.body.locationSuggRadius;
 
 		rallyFields.voting = {};
-		rallyFields.voting.locations= new Map();
+			rallyFields.voting.locations= new Map();
 		if(req.body.locations) rallyFields.voting.locations.set(req.body.locations,0);
 
 
@@ -169,16 +169,46 @@ router.post('/addLocations', passport.authenticate('jwt', { session: false }), (
 	//find a rally to change based on id
 	  Rally.findOne({ _id: req.body._id }).then(rally => {
 	  	if (rally) {
-	  		//set rally fields to be changed
+				//set rally fields to be changed
+				//console.log(rally.voting.locations)
 				const rallyFields = {};
 				rallyFields.voting={};
 				rallyFields.voting.locations= new Map();
+				let it=rally.voting.locations.entries();
+				let result = it.next();
+				while (!result.done) {
+					console.log(result.value); // 1 3 5 7 9
+					rallyFields.voting.locations.set(result.value[0],0);
+					result = it.next();
 
-				console.log("HI", rally.voting.locations)
+				 }
+
+			//console.log("HI123", rally.voting.locations)
 		  	if(!rally.voting.locations.has(req.body.locations) && req.body.locations!==undefined) {
 				//	rallyFields.voting.locations = rally.voting.locations.slice();
 		  		rallyFields.voting.locations.set(req.body.locations,0);
-		  	}
+				}
+			
+				
+					// for (var i in rally.voting.locations){
+					// 	if (rally.voting.locations.hasOwnProperty(i)) {
+					// 		console.log('Key is: ' + i + '. Value is: ' + rally.voting.locations[i].voting);
+					// }
+					// for(var index in rally.voting.locations) {
+       		// 		var mapKey = index;//This is the map's key.
+       		// 		for(i = 0 ; i < rally.voting.locations[mapKey].length ; i++){	
+					// 			var mapKeyVal = rally.voting.locations[mapKey];//This is the value part for the map's ke
+					// 			console.log(mapKeyVal)
+					// 	}
+						//console.log("TESTESTESTSTES", i)
+					
+						//rallyFields.voting.locations.set(rally.voting.locations[i]);
+					// }
+
+							
+				
+			
+			
 
 			//find rally and update it
 	  		Rally.findOneAndUpdate(
