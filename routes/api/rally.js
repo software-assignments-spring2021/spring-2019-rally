@@ -164,14 +164,26 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 	  		return res.status(400).json(errors);
 	  }
   	})	
-
 });
 
-/*
-router.get('/google', passport.authenticate('google', {
-    scope: ['https://www.googleapis.com/auth/calendar.readonly']
-}));
-*/
+
+router.get('/google', (req, res) => {
+	const oauth2Client = new google.auth.OAuth2(
+	  process.env.clientId,
+	  process.env.clientSecret,
+	  'http://localhost:5000/api/rally/google/redirect'
+	);
+  
+  const authorizeUrl = oauth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: ['https://www.googleapis.com/auth/calendar.readonly'],
+	});
+	
+	google.options({auth: oauth2Client});
+
+	res.send(authorizeUrl);
+});
+
 
 // callback route for google to redirect to
 // hand control to passport to use code to grab profile info
