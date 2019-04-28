@@ -25,29 +25,35 @@ const RallySchema = new Schema({
   dateExpires: {
     name: String,
   },
-  restrictions: {
-    earliestTime: {
-      type: Date,
+    restrictions: {
+        earliestTime: {
+            type: Date
+        },
+        latestTime: {
+            type: Date
+        },
+        location: {
+          type: String
+        },
+        locationSuggRadius: {
+            type: Number
+        },
+        timeOfWeek: {
+            type: String
+        },
+        startDate: {
+            type: Date
+        },
+        endDate: {
+            type: Date
+        }
     },
-    latestTime: {
-      type: Date,
-    },
-    location: {
-      type: String,
-    },
-    locationSuggRadius: {
-      type: Number,
-    },
-    timeOfWeek: {
-      type: String,
-    },
-    startDate: {
-      type: Date,
-    },
-    endDate: {
-      type: Date,
-    },
-  },
+    voting: {
+        locations: {
+            type: Map,
+            of: Number
+        },
+    }
 
 });
 

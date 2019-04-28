@@ -1,14 +1,16 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
-import isEmpty from '../../validation/is-empty';
+//import isEmpty from '../../validation/is-empty';
 
 class RallyItem extends Component {
+
+
   render() {
 
     //TODO: change "border-info" in div to "border-primary" based on
     //      Rally ownership
-    
+
     const { rally } = this.props;
     return (
       <div>
@@ -23,8 +25,15 @@ class RallyItem extends Component {
 
             </div>
             <div className="col-md-2 d-md-block">
-              <Link to ={`/${rally._id}`} className="btn btn-info">
+              <Link to={{
+                  state: {...this.state},
+                  pathname:`/${rally._id}`
+              }}
+              className="btn btn-info" onClick={this.forceUpdate}>
+
                 View Rally
+
+
               </Link>
 
             </div>
