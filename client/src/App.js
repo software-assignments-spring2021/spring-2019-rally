@@ -8,6 +8,7 @@ import Login from './components/auth/Login';
 import CreateRally from './components/create-rally/CreateRally';
 import Rallies from './components/rallies/Rallies';
 import RallyEventPage from './components/rally/RallyEventPage';
+import DeleteAccount from './components/auth/DeleteAccount';
 
 
 
@@ -74,6 +75,10 @@ class App extends Component {
               </Switch>
               <Switch>
                 <PrivateRoute exact path="/:rallyID" component= {RallyEventPage} />
+              </Switch>
+
+              <Switch>
+                <PrivateRoute exact path="/deleteAccount" component= {DeleteAccount} />
               </Switch>
 
             </div>

@@ -57,6 +57,12 @@ router.post('/information', passport.authenticate('jwt', { session: false }), (r
 // @access   Private
 router.get('/rallyID/:rallyID', passport.authenticate('jwt', { session: false }), (req, res) => {
 	const errors = {};
+
+    if(req.params.rallyID === "rally" || req.params.rallyID === "create-rally" || req.params.rallyID === "deleteAccount"){
+
+        return res.json();
+    }
+
     //console.log("request params: ", req.params.rallyID);
 	Rally.findOne({ _id: req.params.rallyID})
 		.then(rally => {
@@ -114,6 +120,11 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
       if(req.body.duration) rallyFields.duration = req.body.duration;
       if(req.body.earliestTime) rallyFields.restrictions.earliestTime = req.body.earliestTime;
       if(req.body.latestTime) rallyFields.restrictions.latestTime = req.body.latestTime;
+
+      if(req.body.startDate) rallyFields.restrictions.startDate = req.body.startDate;
+      if(req.body.endDate) rallyFields.restrictions.endDate = req.body.endDate;
+
+
       if(req.body.location) rallyFields.restrictions.location = req.body.location;
       if(req.body.timeOfWeek) rallyFields.restrictions.timeOfWeek = req.body.timeOfWeek;
       if(req.body.locationSuggRadius) rallyFields.restrictions.locationSuggRadius = req.body.locationSuggRadius;
@@ -174,7 +185,92 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 });
 
 
-router.get('/google', (req, res) => {
+// router.get('/google', (req, res) => {
+// 	const oauth2Client = new google.auth.OAuth2(
+// 	  process.env.clientId,
+// 	  process.env.clientSecret,
+// 	  'http://localhost:5000/api/rally/google/redirect'
+// 	);
+//
+//   const authorizeUrl = oauth2Client.generateAuthUrl({
+//     access_type: 'offline',
+//     scope: ['https://www.googleapis.com/auth/calendar.readonly'],
+// 	});
+//
+// 	google.options({auth: oauth2Client});
+//
+// 	res.send(authorizeUrl);
+// });
+//
+//
+//
+// // callback route for google to redirect to
+// // hand control to passport to use code to grab profile info
+// router.get('/google/redirect', (req, res) => {
+// 	//console.log('you reached the redirect URI');
+// 	//console.log(req.query.code);
+//
+// 	//Parameters for creating oAuthClient
+//   const clientSecret = process.env.clientSecret;
+// 	const clientId = process.env.clientId;
+//   const redirectUris =['http://localhost:5000/api/rally/google/redirect'];
+//
+// 	//Create oAutClient
+// 	const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUris[0]);
+//
+// 	//Authenticate
+// 	google.options({auth: oauth2Client});
+//
+// 	//Get an access token using the code google sent us.
+// 	oauth2Client.getToken(req.query.code, function (err, tokens) {
+// 		// Now tokens contains an access_token and an optional refresh_token. Save them.
+// 		if (!err) {
+// 			oauth2Client.setCredentials(tokens);
+// 			const authorizeUrl = oauth2Client.generateAuthUrl({
+// 				access_type: 'offline',
+// 				scope: ['https://www.googleapis.com/auth/calendar.readonly']
+// 			});
+//
+// 			//Outh client set up, now implement basic google calendar call.
+// 			const calendar = google.calendar({version: 'v3', oauth2Client});
+//
+// 			calendar.events.list({
+// 				calendarId: 'primary',
+// 				timeMin: (new Date()).toISOString(),
+// 				maxResults: 10,
+// 				singleEvents: true,
+// 				orderBy: 'startTime',
+// 			}, (err, res) => {
+// 				if (err) return console.log('The API returned an error: ' + err);
+// 				const events = res.data.items;
+// 				if (events.length) {
+// 					//console.log('Upcoming 10 events:');
+// 					events.map((event, i) => {
+// 						const start = event.start.dateTime || event.start.date;
+// 						console.log(`${start} - ${event.summary}`);
+// 					});
+// 					} else {
+// 					console.log('No upcoming events found.');
+// 				}
+// 			});
+// 		} else {
+// 			console.log(err);
+// 		}
+// 	});
+//
+// 	res.send('<div><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"><script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script><style>h1 {text-align:center;}p {text-align:center;}</style><div><center><h1>Thank you!</h1> <p>You may now close this page and return to Rally</p></a></center></div></div>');
+// });
+
+//------------------------
+
+router.get('/google', passport.authenticate('jwt', { session: false }), (req, res) => {
+	const errors = {};
+	//gets the token
+	const usertoken = req.headers.authorization;
+	const token = usertoken.split(' ');
+	const decoded = jwt.verify(token[1], 'secret');
+	//console.log('you reached the redirect URI');
+	//console.log(req.query.code);
 	const oauth2Client = new google.auth.OAuth2(
 	  process.env.clientId,
 	  process.env.clientSecret,
@@ -195,7 +291,12 @@ router.get('/google', (req, res) => {
 
 // callback route for google to redirect to
 // hand control to passport to use code to grab profile info
-router.get('/google/redirect', (req, res) => {
+router.get('/google/redirect', passport.authenticate('jwt', { session: false }), (req, res) => {
+	const errors = {};
+	//gets the token
+	const usertoken = req.headers.authorization;
+	const token = usertoken.split(' ');
+	const decoded = jwt.verify(token[1], 'secret');
 	//console.log('you reached the redirect URI');
 	//console.log(req.query.code);
 
@@ -233,12 +334,26 @@ router.get('/google/redirect', (req, res) => {
 				if (err) return console.log('The API returned an error: ' + err);
 				const events = res.data.items;
 				if (events.length) {
-					//console.log('Upcoming 10 events:');
-					events.map((event, i) => {
-						const start = event.start.dateTime || event.start.date;
-						console.log(`${start} - ${event.summary}`);
-					});
-					} else {
+					User.findById(req.body._id)
+					  .then(
+							events.map((event, i) => {
+								const start = event.start.dateTime || event.start.date;
+								const end = event.end.dateTime || event.end.date;
+
+								User.update(
+									{id: req.body._id},
+									{ $push: {
+										   calendar: {
+												 startTIme: start,
+												 endTime: end
+											 }
+										}
+									});
+								console.log(`${start} - ${end}`);
+							})
+						)
+				}
+				else {
 					console.log('No upcoming events found.');
 				}
 			});
@@ -249,6 +364,11 @@ router.get('/google/redirect', (req, res) => {
 
 	res.send('<div><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"><script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script><style>h1 {text-align:center;}p {text-align:center;}</style><div><center><h1>Thank you!</h1> <p>You may now close this page and return to Rally</p></a></center></div></div>');
 });
+
+//------------------------
+
+
+
 
 // voting post/get
 // @route    POST api/rally/addLocations

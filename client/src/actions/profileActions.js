@@ -92,7 +92,7 @@ export const createRally = (rallyData, history) => dispatch => {
 // add location
 export const addLocations = (locationData, history) => dispatch => {
 
-    
+
 
     axios
         .post('api/rally/addLocations', locationData)
@@ -110,6 +110,8 @@ export const addLocations = (locationData, history) => dispatch => {
             })
         );
 }
+
+
 
 // profile LOADING
 export const setProfileLoading = () => {

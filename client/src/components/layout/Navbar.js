@@ -53,6 +53,16 @@ class Navbar extends Component {
           </a>
         </li>
 
+        <li className="nav-item">
+            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossOrigin="anonymous"/>
+
+            <div className="col-md-1">
+            <Link to="/deleteAccount" className="btn btn-xs btn-dark " onClick={this.forceUpdate}>
+                <i className="fas fa-user-cog"></i>
+            </Link>
+            </div>
+        </li>
+
       </ul>
 
       </div>
