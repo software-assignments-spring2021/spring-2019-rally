@@ -154,8 +154,9 @@ router.post('/update', passport.authenticate('jwt', {session: false}), (req, res
   		return res.status(400).json(errors);
     }
   });
+});
 
- // @route    POST api/rally/addMembers
+// @route    POST api/rally/addMembers
 // @desc     Update user rally
 // @access   Private
 // this route is available through an email
