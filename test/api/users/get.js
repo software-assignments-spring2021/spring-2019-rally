@@ -109,5 +109,30 @@ describe('GET /notes', () => {
       .catch((err) => done(err));
   });
 
+  // //Ryan - a dummy user will be registered, a login attempt will be made, and a request to find the rallies of the user is attempted and error is returned
+  it('Fail, getting rallies of user "barbarbar" without any rallies created', (done) => {
+    request(app).post('/api/users/register')
+      .send({ name: 'barbarbar', username: "foofoo", email: "baroo@gmail.com", password: "Test123", password2: "Test123" })
+      .then((res) => {
+        request(app).post('/api/users/login')
+          .send({ email: "baroo@gmail.com", password: "Test123" })
+          .then((res) => {
+            request(app).get('/api/users/current')
+            .set('Authorization', res.body.token)
+            .then((res) => {
+              request(app).get('/api/rally/get')
+              .send({owners: res.body.id})
+               .then((res) => {
+                  const body = res.body;
+                  expect(body.norally).equals(undefined);
+                  done();
+               });
+          })
+        })
+      })
+      .catch((err) => done(err));
+  });
+
+
 
 });

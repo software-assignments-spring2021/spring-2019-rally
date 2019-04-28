@@ -5,15 +5,20 @@
   "dependencies": {
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
+    "datepicker-moment": "^2.0.2",
+    "js-yaml": "^3.13.1",
     "jwt-decode": "^2.2.0",
-    "react": "^16.8.4",
-    "react-dom": "^16.8.4",
+    "moment": "^2.24.0",
+    "react": "^16.8.6",
+    "react-datepicker": "^2.4.0",
+    "react-dom": "^16.8.6",
+    
     "react-redux": "^6.0.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.8",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.4.3"
   },
   "scripts": {
     "start": "react-scripts start",

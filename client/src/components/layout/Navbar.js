@@ -21,7 +21,21 @@ class Navbar extends Component {
     const { isAuthenticated, user } = this.props.auth;
     let hrefLink = "#";
     const authLinks = (
+      <div>
+
       <ul className="navbar-nav ml-auto">
+      <li className="nav-item">
+        <Link className="nav-link" to="/rally">
+          Profile
+        </Link>
+
+      </li>
+      <li className="nav-item">
+        <Link className="nav-link" to="/create-rally">
+          Create Rally
+        </Link>
+
+      </li>
         <li className="nav-item">
           <a
             href={hrefLink}
@@ -38,7 +52,10 @@ class Navbar extends Component {
             Logout {user.name}
           </a>
         </li>
+
       </ul>
+
+      </div>
     );
 
     const guestLinks = (
@@ -66,18 +83,11 @@ class Navbar extends Component {
               <span className="navbar-toggler-icon"></span>
             </button>
 
-            <div className="collapse navbar-collapse" id="mobile-nav">
-              <ul className="navbar-nav mr-auto">
-                <li className="nav-item">
-                  <Link className="nav-link" to="/profiles">
-                    Peeps
-                  </Link>
-                </li>
-              </ul>
+
 
               {isAuthenticated ? authLinks : guestLinks}
 
-            </div>
+
           </div>
         </nav>
     )

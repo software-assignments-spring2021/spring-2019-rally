@@ -4,8 +4,11 @@ import Footer from './components/layout/Footer';
 import Landing from './components/layout/Landing';
 import Register from './components/auth/Register';
 import Login from './components/auth/Login';
-import Dashboard from './components/dashboard/Dashboard';
+//import Dashboard from './components/dashboard/Dashboard';
 import CreateRally from './components/create-rally/CreateRally';
+import Rallies from './components/rallies/Rallies';
+import RallyEventPage from './components/rally/RallyEventPage';
+
 
 
 import { Provider } from 'react-redux';
@@ -55,10 +58,13 @@ class App extends Component {
 
 
               <Switch>
-                <PrivateRoute exact path="/profile" component= {Dashboard} />
+                <PrivateRoute exact path="/rally" component= {Rallies} />
               </Switch>
               <Switch>
-                <CreateRally exact path="/create-rally" component= {CreateRally} />
+                <PrivateRoute exact path="/create-rally" component= {CreateRally} />
+              </Switch>
+              <Switch>
+                <PrivateRoute exact path="/:rallyID" component= {RallyEventPage} />
               </Switch>
 
             </div>
