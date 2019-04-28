@@ -37,18 +37,7 @@ class Navbar extends Component {
 
       </li>
         <li className="nav-item">
-          <a
-            href={hrefLink}
-            onClick={this.onLogoutClick.bind(this)}
-            className="nav-link"
-          >
-            <img
-              className="rounded-circle"
-              src={showcase}
-              alt=""
-              style={{width: '25px', marginRight: '5px'}}
-
-            /> {' '}
+          <a href={hrefLink} onClick={this.onLogoutClick.bind(this)} className="nav-link">
             Logout {user.name}
           </a>
         </li>

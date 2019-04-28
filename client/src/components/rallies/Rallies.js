@@ -60,6 +60,9 @@ class Rallies extends Component {
 
     if( rallies === null || loading ) {
       rallyItems = <h4>Loading...</h4>
+      if(rallies === null && !loading){
+          rallyItems = <h4>Please refresh the page</h4>
+      }
     }
     // if (rallies === null && !loading){
     //     rallyItems = <h4>Error loading Rallies. Please refresh the page.</h4>

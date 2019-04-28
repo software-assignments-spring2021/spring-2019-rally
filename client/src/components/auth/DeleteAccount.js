@@ -42,9 +42,9 @@ class DeleteAccount extends Component {
                     </div>
                 </div>
                 <br></br>
-                <div onClick={this.deleteUser} className="btn btn-xs btn-danger">Delete Account</div><p></p>
-                <small>You cannot undo this!</small>
-                <p>TODO: revoke JWT when delete user is clicked</p>
+                <div onClick={this.deleteUser} className="btn btn-xs btn-danger">Delete Account</div>
+                <small className="form-text text-muted" border="5">You cannot undo this!</small>
+                <p><br></br>TODO: revoke JWT when delete user is clicked</p>
             </div>
         );
     }
