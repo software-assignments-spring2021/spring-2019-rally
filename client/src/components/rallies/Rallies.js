@@ -5,7 +5,7 @@ import { getRallies, clearCurrentProfile } from '../../actions/profileActions';
 import { Link } from 'react-router-dom';
 
 //import { google } from 'googleapis';
-
+import axios from 'axios';
 
 import RallyItem from './RallyItem';
 
@@ -16,6 +16,18 @@ const readline = require('readline');
 
 class Rallies extends Component {
 
+    constructor(props) {
+        super(props);
+
+        this.state = {
+
+          URL: '',
+        }
+
+        this.componentDidMount = this.componentDidMount.bind(this);
+
+
+    }
 
   componentDidMount(){
     this.props.clearCurrentProfile();
@@ -23,31 +35,29 @@ class Rallies extends Component {
     console.log(user.name);
     this.props.getRallies(user);
 
-  }
 
+    axios.get('api/rally/google')
+        .then(res =>
+
+            this.setState({URL: res.data})
+            //url = res.data
+
+        )
+        .catch(err =>
+            console.log(err)
+        );
+
+
+
+
+  }
 
   render() {
 
-
-      // const readline = require('readline');
-    //const { google } = require('googleapis');
-
-    // const {client_secret, client_id, redirect_uris} = credentials.installed;
-    // const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
-    // const authUrl = oAuth2Client.generateAuthUrl({
-    //   access_type: 'offline',
-    //   scope: SCOPES,
-    // });
-    //
-    // console.log("authUrl: ",authUrl);
-
-    //const { user } = this.props.auth;
-    //console.log(this.props.rally);
+      console.log("url: ", this.state.URL);
     const { rallies, loading } = this.props.rally;
     let rallyItems;
-    //const rallyIDs = [];
 
-    //console.log(rallies);
     if( rallies === null || loading ) {
       rallyItems = <h4>Loading...</h4>
     }
@@ -88,7 +98,7 @@ class Rallies extends Component {
                 <p className="lead">
 
 
-                <a href="https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.readonly&response_type=code&client_id=987401539137-ia5sndc9trs64phqig2ftluiqd8j4lnu.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fapi%2Frally%2Fgoogle%2Fredirect">Sync</a>
+                <a href={this.state.URL} target="_blank" className="btn btn-xs btn-info">Sync My Google Calendar</a>
                 </p>
 
                 {rallyItems}
