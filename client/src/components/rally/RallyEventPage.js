@@ -20,7 +20,7 @@ class RallyEventPage extends Component {
         // Location suggestion state fields
         locationSuggestion: '',
         pollAnswers: [],
-
+        pollAnswerMap: new Map(),
         // Member addition fields
         addMembers: '',
       }
@@ -43,11 +43,21 @@ class RallyEventPage extends Component {
       e.preventDefault();
 
       const {locationSuggestion, pollAnswers} = this.state;
-      console.log("submitting: ", locationSuggestion);
+      //console.log("submitting: ", locationSuggestion);
 
-      this.props.addLocations(locationSuggestion, this.props.history);
+      const toAdd = {
+          locations: locationSuggestion,
+          _id: this.props.rally.rallies._id
+      }
+
+      console.log("addLoc.loc: ",toAdd.locations);
+      console.log("addLoc.id: ",toAdd._id);
+
+      this.props.addLocations(toAdd, this.props.history);
       //this.state.pollAnswers.push({ option: {locationSuggestion}, votes: 0});
-      console.log("poll answers on sub: ",pollAnswers);
+      //console.log("poll answers on sub: ",pollAnswers);
+
+
 
   }
   componentWillUnmount() {
@@ -98,6 +108,29 @@ class RallyEventPage extends Component {
       console.log("rallyID: ", this.props.match.params.rallyID);
 
     }else{return;}
+
+    if(!this.props.rally.loading){
+
+        // const newPollAnswers = pollAnswers.map(answer => {
+        //   if (answer.option === voteAnswer) answer.votes++
+        //   return answer
+        // })
+        //console.log(this.props.rally.voting)
+        if(this.props.rally.voting){
+            let iterator = this.props.rally.rallies.voting.locations.entries();
+            for(let value of iterator){
+                console.log("iterator: ",value);
+
+            }
+            this.setState({
+              pollAnswerMap: this.props.rally.rallies.voting.locations
+            })
+
+        }
+
+    }
+
+    //this.state.pollAnswerMap =
   }
 
   render() {
@@ -125,9 +158,9 @@ class RallyEventPage extends Component {
 
       const pollQuestion = null;
 
-      if(this.props.rally.rallies.pollAnswers){
-          const {pollAnswers} = this.props.rally.rallies;//.pollAnswers;
-          console.log("poll ans: ", pollAnswers);
+      if(this.props.rally.rallies.voting){
+          const {locations} = this.props.rally.rallies.voting;//.pollAnswers;
+          console.log("incheck: ", locations);
       }
 
       // Display the members if they exist

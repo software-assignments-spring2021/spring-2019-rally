@@ -11,12 +11,21 @@ const RallySchema = new Schema({
         type: [String],
         required: true
     },
+    ownerNames: {
+        type: [String],
+        required: true
+    },
+
     duration: {
         type: Number,
         required: true
     },
     members: {
       type: [String]
+    },
+    memberNames: {
+        type: [String],
+        required: true
     },
     dateCreated: {
         date: String

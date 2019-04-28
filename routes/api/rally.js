@@ -30,7 +30,7 @@ router.post('/get', passport.authenticate('jwt', { session: false }), (req, res)
 			}
 			res.json(rally);
 		})
-		
+
 		.catch(err => res.status(404).json(err));
 });
 
@@ -93,16 +93,22 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
       //sets the rally fields to be created
       const rallyFields = {};
       rallyFields.owners = [];
+      rallyFields.ownerNames = [];
       rallyFields.voting = {};
       rallyFields.voting.locations = new Map();
       if(req.body.locations) rallyFields.voting.locations.set(req.body.locations, 0);
       // rallyFields.owners.push(req.body.owners);
-     rallyFields.owners.push(req.user.id);
+      rallyFields.owners.push(req.user.id);
+      rallyFields.ownerNames.push(req.user.name);
+
       if(req.body.name) rallyFields.name = req.body.name;
       rallyFields.members = [];
+      rallyFields.memberNames = [];
 
       //TODO: put array of members from form into this array
       rallyFields.members.push(req.user.id);
+      rallyFields.memberNames.push(req.user.name);
+
       rallyFields.restrictions = {};
       //if(req.body.displayRestrictions) rallyFields.displayRestrictions = req.body.displayRestrictions;
       if(req.body.duration) rallyFields.duration = req.body.duration;
@@ -163,7 +169,8 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 	  		errors.rallyexists = 'A rally with this id does not exist';
 	  		return res.status(400).json(errors);
 	  }
-  	})	
+
+  	})
 });
 
 
@@ -173,35 +180,115 @@ router.get('/google', (req, res) => {
 	  process.env.clientSecret,
 	  'http://localhost:5000/api/rally/google/redirect'
 	);
-  
+
   const authorizeUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: ['https://www.googleapis.com/auth/calendar.readonly'],
 	});
-	
+
 	google.options({auth: oauth2Client});
 
 	res.send(authorizeUrl);
 });
 
 
+
+// @route    POST api/rally/addLocations
+// @desc     Update user rally by adding locations
+// @access   Private
+// this route is available through UI button on loaded rally page
+// router.post('/addLocations', passport.authenticate('jwt', { session: false }), (req, res) => {
+//     const errors = {};
+//     //gets the token
+//     const usertoken = req.headers.authorization;
+//     const token = usertoken.split(' ');
+//     const decoded = jwt.verify(token[1], 'secret');
+//
+//     //checks if the id from the jwt and the owner of the rally id matches
+//     // if(decoded.id!==req.body.user ) {
+//     //     errors.nologin = ‘Please log in.’;
+//     //     return res.status(400).json(errors);
+//     // }
+//
+//     //find a rally to change based on id
+//       Rally.findOne({ _id: req.body._id })
+//         .then(rally => {
+//           if (rally) {
+//
+//               //if(rally.)
+//               console.log("rally found!");
+//
+//               //set rally fields to be changed
+//               const rallyFields = {};
+//               rallyFields.voting={};
+//
+//               if(!rally.voting.locations){
+//
+//                   console.log("no locations")
+//                   // rallyFields.voting={
+//                   //     locations: new Map()
+//                   // }
+//                   rally.voting.locations = new Map();
+//               }
+//
+//               console.log("voting stuff: ", rally.voting.locations);
+//               console.log("reqbody: ", req.body.locations);
+//
+//             if(!rally.voting.locations){
+//
+//               // If voting hashmap does not contain this, add it
+//               if(!rally.voting.locations.has(req.body.locations) && req.body.locations!==undefined) {
+//                   //rallyFields.voting.locations = rally.voting.locations.slice();
+//                   rallyFields.voting.locations.set(req.body.locations,0);
+//               }
+//           }
+//               //find rally and update it
+//               Rally.findOneAndUpdate(
+//                   { _id: rally._id },
+//                   { $set: rallyFields },
+//                   { new: true }
+//               ).then(rally => res.json(rally));
+//
+//               rally => res.json(rally);
+//
+//           } else {
+//               console.log("rally DNE");
+//
+//               //throw an error that a rally with name does not exist
+//               errors.rallyexists = 'A rally with this id does not exist';
+//               return res.status(400).json(errors);
+//           }
+//      })
+//      .catch(err =>
+//          console.log(err)
+//      ));
+// }
+//
+// /*
+// router.get('/google', passport.authenticate('google', {
+//     scope: ['https://www.googleapis.com/auth/calendar.readonly']
+// }));
+// */
+//
+//
+
 // callback route for google to redirect to
 // hand control to passport to use code to grab profile info
 router.get('/google/redirect', (req, res) => {
 	//console.log('you reached the redirect URI');
-	//console.log(req.query.code);	
-	
+	//console.log(req.query.code);
+
 	//Parameters for creating oAuthClient
   const clientSecret = process.env.clientSecret;
 	const clientId = process.env.clientId;
   const redirectUris =['http://localhost:5000/api/rally/google/redirect'];
-	
+
 	//Create oAutClient
 	const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUris[0]);
-	
+
 	//Authenticate
 	google.options({auth: oauth2Client});
- 
+
 	//Get an access token using the code google sent us.
 	oauth2Client.getToken(req.query.code, function (err, tokens) {
 		// Now tokens contains an access_token and an optional refresh_token. Save them.
@@ -214,7 +301,7 @@ router.get('/google/redirect', (req, res) => {
 
 			//Outh client set up, now implement basic google calendar call.
 			const calendar = google.calendar({version: 'v3', oauth2Client});
-			
+
 			calendar.events.list({
 				calendarId: 'primary',
 				timeMin: (new Date()).toISOString(),
@@ -239,24 +326,7 @@ router.get('/google/redirect', (req, res) => {
 		}
 	});
 
-	res.send('from api rally');
+	res.send('<div><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"><script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script><style>h1 {text-align:center;}p {text-align:center;}</style><div><center><h1>Thank you!</h1> <p>You may now close this page and return to Rally</p></a></center></div></div>');
 });
 
 module.exports = router;
-
-
-/*
-User's access token.
-Credentials.json
-
-
-WHAT WE NEED - A snapshot of user's calendar.
-WHERE IS THE SNAPSHOT STORED - As an array of calendar objects under that specific rally.
-HOW DO WE ACCESS THE SNAPSHOT - Program Flow Mentioned Below.
-
-
-* A button in the frontend asking user to authorize Rally to integrate their calendar.
-* User clicks button which redirects them to the url which google generates, user authorizes, Google redirects to a URI we mention,
-	so that means we can mention a unique endpoint in the backendm, we recieve that code back from Google, 
-	which is then sent back to 'setCredentials' that access token in the userSchema, then makes the call to Calendar API using that access token.
-*/

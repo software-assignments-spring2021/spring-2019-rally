@@ -4,7 +4,15 @@ import PropTypes from 'prop-types';
 import { getRallies, clearCurrentProfile } from '../../actions/profileActions';
 import { Link } from 'react-router-dom';
 
+//import { google } from 'googleapis';
+
+
 import RallyItem from './RallyItem';
+
+const readline = require('readline');
+//const fs = require('fs');
+//const { google } = require('googleapis');
+
 
 class Rallies extends Component {
 
@@ -12,12 +20,27 @@ class Rallies extends Component {
   componentDidMount(){
     this.props.clearCurrentProfile();
     const { user } = this.props.auth;
+    console.log(user.name);
     this.props.getRallies(user);
 
   }
 
 
   render() {
+
+
+      // const readline = require('readline');
+    //const { google } = require('googleapis');
+
+    // const {client_secret, client_id, redirect_uris} = credentials.installed;
+    // const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+    // const authUrl = oAuth2Client.generateAuthUrl({
+    //   access_type: 'offline',
+    //   scope: SCOPES,
+    // });
+    //
+    // console.log("authUrl: ",authUrl);
+
     //const { user } = this.props.auth;
     //console.log(this.props.rally);
     const { rallies, loading } = this.props.rally;
@@ -60,6 +83,12 @@ class Rallies extends Component {
                 <Link to="/create-rally" className="btn btn-xs btn-info">
                     Create a Rally
                 </Link>
+                </p>
+
+                <p className="lead">
+
+
+                <a href="https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.readonly&response_type=code&client_id=987401539137-ia5sndc9trs64phqig2ftluiqd8j4lnu.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fapi%2Frally%2Fgoogle%2Fredirect">Sync</a>
                 </p>
 
                 {rallyItems}

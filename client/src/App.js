@@ -11,6 +11,10 @@ import RallyEventPage from './components/rally/RallyEventPage';
 
 
 
+//import GoogleAuth from './components/auth/GoogleAuth';
+
+
+
 import { Provider } from 'react-redux';
 import store from './store';
 import jwt_decode from 'jwt-decode';
@@ -19,10 +23,12 @@ import { setCurrentUser, logoutUser } from './actions/authActions';
 import { clearCurrentProfile } from './actions/profileActions';
 
 import PrivateRoute from './components/common/PrivateRoute';
+import GoogleAuth from './components/auth/GoogleAuth';
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
 
+//const {googAuth} = require('./components/auth/GoogleAuth.html');
 //check for jwtToken
 if(localStorage.jwtToken){
   // set auth token header authActions
@@ -55,6 +61,9 @@ class App extends Component {
             <div className="container">
               <Route exact path="/register" component= {Register} />
               <Route exact path="/login" component= {Login} />
+
+
+
 
 
               <Switch>
