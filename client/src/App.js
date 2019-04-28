@@ -63,7 +63,6 @@ class App extends Component {
               <Switch>
                 <PrivateRoute exact path="/create-rally" component= {CreateRally} />
               </Switch>
-
               <Switch>
                 <PrivateRoute exact path="/:rallyID" component= {RallyEventPage} />
               </Switch>
