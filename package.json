@@ -33,6 +33,7 @@
     "mocha": "^6.1.4",
     "mockgoose": "^8.0.1",
     "mongoose": "^5.4.17",
+    "nodemailer": "^6.1.1",
     "nyc": "^14.0.0",
     "passport": "^0.4.0",
     "passport-google-oauth20": "^2.0.0",
@@ -40,6 +41,7 @@
     "react": "^16.8.6",
     "react-datepicker": "^2.3.0",
     "react-dom": "^16.8.6",
+    "react-polls": "^1.2.0",
     "react-router-dom": "^5.0.0",
     "supertest": "^3.4.2",
     "tar": "^4.4.2",
@@ -47,9 +49,6 @@
   },
   "devDependencies": {
     "datepicker-moment": "^2.0.2",
-    "eslint": "^5.16.0",
-    "eslint-config-google": "^0.12.0",
-    "eslint-plugin-react": "^7.12.4",
     "moment": "^2.24.0",
     "nodemon": "^1.18.11"
   }

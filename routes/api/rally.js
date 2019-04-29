@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const {google} = require('googleapis');
 const jwt = require('jsonwebtoken');
-//const keys = process.env;//const keys = require('../../config/keys');
+const nodemailer = require('nodemailer');
 const passport = require('passport');
 
 //Load rally model
@@ -161,8 +161,122 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 	  		errors.rallyexists = 'A rally with this id does not exist';
 	  		return res.status(400).json(errors);
 	  }
-  	})	
+// @route    POST api/rally/addMembers
+// @desc     Update user rally
+// @access   Private
+// this route is available through an email
+router.post('/addMembers', passport.authenticate('jwt', {session: false}), (req, res) => {
+  const errors = {};
+  // gets the token
+  const usertoken = req.headers.authorization;
+  const token = usertoken.split(' ');
+  const decoded = jwt.verify(token[1], 'secret');
 
+  // checks if the id from the jwt and the owner of the rally id matches
+  // if(decoded.id!==req.body.user ) {
+  // 	errors.nologin = 'Please log in.';
+  // 	return res.status(400).json(errors);
+  // }
+  User.findOne({email: req.body.email}).then((user) => {
+	  if (user) {
+		  // find a rally to change based on id
+		  Rally.findOne({_id: req.body._id}).then((rally) => {
+		  	if (rally) {
+		  		// set rally fields to be changed
+		      const rallyFields = {}
+		  		rallyFields.members = rally.members.slice();
+		  		if (!rally.members.includes(user._id) && !rally.members.includes(user._id)) {
+		        rallyFields.members.push(user._id);
+			  	}
+			  	if (!rally.owners.includes(user._id)) {
+		        rallyFields.owners = rally.owners.slice();
+			  	rallyFields.owners.push(user._id);
+			  	rallyFields.members.push(user._id);
+			  	}
+
+		      // find rally and update it
+		  		Rally.findOneAndUpdate(
+		          {_id: rally._id},
+		          {$set: rallyFields},
+		          {new: true}
+		      ).then((rally) => res.json(rally));
+		  		(rally) => res.json(rally);
+		  	} else {
+		  		// throw an error that a rally with name does not exist
+		  		errors.rallyexists = 'A rally with this id does not exist';
+		  		return res.status(400).json(errors);
+		    }
+		  });
+	  } else {
+	  	errors.usersexists = 'Please create a rally account';
+	  	return res.status(400).json(errors);
+	  }
+  	})
+});
+
+// @route    POST api/rally/update
+// @desc     Update user rally
+// @access   Private
+// Requires Authorization, _id (rallyId), userId, newMember (Member to be invite and added in database) 
+// this route is available through UI button on loaded rally page
+router.post('/update', passport.authenticate('jwt', { session: false }), (req, res) => {
+	const errors = {};
+
+	//gets the token
+	const usertoken = req.headers.authorization;
+	const token = usertoken.split(' ');
+	const decoded = jwt.verify(token[1], 'secret');
+
+	//checks if the id from the jwt and the owner of the rally id matches
+	if(decoded.id!==req.body.user ) {
+		errors.nologin = 'Please log in.';
+		return res.status(400).json(errors);
+	}
+	
+	else {
+		//Message to be sent
+		const output = `
+			<p>You have a new contact request</p>
+			<h3>Contact Details</h3>
+	
+			<h3>Message</h3>
+			<p>"Hey, you have been invited for a rally. Clink <a href="localhost:3000">here</a> to join it!!! "</p>
+		`;
+
+		// create reusable transporter object using the default SMTP transport
+		let transporter = nodemailer.createTransport({
+			service: 'gmail',
+			auth: {
+					user: process.env.rallyEmail, // generated ethereal user
+					pass: process.env.rallyPassword  // generated ethereal password
+			}
+		});
+
+		// setup email data with unicode symbols
+		let mailOptions = {
+				from: 'rally.agile.info@gmail.com', // sender address
+				to: req.body.newMember, // list of receivers
+				subject: 'New Rally By Your Friends!!', // Subject line
+				text: 'Hello world?', // plain text body
+				html: output // html body
+		};
+
+		// send mail with defined transport object
+		transporter.sendMail(mailOptions, (error, info) => {
+				if (error) {
+						return console.log(error);
+				}
+				console.log('Message sent: %s', info.messageId);   
+				console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+		});
+
+		//find rally and add the newMember in database.
+		Rally.findByIdAndUpdate(
+			{ _id: rally._id },
+			{ $push: {members: req.body.newMember} },
+			{ new: true }
+			).then(rally => res.json(rally));
+	}
 });
         
 
