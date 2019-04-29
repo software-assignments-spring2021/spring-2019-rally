@@ -292,7 +292,7 @@ router.get('/getLocations', passport.authenticate('jwt', { session: false }), (r
 
 	Rally.findOne({ _id: req.body._id }).then(rally => {
 		if (rally) {	
-			console.log(Array.from(rally.voting.locations.entries()))
+			// console.log(Array.from(rally.voting.locations.entries()))
 			res.json(Array.from(rally.voting.locations.entries()));
 		}
 		
