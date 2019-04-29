@@ -161,6 +161,9 @@ router.post('/update', passport.authenticate('jwt', { session: false }), (req, r
 	  		errors.rallyexists = 'A rally with this id does not exist';
 	  		return res.status(400).json(errors);
 	  }
+	})
+});
+
 // @route    POST api/rally/addMembers
 // @desc     Update user rally
 // @access   Private
