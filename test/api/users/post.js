@@ -266,7 +266,6 @@ describe('POST /api/users/register', () => {
         .catch((err) => done(err));
   });
 
-
   // Ryan - a rally will be created and expect rally object, then update the rally changing its name
   it('Ok, updating a new rally by changing the name works', (done) => {
     request(app).post('/api/users/login')
@@ -296,5 +295,61 @@ describe('POST /api/users/register', () => {
               });
         })
         .catch((err) => done(err));
+  });
+
+  // Nanako - a rally will be created and expect rally object, then update the rally by adding a location
+  // it('Ok, updating a new rally by adding a location works', (done) => {
+  //   request(app).post('/api/users/login')
+  //   .send({ email: "baroo@gmail.com", password: "Test123" })
+  //   .then((res) => {
+  //     request(app).get('/api/users/current')
+  //     .set('Authorization', res.body.token)
+  //     .then((res2) => {
+  //       request(app).post('/api/rally/create')
+  //       .set('Authorization', res.body.token)
+  //       .send({ owners: res2.body._id, name: 'Test', duration: "10" })
+  //         .then((res3) => {
+  //         request(app).get('/api/rally/get')
+  //         .set('Authorization', res.body.token)
+  //         .send(res3.body._id)
+  //         .then((res4) => {
+  //           request(app).post('/api/rally/addLocations')
+  //           .set('Authorization', res.body.token)
+  //           .send({ _id: res3.body._id, location: 'Manhattan' })
+  //             .then((res5) => {
+  //               const body = res5.body;
+  //               expect(body.voting.locations).contains("Manhattan");
+  //               done();
+  //             });
+  //           })
+  //         })
+  //     })
+  //   })
+  //     .catch((err) => done(err));     
+  // });
+
+  // Nanako - testing callback route for google to redirect to
+  it('Ok, redirecting to google works', (done) => {
+    request(app).post('/api/users/login')
+    .send({ email: "baroo@gmail.com", password: "Test123" })
+    .then((res) => {
+      request(app).get('/api/users/current')
+      .set('Authorization', res.body.token)
+      .then((res2) => {
+        request(app).post('/google/redirect')
+        .set('Authorization', res.body.token)
+        .then((res3) => {
+          request(app).get('/api/rally/get')
+          .set('Authorization', res.body.token)
+          .send(res3.body._id)
+          .then((res4) => {
+            const body = res4.body;
+            // console.log();
+            done();
+          })
+        })
+      })
+      .catch((err) => done(err));     
+    });
   });
 });
