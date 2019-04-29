@@ -217,12 +217,12 @@ router.post('/addMembers', passport.authenticate('jwt', {session: false}), (req,
   	})
 });
 
-// @route    POST api/rally/update
+// @route    POST api/rally/inviteViaEmail
 // @desc     Update user rally
 // @access   Private
 // Requires Authorization, _id (rallyId), userId, newMember (Member to be invite and added in database) 
 // this route is available through UI button on loaded rally page
-router.post('/update', passport.authenticate('jwt', { session: false }), (req, res) => {
+router.post('/inviteViaEmail', passport.authenticate('jwt', { session: false }), (req, res) => {
 	const errors = {};
 
 	//gets the token
