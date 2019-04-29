@@ -23,6 +23,7 @@ class RallyEventPage extends Component {
 
         // Member addition fields
         addMembers: '',
+        // memberToAdd: [],
       }
 
       this.onChange = this.onChange.bind(this);
@@ -50,6 +51,22 @@ class RallyEventPage extends Component {
       console.log("poll answers on sub: ",pollAnswers);
 
   }
+
+  // onMembersChange(e){
+
+  //   e.preventDefault();
+
+  //   //an array that keeps track of members that were added
+  //   const {addMembers, memberToAdd} = this.state;
+  //   console.log("adding member: ", memberToAdd);
+
+  //   this.props.addLocations(addMembers, this.props.history);
+  //   console.log("members: ",addMembers);
+
+  //   //create axios request to post request with email in a string to add to the rally object in the database
+
+  // }
+
   componentWillUnmount() {
    this._ismounted = false;
   }
@@ -80,10 +97,6 @@ class RallyEventPage extends Component {
     this.setState({
       pollAnswers: newPollAnswers
     })
-
-  }
-
-  onMembersChange(e){
 
   }
 
