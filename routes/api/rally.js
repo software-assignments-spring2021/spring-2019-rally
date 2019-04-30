@@ -227,7 +227,9 @@ router.get('/google/redirect', (req, res) => {
     //Use the bearer token to find user_id so that we can store calendars into databse.
     const {jwtTok} = JSON.parse(req.query.state);
     const decoded = jwt.verify(jwtTok, 'secret');
-    const theFrIkInID = decoded.id;
+    const userId = decoded.id;
+
+    console.log("userid: ",userId);
 
     //Create oAutClient
 	const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUris[0]);
@@ -265,14 +267,21 @@ router.get('/google/redirect', (req, res) => {
 
                         //TODO Ask Professor - Refer back to User.js in Models
 						User.findOneAndUpdate(
-							{_id: theFrIkInID},
+							{_id: userId},
 							{ $push: {
 								   calendar: {
 										 startTIme: start,
 										 endTime: end
 									 }
 								}
-							});
+							}, (err, docs) => { // callback
+                                if(err){
+                                    console.log(err);
+                                }else{
+                                    console.log(docs);
+                                }
+
+                            });
 						console.log(`${start} - ${end}`);
 					})
 

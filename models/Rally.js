@@ -61,7 +61,7 @@ const RallySchema = new Schema({
        locations: {
            type: Map,
            of: Number
-       },
+       }
     }
 
 })

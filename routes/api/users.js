@@ -149,8 +149,14 @@ router.get('/current', passport.authenticate('jwt', { session: false }), (req, r
 
 router.post('/deleteAccount', passport.authenticate('jwt', { session: false }), (req, res) => {
   var thisID = req.user.id;
-  User.findOneAndDelete({ _id: thisID });
-  Rally.update({ members: thisID }, { $pull: {owners: thisID, members: thisID}}, {multi: true}).then(rally => res.json(rally));
+  User.findOneAndDelete({ _id: thisID }, (err, docs) => {
+      if(err){
+          console.log(err);
+      }else{
+          Rally.update({ members: thisID }, { $pull: {owners: thisID, members: thisID}}, {multi: true}).then(rally => res.json(rally));
+      }
+  });
+
 })
 
 module.exports = router;
