@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-//Create a schema
+// Create a schema
 const UserSchema = new Schema({
+
     name: {
         type: String,
         required: true
@@ -31,5 +32,6 @@ const UserSchema = new Schema({
     calendar : []
 
 })
+
 
 module.exports = User = mongoose.model('users', UserSchema);

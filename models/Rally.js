@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-//Create a schema
+// Create a schema
 const RallySchema = new Schema({
+
     name: {
         type: String,
         required: true
@@ -15,7 +16,6 @@ const RallySchema = new Schema({
         type: [String],
         required: true
     },
-
     duration: {
         type: Number,
         required: true
@@ -56,14 +56,12 @@ const RallySchema = new Schema({
             type: Date
         }
     },
-
     voting: {
        locations: {
            type: Map,
            of: Number
        }
     }
-
-})
+});
 
 module.exports = Rally = mongoose.model('rally', RallySchema);
