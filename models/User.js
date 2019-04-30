@@ -26,7 +26,10 @@ const UserSchema = new Schema({
     rallies: {
         type: [String],
         required: false
-    }
+    },
+
+    calendar : []
+
 })
 
 module.exports = User = mongoose.model('users', UserSchema);

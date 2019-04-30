@@ -149,7 +149,7 @@ router.get('/current', passport.authenticate('jwt', { session: false }), (req, r
 
 router.post('/deleteAccount', passport.authenticate('jwt', { session: false }), (req, res) => {
   var thisID = req.user.id;
-  //User.findOneAndDelete({ _id: thisID });
+  User.findOneAndDelete({ _id: thisID });
   Rally.update({ members: thisID }, { $pull: {owners: thisID, members: thisID}}, {multi: true}).then(rally => res.json(rally));
 })
 
