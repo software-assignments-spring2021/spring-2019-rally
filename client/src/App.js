@@ -8,6 +8,11 @@ import Login from './components/auth/Login';
 import CreateRally from './components/create-rally/CreateRally';
 import Rallies from './components/rallies/Rallies';
 import RallyEventPage from './components/rally/RallyEventPage';
+import DeleteAccount from './components/auth/DeleteAccount';
+
+
+
+//import GoogleAuth from './components/auth/GoogleAuth';
 
 
 
@@ -19,10 +24,12 @@ import { setCurrentUser, logoutUser } from './actions/authActions';
 import { clearCurrentProfile } from './actions/profileActions';
 
 import PrivateRoute from './components/common/PrivateRoute';
+import GoogleAuth from './components/auth/GoogleAuth';
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
 
+//const {googAuth} = require('./components/auth/GoogleAuth.html');
 //check for jwtToken
 if(localStorage.jwtToken){
   // set auth token header authActions
@@ -57,6 +64,9 @@ class App extends Component {
               <Route exact path="/login" component= {Login} />
 
 
+
+
+
               <Switch>
                 <PrivateRoute exact path="/rally" component= {Rallies} />
               </Switch>
@@ -65,6 +75,10 @@ class App extends Component {
               </Switch>
               <Switch>
                 <PrivateRoute exact path="/:rallyID" component= {RallyEventPage} />
+              </Switch>
+
+              <Switch>
+                <PrivateRoute exact path="/deleteAccount" component= {DeleteAccount} />
               </Switch>
 
             </div>

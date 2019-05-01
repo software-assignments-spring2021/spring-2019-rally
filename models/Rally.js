@@ -3,28 +3,36 @@ const Schema = mongoose.Schema;
 
 // Create a schema
 const RallySchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  owners: {
-    type: [String],
-    required: true,
-  },
-  duration: {
-    type: Number,
-    required: true,
-  },
-  members: {
-    type: [String],
-  },
 
-  dateCreated: {
-    date: String,
-  },
-  dateExpires: {
-    name: String,
-  },
+    name: {
+        type: String,
+        required: true
+    },
+    owners: {
+        type: [String],
+        required: true
+    },
+    ownerNames: {
+        type: [String],
+        required: true
+    },
+    duration: {
+        type: Number,
+        required: true
+    },
+    members: {
+      type: [String]
+    },
+    memberNames: {
+        type: [String],
+        required: true
+    },
+    dateCreated: {
+        date: String
+    },
+    dateExpires: {
+        name: String
+    },
     restrictions: {
         earliestTime: {
             type: Date
@@ -49,12 +57,11 @@ const RallySchema = new Schema({
         }
     },
     voting: {
-        locations: {
-            type: Map,
-            of: Number
-        },
+       locations: {
+           type: Map,
+           of: Number
+       }
     }
-
 });
 
 module.exports = Rally = mongoose.model('rally', RallySchema);

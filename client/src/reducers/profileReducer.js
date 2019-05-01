@@ -34,6 +34,7 @@ export default function(state = initialState, action) {
                 rally: null,
                 rallies: null
             }
+    
         default:
             return state;
     }

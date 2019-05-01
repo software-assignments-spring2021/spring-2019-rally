@@ -37,20 +37,19 @@ class Navbar extends Component {
 
       </li>
         <li className="nav-item">
-          <a
-            href={hrefLink}
-            onClick={this.onLogoutClick.bind(this)}
-            className="nav-link"
-          >
-            <img
-              className="rounded-circle"
-              src={showcase}
-              alt=""
-              style={{width: '25px', marginRight: '5px'}}
-
-            /> {' '}
+          <a href={hrefLink} onClick={this.onLogoutClick.bind(this)} className="nav-link">
             Logout {user.name}
           </a>
+        </li>
+
+        <li className="nav-item">
+            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossOrigin="anonymous"/>
+
+            <div className="col-md-1">
+            <Link to="/deleteAccount" className="btn btn-xs btn-dark " onClick={this.forceUpdate}>
+                <i className="fas fa-user-cog"></i>
+            </Link>
+            </div>
         </li>
 
       </ul>
@@ -76,7 +75,7 @@ class Navbar extends Component {
     return (
       <nav className="navbar navbar-expand-sm navbar-dark bg-dark mb-4">
           <div className="container">
-            <Link className="navbar-brand" to="/">
+            <Link className="navbar-brand" to="/rally">
               Rally
             </Link>
             <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#mobile-nav">
