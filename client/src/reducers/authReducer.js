@@ -1,4 +1,5 @@
-import { SET_CURRENT_USER } from '../actions/types';
+import { SET_CURRENT_USER , DELETE_ACCOUNT} from '../actions/types';
+
 import isEmpty from '../validation/is-empty';
 
 const initialState = {
@@ -14,6 +15,12 @@ export default function(state = initialState, action){
         isAuthenticated: !isEmpty(action.payload),
         user: action.payload
       }
+     case DELETE_ACCOUNT:
+        return {
+            ...state,
+            isAuthenticated: false,
+            user: null
+        }
     default:
       return state;
   }

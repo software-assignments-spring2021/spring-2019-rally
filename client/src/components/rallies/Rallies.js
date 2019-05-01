@@ -4,30 +4,69 @@ import PropTypes from 'prop-types';
 import { getRallies, clearCurrentProfile } from '../../actions/profileActions';
 import { Link } from 'react-router-dom';
 
+//import { google } from 'googleapis';
+import axios from 'axios';
+
 import RallyItem from './RallyItem';
+
+//const readline = require('readline');
+//const fs = require('fs');
+//const { google } = require('googleapis');
+
 
 class Rallies extends Component {
 
+    constructor(props) {
+        super(props);
+
+        this.state = {
+
+          URL: '',
+        }
+
+        this.componentDidMount = this.componentDidMount.bind(this);
+
+
+    }
 
   componentDidMount(){
     this.props.clearCurrentProfile();
     const { user } = this.props.auth;
+    console.log(user.name);
     this.props.getRallies(user);
+
+
+    axios.get('api/rally/google')
+        .then(res =>
+
+            this.setState({URL: res.data})
+            //url = res.data
+
+        )
+        .catch(err =>
+            console.log(err)
+        );
+
+
+
 
   }
 
-
   render() {
-    //const { user } = this.props.auth;
-    //console.log(this.props.rally);
+
+      //console.log("url: ", this.state.URL);
     const { rallies, loading } = this.props.rally;
     let rallyItems;
-    //const rallyIDs = [];
 
-    //console.log(rallies);
     if( rallies === null || loading ) {
       rallyItems = <h4>Loading...</h4>
+      if(rallies === null && !loading){
+          rallyItems = <h4>Please refresh the page</h4>
+      }
     }
+    // if (rallies === null && !loading){
+    //     rallyItems = <h4>Error loading Rallies. Please refresh the page.</h4>
+    // }
     else{
         if(rallies.length > 0){
 
@@ -56,11 +95,32 @@ class Rallies extends Component {
                 <h1 className="display-4">My Rallies
                 </h1>
 
-                <p className="lead">
-                <Link to="/create-rally" className="btn btn-xs btn-info">
-                    Create a Rally
-                </Link>
-                </p>
+                    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossOrigin="anonymous"/>
+
+                    <div className="btn-group mr-2" role="group" aria-label="First group">
+
+
+                        <p className="lead">
+                        <Link to="/create-rally" className="btn btn-xs btn-info">
+                            <i style={{marginRight: 10 }} className="fas fa-plus"></i>
+                            New Rally
+                        </Link>
+                        </p>
+
+                    </div>
+                    <div className="btn-group mr-2" role="group" aria-label="second group">
+                        <p className="lead">
+                        <a href={this.state.URL} target="_blank" className="btn btn-xs btn-info ">
+
+                            <i style={{marginRight: 10 }} className="fab fa-google"></i>
+
+                            Sync Google Calendar
+                        </a>
+                        </p>
+                    </div>
+
+
+
 
                 {rallyItems}
             </div>

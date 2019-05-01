@@ -7,7 +7,7 @@ import SelectListGroup from '../common/SelectListGroup';
 import { createRally, clearCurrentProfile } from '../../actions/profileActions';
 import { withRouter } from 'react-router-dom';
 
-//import moment from 'moment';
+import moment from 'moment';
 
 import DatePicker from 'react-datepicker';
 
@@ -103,10 +103,15 @@ class CreateRally extends Component {
     }
 
     onEndChange(date) {
-      this.setState({
-        endDate: date
+
+        console.log("onEndChange received: ",new Date(date))
+      this.setState({ endDate: new Date(date) }, () => {
+          console.log("state.endDate = ", this.state.endDate, "<-- why is this???")
       })
+
+
     }
+
     onStartTimeChange(time) {
       this.setState({
         earliestTime: time
@@ -122,6 +127,8 @@ class CreateRally extends Component {
         const {errors, displayRestrictions} = this.state;
 
         let restrictions;
+
+        // Drop down menu for event durations
         const options = [
             {label: 'Select event duration', value: 0},
             {label: '15 minutes', value: .25},
@@ -138,6 +145,7 @@ class CreateRally extends Component {
             {label: 'Longer than 5 Hours', value: '5+'}
         ];
 
+        // Drop down menu options for location radius
         const radiusOptions = [
 
             {label: 'Select location suggestion radius', value: 0},
@@ -150,65 +158,7 @@ class CreateRally extends Component {
 
         ];
 
-        // const timeStartOptions = [
-        //
-        //     // TODO: separate drop down for AM/PM
-        //     {label: 'Select start time restriction', value: 0},
-        //     {label: '12 AM', value: '0'},
-        //     {label: '1 AM', value: '1'},
-        //     {label: '2 AM', value: '2'},
-        //     {label: '3 AM', value: '3'},
-        //     {label: '4 AM', value: '4'},
-        //     {label: '5 AM', value: '5'},
-        //     {label: '6 AM', value: '6'},
-        //     {label: '7 AM', value: '7'},
-        //     {label: '8 AM', value: '8'},
-        //     {label: '9 AM', value: '9'},
-        //     {label: '10 AM', value: '10'},
-        //     {label: '11 AM', value: '11'},
-        //     {label: '12 PM', value: '12'},
-        //     {label: '1 PM', value: '13'},
-        //     {label: '2 PM', value: '14'},
-        //     {label: '3 PM', value: '15'},
-        //     {label: '4 PM', value: '16'},
-        //     {label: '5 PM', value: '17'},
-        //     {label: '6 PM', value: '18'},
-        //     {label: '7 PM', value: '19'},
-        //     {label: '8 PM', value: '20'},
-        //     {label: '9 PM', value: '21'},
-        //     {label: '10 PM', value: '22'},
-        //     {label: '11 PM', value: '23'},
-        // ];
-        // const timeEndOptions = [
-        //
-        //     // TODO: separate drop down for AM/PM
-        //     {label: 'Select end time restriction', value: 0},
-        //     {label: '12 AM', value: '0'},
-        //     {label: '1 AM', value: '1'},
-        //     {label: '2 AM', value: '2'},
-        //     {label: '3 AM', value: '3'},
-        //     {label: '4 AM', value: '4'},
-        //     {label: '5 AM', value: '5'},
-        //     {label: '6 AM', value: '6'},
-        //     {label: '7 AM', value: '7'},
-        //     {label: '8 AM', value: '8'},
-        //     {label: '9 AM', value: '9'},
-        //     {label: '10 AM', value: '10'},
-        //     {label: '11 AM', value: '11'},
-        //     {label: '12 PM', value: '12'},
-        //     {label: '1 PM', value: '13'},
-        //     {label: '2 PM', value: '14'},
-        //     {label: '3 PM', value: '15'},
-        //     {label: '4 PM', value: '16'},
-        //     {label: '5 PM', value: '17'},
-        //     {label: '6 PM', value: '18'},
-        //     {label: '7 PM', value: '19'},
-        //     {label: '8 PM', value: '20'},
-        //     {label: '9 PM', value: '21'},
-        //     {label: '10 PM', value: '22'},
-        //     {label: '11 PM', value: '23'},
-        // ];
-
+        // Consider only weekdays or weekends
         const onlyOptions = [
             {label: 'Only consider these days', value: 0},
             {label: 'Weekends', value: 'Weekends'},
@@ -219,7 +169,6 @@ class CreateRally extends Component {
             restrictions = (
 
                 <div>
-
                   <TextFieldGroup
                       placeholder="Predetermined Location"
                       name="location"
