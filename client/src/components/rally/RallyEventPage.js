@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import TextFieldGroup from '../common/TextFieldGroup';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
-
+import axios from "axios";
 import Poll from 'react-polls';
 
 class RallyEventPage extends Component {
@@ -22,14 +22,16 @@ class RallyEventPage extends Component {
         pollAnswers: [],
 
         // Member addition fields
-        addMembers: '',
-        // memberToAdd: [],
+        // one member's email
+        addMembers: " ",
+        errors: {}
       }
 
       this.onChange = this.onChange.bind(this);
       this.onSubmit = this.onSubmit.bind(this);
       this.handleVote = this.handleVote.bind(this);
-
+      this.onMembersSubmit = this.onMembersSubmit.bind(this);
+      this.onMembersChange = this.onMembersChange.bind(this);
   }
 
   // Used for location submission
@@ -52,20 +54,37 @@ class RallyEventPage extends Component {
 
   }
 
-  // onMembersChange(e){
+  onMembersChange(e){
 
-  //   e.preventDefault();
+    this.setState({
+      addMembers: e.target.value
+    })
+    console.log("member entered: ",this.state.addMembers)
+  }
 
-  //   //an array that keeps track of members that were added
-  //   const {addMembers, memberToAdd} = this.state;
-  //   console.log("adding member: ", memberToAdd);
+  onMembersSubmit(e){
 
-  //   this.props.addLocations(addMembers, this.props.history);
-  //   console.log("members: ",addMembers);
+    e.preventDefault();
 
-  //   //create axios request to post request with email in a string to add to the rally object in the database
 
-  // }
+    const {rallies}=this.props.rally;
+    console.log("rallies: ",rallies)
+    //an array that keeps track of members that were added
+    const {addMembers} = this.state;
+    console.log("adding member: ", addMembers);
+
+    const data = {
+      email: addMembers,
+      _id: rallies._id
+    }
+
+    //create axios request to post request with email in a string to add to the rally object in the database
+    axios
+      .post('/api/rally/addMembers', data)
+      .catch(err => 
+          console.log(err)
+      );
+  }
 
   componentWillUnmount() {
    this._ismounted = false;
@@ -375,10 +394,11 @@ class RallyEventPage extends Component {
                                 type="addMembers"
                                 value={this.state.addMembers}
                                 onChange={this.onMembersChange}
-                                info="Enter emails separated by commas."
+                                info="Enter email of member you want to add"
+                                error={this.state.errors.email}
                       />
 
-                      <button type="button" onClick={this.onMemberSubmit} className="btn btn-info">
+                      <button type="button" onClick={this.onMembersSubmit} className="btn btn-info">
                         <span>Invite</span>
                       </button>
 
