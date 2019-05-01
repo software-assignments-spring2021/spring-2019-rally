@@ -76,12 +76,12 @@ class RallyEventPage extends Component {
 
     e.preventDefault();
 
-
     const {rallies}=this.props.rally;
     console.log("rallies: ",rallies)
+
     //an array that keeps track of members that were added
     const {addMembers} = this.state;
-    console.log("adding member: ", addMembers);
+    // console.log("adding member: ", addMembers);
 
     const data = {
       email: addMembers,
@@ -193,7 +193,7 @@ class RallyEventPage extends Component {
 
       if(this.props.rally.rallies.voting){
           const {locations} = this.props.rally.rallies.voting;//.pollAnswers;
-          console.log("incheck: ", locations);
+          // console.log("incheck: ", locations);
       }
 
       // Display restrictions if they exist
