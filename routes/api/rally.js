@@ -318,6 +318,7 @@ router.post('/addMembers', passport.authenticate('jwt', {session: false}), (req,
 	  if (user) {
 		  // find a rally to change based on id
 		  Rally.findOne({_id: req.body._id}).then((rally) => {
+				console.log("What do I want: ", req.body);
 		  	if (rally) {
 		  		// set rally fields to be changed
 		      const rallyFields = {}
@@ -446,7 +447,7 @@ router.post('/addLocations', passport.authenticate('jwt', { session: false }), (
 				let result = it.next();
 				//this while populates the locations map with the current locations
 				while (!result.done) {
-					console.log(result.value); // 1 3 5 7 9
+					// console.log(result.value); // 1 3 5 7 9
 					rallyFields.voting.locations.set(result.value[0],result.value[1]);
 					result = it.next();
 
@@ -510,7 +511,7 @@ router.post('/addVotes', passport.authenticate('jwt', { session: false }), (req,
 
 				 }
 				//adds vote to specified location
-				console.log("HELLO");
+				// console.log("HELLO");
 		  	if(rally.voting.locations.has(req.body.location) && req.body.location!==null) {
 				//	rallyFields.voting.locations = rally.voting.locations.slice();
 					// rallyFields.voting.locations.set(req.body.locations,0);
@@ -541,16 +542,16 @@ router.post('/addVotes', passport.authenticate('jwt', { session: false }), (req,
 router.get('/getLocations', passport.authenticate('jwt', { session: false }), (req, res) => {
 	const errors = {};
 
-	Rally.findOne({ _id: req.body._id }).then(rally => {
-		if (rally) {
-			console.log(Array.from(rally.voting.locations.entries()))
-			res.json(Array.from(rally.voting.locations.entries()));
-		}
-
-	})
-	.catch(err => res.status(404).json(err));
-
-
+	Rally.findOne({ _id: req.body._id })
+		.then(rally => {
+			if (rally) {
+				// console.log(Array.from(rally.voting.locations.entries()));
+				res.json(Array.from(rally.voting.locations.entries()));
+			} else {
+				return res.status(404).json(errors);
+			}
+		})
+		.catch(err => res.status(404).json(err));
 });
 
 
