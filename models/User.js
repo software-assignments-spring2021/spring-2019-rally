@@ -28,8 +28,8 @@ const UserSchema = new Schema({
         type: [String],
         required: false
     },
-
-    calendar : []
+    calendar: [],
+    lastSynced: Date
 
 })
 
