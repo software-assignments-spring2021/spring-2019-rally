@@ -5,6 +5,8 @@ const {google} = require('googleapis');
 const jwt = require('jsonwebtoken');
 //const keys = process.env;//const keys = require('../../config/keys');
 const passport = require('passport');
+const moment = require('moment');
+moment().format();
 
 
 //Load rally model
@@ -69,11 +71,11 @@ router.get('/rallyID/:rallyID', passport.authenticate('jwt', { session: false })
 // @access   Private
 // route through which Rally Creation UI form connects to DB
 router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
-//    const {errors, isValid} = validateRallyInput(req.body);
+		//    const {errors, isValid} = validateRallyInput(req.body);
 
-//    if(!isValid){
-//        return res.status(400).json(errors);
-//    }
+		//    if(!isValid){
+		//        return res.status(400).json(errors);
+		//    }
       //gets the token
       const usertoken = req.headers.authorization;
       const token = usertoken.split(' ');
@@ -197,7 +199,6 @@ router.get('/google', passport.authenticate('jwt', { session: false }), (req, re
 // hand control to passport to use code to grab profile info
 router.get('/google/redirect', (req, res) => {
 	const errors = {};
-	CCC();
 
 	//Parameters for creating oAuthClient
     const clientSecret = process.env.clientSecret;
@@ -232,9 +233,8 @@ router.get('/google/redirect', (req, res) => {
 			//Outh client set up, now implement basic google calendar call.
 			const calendar = google.calendar({version: 'v3', oauth2Client});
 			const arrayToSet = [];
-			const currentDate = new Date();
-			const thisDate = currentDate.getFullYear()+"-"+currentDate.getMonth()+"-"+currentDate.getDate()+"T"+currentDate.getHours()+":"+currentDate.getMinutes()+":"+currentDate.getSeconds()+"-04:00";
-
+			const currentDate = moment().format();
+			
 			calendar.events.list({
 				calendarId: 'primary',
 				timeMin: (new Date()).toISOString(),
@@ -253,15 +253,19 @@ router.get('/google/redirect', (req, res) => {
                         //TODO Ask Professor - Refer back to User.js in Models
 						User.findOneAndUpdate(
 							{_id: userId},
-							{ $set: {calendar: arrayToSet, lastSynced: thisDate} }, (err, docs) => { // callback
+							{ $set: {calendar: arrayToSet, lastSynced: currentDate} }, (err, docs) => { // callback
                                 if(err){
                                     console.log(err);
                                 }else{
-                                    console.log(docs);
+                                    //console.log(docs);
                                 }
 
-                            });
-						console.log(`${start} - ${end}`);
+                            }).then((user) => {
+                            	// Rally.update({})
+                            	// CCC();
+                            	//Rally.update({ members: user._id }, {}, { multi: true });
+                            })
+						//console.log(`${start} - ${end}`);
 					})
 
 				}
@@ -523,8 +527,8 @@ router.get('/getLocations', passport.authenticate('jwt', { session: false }), (r
 	.catch(err => res.status(404).json(err));
 });
 
-function CCC() {
+// function CCC() {
 	
-}
+// }
 
 module.exports = router;
