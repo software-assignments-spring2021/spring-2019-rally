@@ -530,36 +530,35 @@ router.post('/crossCompare', passport.authenticate('jwt', { session: false }), (
 	Rally.findOne({ _id: req.body.id }).then(rally => {
 		//database for each possible time slot
 		var timeslotDatabase = new Map();
-		var smallestLength = 9999;
 		//get the calendar of each member
-		for (var ii = 0; ii < rally.members.length; ii++) {
-			User.findOne({ _id: rally.members[ii] }).then(user => {
-				if (user.calendar.length < smallestLength) {
-					smallestLength = user.calendar.length;
-				}
-				for (var jj = 0; jj < user.calendar.length; jj++) {
-					if (!timeslotDatabase.has(moment(user.calendar[jj].startTime).format('DD-MM-YYYY') + ' ' + kk + '-' + (kk+rally.duration)) && moment(user.calendar[jj].startTime).format() > moment().format()) {
-						for (var kk = 8; kk + rally.duration <= 24; kk++) {
-							timeslotDatabase.set(moment(user.calendar[jj].startTime).format('DD-MM-YYYY') + ' ' + kk + '-' + (kk+rally.duration), 0);
+			User.find({ _id: rally.members }).then(users => {
+				for (let user of users) {
+					//create time slots for each day based on the user calendar and the duration of the rally
+					for (var jj = 0; jj < user.calendar.length; jj++) {
+						if (!timeslotDatabase.has(moment(user.calendar[jj].startTime).format('YYYY-MM-DD') + ' ' + kk + '-' + (kk+rally.duration)) && moment(user.calendar[jj].startTime).format() > moment().format()) {
+							for (var kk = 8; kk + rally.duration <= 24; kk++) {
+								timeslotDatabase.set(moment(user.calendar[jj].startTime).format('YYYY-MM-DD') + ' ' + kk + '-' + (kk+rally.duration), 0);
+							}
 						}
-					}
-					for (let pair of timeslotDatabase) {
-						var allTimes = pair[0].split(/[\s-]+/)
-						if (moment(user.calendar[jj].startTime).format('DD') == allTimes[0] && moment(user.calendar[jj].startTime).format('MM') == allTimes[1] && moment(user.calendar[jj].startTime).format('YYYY') == allTimes[2]) {
-							if (moment(user.calendar[jj].startTime).format('HH') <= allTimes[3] && moment(user.calendar[jj].startTime).format('YYYY') >= allTimes[4]) {
-								//console.log(pair)
-								//timeslotDatabase.set(pair, (timeslotDatabase.get(pair)+1));
+						//find the time slots that overlap with the user calendar and increment the value of discrepencies
+						for (let pair of timeslotDatabase) {
+							var allTimes = pair[0].split(/[\s-]+/)
+							if (moment(user.calendar[jj].startTime).format('YYYY') == allTimes[0] && moment(user.calendar[jj].startTime).format('MM') == allTimes[1] && moment(user.calendar[jj].startTime).format('DD') == allTimes[2]) {
+								if (parseInt(moment(user.calendar[jj].startTime).format('HH')) >= parseInt(allTimes[3]) && parseInt(moment(user.calendar[jj].startTime).format('HH')) <= parseInt(allTimes[4])) {
+									timeslotDatabase.set(pair[0], (timeslotDatabase.get(pair[0])+1));
+								}
+								if (parseInt(moment(user.calendar[jj].endTime).format('HH')) >= parseInt(allTimes[3]) && parseInt(moment(user.calendar[jj].endTime).format('HH')) <= parseInt(allTimes[4])) {
+									timeslotDatabase.set(pair[0], (timeslotDatabase.get(pair[0])+1));
+								}
 							}
 						}
 					}
-					console.log(timeslotDatabase)
-					//console.log(moment(user.calendar[jj].startTime).format('DD-MM-YYYY') + ' ' + moment(user.calendar[jj].startTime).format('HH:mm') + ' ' + moment(user.calendar[jj].endTime).format('HH:mm'))
 				}
-
+				console.log(timeslotDatabase)
 			})
-		}
-		res.json(rally);
+		res.json(timeslotDatabase);
 	});
+
 });
 
 module.exports = router;
