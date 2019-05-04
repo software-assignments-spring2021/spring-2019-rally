@@ -259,12 +259,7 @@ router.get('/google/redirect', (req, res) => {
                                 }else{
                                     //console.log(docs);
                                 }
-
-                            }).then((user) => {
-                            	// Rally.update({})
-                            	// CCC();
-                            	//Rally.update({ members: user._id }, {}, { multi: true });
-                            })
+                            });
 						//console.log(`${start} - ${end}`);
 					})
 
@@ -512,7 +507,7 @@ router.post('/addVotes', passport.authenticate('jwt', { session: false }), (req,
 
 });
 
-// @route    GET api/rally
+// @route    GET api/rally/getLocations
 // @desc     Return locations associated with voting in a Rally
 // @access   Private
 router.get('/getLocations', passport.authenticate('jwt', { session: false }), (req, res) => {
@@ -527,8 +522,44 @@ router.get('/getLocations', passport.authenticate('jwt', { session: false }), (r
 	.catch(err => res.status(404).json(err));
 });
 
-// function CCC() {
-	
-// }
+// @route    GET api/rally/crossCompare
+// @desc     Compare all the calendars of the members of a Rally and return the best dates
+// @access   Private
+router.post('/crossCompare', passport.authenticate('jwt', { session: false }), (req, res) => {
+	//find rally based on id
+	Rally.findOne({ _id: req.body.id }).then(rally => {
+		//database for each possible time slot
+		var timeslotDatabase = new Map();
+		var smallestLength = 9999;
+		//get the calendar of each member
+		for (var ii = 0; ii < rally.members.length; ii++) {
+			User.findOne({ _id: rally.members[ii] }).then(user => {
+				if (user.calendar.length < smallestLength) {
+					smallestLength = user.calendar.length;
+				}
+				for (var jj = 0; jj < user.calendar.length; jj++) {
+					if (!timeslotDatabase.has(moment(user.calendar[jj].startTime).format('DD-MM-YYYY') + ' ' + kk + '-' + (kk+rally.duration)) && moment(user.calendar[jj].startTime).format() > moment().format()) {
+						for (var kk = 8; kk + rally.duration <= 24; kk++) {
+							timeslotDatabase.set(moment(user.calendar[jj].startTime).format('DD-MM-YYYY') + ' ' + kk + '-' + (kk+rally.duration), 0);
+						}
+					}
+					for (let pair of timeslotDatabase) {
+						var allTimes = pair[0].split(/[\s-]+/)
+						if (moment(user.calendar[jj].startTime).format('DD') == allTimes[0] && moment(user.calendar[jj].startTime).format('MM') == allTimes[1] && moment(user.calendar[jj].startTime).format('YYYY') == allTimes[2]) {
+							if (moment(user.calendar[jj].startTime).format('HH') <= allTimes[3] && moment(user.calendar[jj].startTime).format('YYYY') >= allTimes[4]) {
+								//console.log(pair)
+								//timeslotDatabase.set(pair, (timeslotDatabase.get(pair)+1));
+							}
+						}
+					}
+					console.log(timeslotDatabase)
+					//console.log(moment(user.calendar[jj].startTime).format('DD-MM-YYYY') + ' ' + moment(user.calendar[jj].startTime).format('HH:mm') + ' ' + moment(user.calendar[jj].endTime).format('HH:mm'))
+				}
+
+			})
+		}
+		res.json(rally);
+	});
+});
 
 module.exports = router;
