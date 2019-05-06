@@ -322,14 +322,14 @@ router.post('/addMembers', passport.authenticate('jwt', {session: false}), (req,
 		  		// set rally fields to be changed
 		      const rallyFields = {}
 		  		rallyFields.members = rally.members.slice();
-		  		if (!rally.members.includes(user._id) && !rally.members.includes(user._id)) {
+		  		if (!rally.members.includes(user._id)) {
 		        rallyFields.members.push(user._id);
-			  	}
-			  	if (!rally.owners.includes(user._id)) {
-		        rallyFields.owners = rally.owners.slice();
-			  	rallyFields.owners.push(user._id);
-			  	rallyFields.members.push(user._id);
-			  	}
+			  	} else {
+						// throw an error that the Rally member is already added
+						errors.rallymemberalreadyadded = 'Rally member is already added';
+						console.log(errors.rallymemberalreadyadded);
+						return res.status(400).json(errors);
+					}
 
 		      // find rally and update it
 		  		Rally.findOneAndUpdate(
@@ -339,16 +339,18 @@ router.post('/addMembers', passport.authenticate('jwt', {session: false}), (req,
 		      ).then((rally) => res.json(rally));
 		  		(rally) => res.json(rally);
 		  	} else {
-		  		// throw an error that a rally with name does not exist
-		  		errors.rallyexists = 'A rally with this id does not exist';
-		  		return res.status(400).json(errors);
-		    }
+					// throw an error that a rally with name does not exist
+					errors.rallyexists = 'A rally with this id does not exist';
+					console.log(errors.rallyexists)
+					return res.status(400).json(errors);
+				}
 		  });
 	  } else {
-	  	errors.usersexists = 'Member must have a Rally account';
+			errors.usersexists = 'Member to add must have a Rally account';
+			console.log(errors.usersexists);
 	  	return res.status(400).json(errors);
 	  }
-  	})
+  })
 });
 
 // @route    POST api/rally/inviteViaEmail
