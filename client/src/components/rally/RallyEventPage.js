@@ -91,8 +91,11 @@ class RallyEventPage extends Component {
     //create axios request to post request with email in a string to add to the rally object in the database
     axios
       .post('/api/rally/addMembers', data)
+      .then( res => {
+        // console.log(res);
+      })
       .catch(err => 
-          console.log(err)
+        console.log(err)
       );
   }
 

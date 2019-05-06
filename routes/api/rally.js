@@ -345,7 +345,7 @@ router.post('/addMembers', passport.authenticate('jwt', {session: false}), (req,
 		    }
 		  });
 	  } else {
-	  	errors.usersexists = 'Please create a rally account';
+	  	errors.usersexists = 'Member must have a Rally account';
 	  	return res.status(400).json(errors);
 	  }
   	})
