@@ -321,10 +321,12 @@ router.post('/addMembers', passport.authenticate('jwt', {session: false}), (req,
 				console.log("What do I want: ", req.body);
 		  	if (rally) {
 		  		// set rally fields to be changed
-		      const rallyFields = {}
+					const rallyFields = {};
+      		rallyFields.memberNames = [];
 		  		rallyFields.members = rally.members.slice();
 		  		if (!rally.members.includes(user._id)) {
-		        rallyFields.members.push(user._id);
+						rallyFields.members.push(user._id);
+						rallyFields.memberNames.push(user.name);
 			  	} else {
 						// throw an error that the Rally member is already added
 						errors.rallymemberalreadyadded = 'Rally member is already added';
