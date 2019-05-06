@@ -10,6 +10,8 @@ As college students in New York City who are always on the move, we quite often 
 
 3/6/19: The server side endpoints for registering a new user (api/users/register), logging in a user (api/users/login), and using JWT to authenticate a user (api/users/current) works with unit testing for some of the POST methods. Get unit tests to be implemented in the next sprint.
 
+5/6/19: The project has a lot more front-end implemented. The user is able to register, login, create a rally, add members to that rally, and vote for a location that is added by members. Cross calendar comparison functionality is in the process of being updated.
+
 
 ### **Endpoints:**
 
@@ -18,6 +20,8 @@ api/users/register: Takes a JSON objet containing "name, email, password, passwo
 api/users/login: Takes a JSON object containing email, passowrd and returns a JSON object containing a boolean property 'success' and a 'token' property containing JWT authentication.
 
 api/users/current: Takes a value 'Authorization' in the header of the request containing the JWT token when user logs in, returns a JSON object containing the details of the users except for password.
+
+api/users/deleteAccount: Deletes the user's account and all of their respective data.
 
 
 ### **Installation Guidelines:**
