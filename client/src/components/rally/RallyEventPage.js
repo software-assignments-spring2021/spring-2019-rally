@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getRallyByID, clearCurrentProfile, addLocations } from '../../actions/profileActions';
+import { getRallyByID, clearCurrentProfile, addLocations, addMembers } from '../../actions/profileActions';
 import { Link } from 'react-router-dom';
 import TextFieldGroup from '../common/TextFieldGroup';
 import moment from 'moment';
@@ -32,6 +32,7 @@ class RallyEventPage extends Component {
       this.handleVote = this.handleVote.bind(this);
       this.onMembersSubmit = this.onMembersSubmit.bind(this);
       this.onMembersChange = this.onMembersChange.bind(this);
+      this.componentWillReceiveProps = this.componentWillReceiveProps.bind(this);
   }
 
   // Used for location submission
@@ -57,6 +58,8 @@ class RallyEventPage extends Component {
       console.log("addLoc.id: ",toAdd._id);
 
       this.props.addLocations(toAdd, this.props.history);
+
+
       //this.state.pollAnswers.push({ option: {locationSuggestion}, votes: 0});
       //console.log("poll answers on sub: ",pollAnswers);
 
@@ -88,21 +91,7 @@ class RallyEventPage extends Component {
       _id: rallies._id
     }
 
-    //create axios request to post request with email in a string to add to the rally object in the database
-    axios
-      .post('/api/rally/addMembers', data, {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        },
-      })
-      .then( res => {
-        console.log(res);
-        
-      })
-      .catch(err => {
-          console.log(err);
-        }
-      );
+    this.props.addMembers(data);
   }
 
   componentWillUnmount() {
@@ -114,7 +103,7 @@ class RallyEventPage extends Component {
       if(nextProps.errors){
           this.setState({errors: nextProps.errors});
       }
-      console.log("nextProps:", nextProps)
+      console.log("nextProps:", nextProps.errors)
   }
 
   // Handling user vote
@@ -176,6 +165,14 @@ class RallyEventPage extends Component {
   }
 
   render() {
+
+    const {errors} = this.state;
+    console.log(errors.email)
+
+    let err = errors.email;
+
+    console.log("state errs: ", errors)
+    
 
     const {loading} = this.props.rally;
 
@@ -372,7 +369,7 @@ class RallyEventPage extends Component {
                                 value={this.state.addMembers}
                                 onChange={this.onMembersChange}
                                 info="Enter email of member you want to add"
-                                error={this.state.errors.email}
+                                error={err}
                       />
 
                       <button type="button" onClick={this.onMembersSubmit} className="btn btn-info">
@@ -407,9 +404,10 @@ class RallyEventPage extends Component {
 RallyEventPage.propTypes = {
   getRallyByID: PropTypes.func.isRequired,
   clearCurrentProfile: PropTypes.func.isRequired,
+  addMembers: PropTypes.func.isRequired,
   //addLocations: PropTypes.func.isRequired,
   rally: PropTypes.object.isRequired,
-
+  errors: PropTypes.object.isRequired
   //locationSuggestion: PropTypes.object.isRequired,
   //pollAnswers: PropTypes.object.isRequired
   //auth: PropTypes.object.isRequired
@@ -419,7 +417,7 @@ RallyEventPage.propTypes = {
 const mapStateToProps = state => ({
 
   rally: state.rally,
-
+  errors: state.errors
   //locationSuggestion: state.locationSuggestion,
   //pollAnswers: state.pollAnswers
 
@@ -429,4 +427,4 @@ const mapStateToProps = state => ({
 // connects the props of the state returned from getRallyByID
 // and those in the component, then exports the component
 // with these props and state
-export default connect(mapStateToProps, {getRallyByID, addLocations, clearCurrentProfile})(withRouter(RallyEventPage));
+export default connect(mapStateToProps, {getRallyByID, addMembers, addLocations, clearCurrentProfile})(withRouter(RallyEventPage));
