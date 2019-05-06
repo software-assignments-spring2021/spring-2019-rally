@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getRallyByID, clearCurrentProfile, addLocations } from '../../actions/profileActions';
+import { getRallyByID, clearCurrentProfile, addLocations, addMembers } from '../../actions/profileActions';
 import { Link } from 'react-router-dom';
 import TextFieldGroup from '../common/TextFieldGroup';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
-
+import axios from "axios";
 import Poll from 'react-polls';
 
 class RallyEventPage extends Component {
@@ -22,13 +22,17 @@ class RallyEventPage extends Component {
         pollAnswers: [],
         pollAnswerMap: new Map(),
         // Member addition fields
-        addMembers: '',
+        // one member's email
+        addMembers: " ",
+        errors: {}
       }
 
       this.onChange = this.onChange.bind(this);
       this.onSubmit = this.onSubmit.bind(this);
       this.handleVote = this.handleVote.bind(this);
-
+      this.onMembersSubmit = this.onMembersSubmit.bind(this);
+      this.onMembersChange = this.onMembersChange.bind(this);
+      this.componentWillReceiveProps = this.componentWillReceiveProps.bind(this);
   }
 
   // Used for location submission
@@ -54,12 +58,42 @@ class RallyEventPage extends Component {
       console.log("addLoc.id: ",toAdd._id);
 
       this.props.addLocations(toAdd, this.props.history);
+
+
       //this.state.pollAnswers.push({ option: {locationSuggestion}, votes: 0});
       //console.log("poll answers on sub: ",pollAnswers);
 
 
 
   }
+
+  onMembersChange(e){
+
+    this.setState({
+      addMembers: e.target.value
+    })
+    console.log("member entered: ",this.state.addMembers)
+  }
+
+  onMembersSubmit(e){
+
+    e.preventDefault();
+
+    const {rallies}=this.props.rally;
+    console.log("rallies: ",rallies)
+
+    //an array that keeps track of members that were added
+    const {addMembers} = this.state;
+    // console.log("adding member: ", addMembers);
+
+    const data = {
+      email: addMembers,
+      _id: rallies._id
+    }
+
+    this.props.addMembers(data);
+  }
+
   componentWillUnmount() {
    this._ismounted = false;
   }
@@ -69,7 +103,7 @@ class RallyEventPage extends Component {
       if(nextProps.errors){
           this.setState({errors: nextProps.errors});
       }
-      console.log("nextProps:", nextProps)
+      console.log("nextProps:", nextProps.errors)
   }
 
   // Handling user vote
@@ -90,10 +124,6 @@ class RallyEventPage extends Component {
     this.setState({
       pollAnswers: newPollAnswers
     })
-
-  }
-
-  onMembersChange(e){
 
   }
 
@@ -136,6 +166,14 @@ class RallyEventPage extends Component {
 
   render() {
 
+    const {errors} = this.state;
+    console.log(errors.email)
+
+    let err = errors.email;
+
+    console.log("state errs: ", errors)
+    
+
     const {loading} = this.props.rally;
 
     if( this.props.rally.rallies === null || loading ) {
@@ -161,7 +199,7 @@ class RallyEventPage extends Component {
 
       if(this.props.rally.rallies.voting){
           const {locations} = this.props.rally.rallies.voting;//.pollAnswers;
-          console.log("incheck: ", locations);
+          // console.log("incheck: ", locations);
       }
 
       // Display restrictions if they exist
@@ -330,10 +368,11 @@ class RallyEventPage extends Component {
                                 type="addMembers"
                                 value={this.state.addMembers}
                                 onChange={this.onMembersChange}
-                                info="Enter emails separated by commas."
+                                info="Enter email of member you want to add"
+                                error={err}
                       />
 
-                      <button type="button" onClick={this.onMemberSubmit} className="btn btn-info">
+                      <button type="button" onClick={this.onMembersSubmit} className="btn btn-info">
                         <span>Invite</span>
                       </button>
 
@@ -365,9 +404,10 @@ class RallyEventPage extends Component {
 RallyEventPage.propTypes = {
   getRallyByID: PropTypes.func.isRequired,
   clearCurrentProfile: PropTypes.func.isRequired,
+  addMembers: PropTypes.func.isRequired,
   //addLocations: PropTypes.func.isRequired,
   rally: PropTypes.object.isRequired,
-
+  errors: PropTypes.object.isRequired
   //locationSuggestion: PropTypes.object.isRequired,
   //pollAnswers: PropTypes.object.isRequired
   //auth: PropTypes.object.isRequired
@@ -377,7 +417,7 @@ RallyEventPage.propTypes = {
 const mapStateToProps = state => ({
 
   rally: state.rally,
-
+  errors: state.errors
   //locationSuggestion: state.locationSuggestion,
   //pollAnswers: state.pollAnswers
 
@@ -387,4 +427,4 @@ const mapStateToProps = state => ({
 // connects the props of the state returned from getRallyByID
 // and those in the component, then exports the component
 // with these props and state
-export default connect(mapStateToProps, {getRallyByID, addLocations, clearCurrentProfile})(withRouter(RallyEventPage));
+export default connect(mapStateToProps, {getRallyByID, addMembers, addLocations, clearCurrentProfile})(withRouter(RallyEventPage));
