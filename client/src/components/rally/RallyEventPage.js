@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import TextFieldGroup from '../common/TextFieldGroup';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
-
+import axios from 'axios';
 import Poll from 'react-polls';
 
 class RallyEventPage extends Component {
@@ -28,6 +28,7 @@ class RallyEventPage extends Component {
       this.onChange = this.onChange.bind(this);
       this.onSubmit = this.onSubmit.bind(this);
       this.handleVote = this.handleVote.bind(this);
+      this.componentDidMount = this.componentDidMount.bind(this);
 
   }
 
@@ -43,7 +44,7 @@ class RallyEventPage extends Component {
       e.preventDefault();
 
       const {locationSuggestion, pollAnswers} = this.state;
-      //console.log("submitting: ", locationSuggestion);
+      console.log("submitting: ", locationSuggestion);
 
       const toAdd = {
           locations: locationSuggestion,
@@ -53,10 +54,21 @@ class RallyEventPage extends Component {
       console.log("addLoc.loc: ",toAdd.locations);
       console.log("addLoc.id: ",toAdd._id);
 
-      this.props.addLocations(toAdd, this.props.history);
-      //this.state.pollAnswers.push({ option: {locationSuggestion}, votes: 0});
-      //console.log("poll answers on sub: ",pollAnswers);
+      // this.props.addLocations(toAdd, this.props.history);
+      // //this.state.pollAnswers.push({ option: {locationSuggestion}, votes: 0});
+      // //console.log("poll answers on sub: ",pollAnswers);
 
+      axios
+          .post('/api/rally/addLocations', toAdd)
+          .then(res => {
+              // this.setState({
+              //   pollAnswers: newPollAnswers
+              // })
+              console.log(res);
+          })
+          .catch(err => {
+              console.log(err)
+      });
 
 
   }
@@ -70,28 +82,73 @@ class RallyEventPage extends Component {
           this.setState({errors: nextProps.errors});
       }
       console.log("nextProps:", nextProps)
+      // if(nextProps.rally){
+      //     if(nextProps.rally.rallies){
+      //         if(nextProps.rally.rallies.voting){
+      //             if(nextProps.rally.rallies.voting.locations){
+      //                 this.setState({pollAnswers: nextProps.rally.rallies.voting.locations})
+      //             }
+      //         }
+      //     }
+      // }
+
+      //TODO: UPDATE PROPS W NEW LOCATIONS
   }
 
   // Handling user vote
   // Increments the votes count of answer when the user votes
-  handleVote = voteAnswer => {
+  handleVote(voteAnswer){
 
 
     const { pollAnswers } = this.state;
-    console.log("poll answers: ",pollAnswers);
+    console.log("poll answers: ",pollAnswers); // this is an array of {location, vote} pairs
+
+    const data = {
+        location: voteAnswer,
+        id: this.props.rally.rallies._id
+    }
+
 
     //iterate through locations and increment vote count where necessary
     const newPollAnswers = pollAnswers.map(answer => {
-      if (answer.option === voteAnswer) answer.votes++
-      return answer
-    })
+      if (answer.option === voteAnswer){
+          answer.votes++;
 
-    // set the poll answers to be the updated info
-    this.setState({
-      pollAnswers: newPollAnswers
+          // set the poll answers to be the updated info
+          //make axios call, on .then(set state)
+          axios
+              .post('/api/rally/addVotes', data)
+              .then(res => {
+                  this.setState({
+                    pollAnswers: newPollAnswers
+                  })
+              })
+              .catch(err => {
+                  console.log(err)
+          });
+          return answer
+      }
+      this.setState({
+        pollAnswers: newPollAnswers
+      })
     })
-
   }
+
+  // handleVote = voteAnswer => {
+  //   const { pollAnswers } = this.state; //pollAnswers is an array
+  //   const newPollAnswers = pollAnswers.map(answer => {
+  //     if (answer.option === voteAnswer){
+  //         answer.votes++;
+  //         return answer;
+  //     }
+  //
+  //   })
+  //
+  //   //instead of this, set the state as the res of the router request
+  //   this.setState({
+  //     pollAnswers: newPollAnswers
+  //   })
+  // }
 
   onMembersChange(e){
 
@@ -102,36 +159,59 @@ class RallyEventPage extends Component {
     this.props.clearCurrentProfile();
     this.state.pollAnswers.push({option: 'Suggest locations below!', votes: 0});
 
+
+
     console.log("rally params: ",this.props.match.params);
     if(this.props.match.params.rallyID){
-        if(this.props.match.params.rallyID !== "rally"){
             this.props.getRallyByID(this.props.match.params.rallyID);
             console.log("rallyID: ", this.props.match.params.rallyID);
-        }
 
 
+
+            if(!this.props.rally.loading){
+
+                // const newPollAnswers = pollAnswers.map(answer => {
+                //   if (answer.option === voteAnswer) answer.votes++
+                //   return answer
+                // })
+                //console.log(this.props.rally.voting)
+                if(this.props.rally.voting){
+                    let iterator = this.props.rally.rallies.voting.locations.entries();
+                    for(let value of iterator){
+                        console.log("iterator: ",value);
+
+                    }
+                    this.setState({
+                      pollAnswerMap: this.props.rally.rallies.voting.locations
+                    })
+                }
+            }
+
+
+            const data = {
+                _id: this.props.match.params.rallyID
+            }
+            console.log(data._id);
+            axios
+                .post('/api/rally/getLocations', data)
+                .then(res => {
+
+                    console.log("res: ",res.data)
+                    this.setState({
+
+                      //this router call returns Array.from(iterable)
+                      //result is array of {location, votes} pairs
+                      pollAnswer: res.data
+                    })
+                })
+                .catch(err => {
+                    console.log(err)
+            });
+
+            //add handle vote stuff with "answers"
     }else{return;}
 
-    if(!this.props.rally.loading){
 
-        // const newPollAnswers = pollAnswers.map(answer => {
-        //   if (answer.option === voteAnswer) answer.votes++
-        //   return answer
-        // })
-        //console.log(this.props.rally.voting)
-        if(this.props.rally.voting){
-            let iterator = this.props.rally.rallies.voting.locations.entries();
-            for(let value of iterator){
-                console.log("iterator: ",value);
-
-            }
-            this.setState({
-              pollAnswerMap: this.props.rally.rallies.voting.locations
-            })
-        }
-    }
-
-    //this.state.pollAnswerMap =
   }
 
   render() {
@@ -369,7 +449,8 @@ RallyEventPage.propTypes = {
   rally: PropTypes.object.isRequired,
 
   //locationSuggestion: PropTypes.object.isRequired,
-  //pollAnswers: PropTypes.object.isRequired
+  //
+  pollAnswers: PropTypes.object.isRequired
   //auth: PropTypes.object.isRequired
 
 }
@@ -379,7 +460,7 @@ const mapStateToProps = state => ({
   rally: state.rally,
 
   //locationSuggestion: state.locationSuggestion,
-  //pollAnswers: state.pollAnswers
+  pollAnswers: state.pollAnswers
 
   //auth: state.auth
 })

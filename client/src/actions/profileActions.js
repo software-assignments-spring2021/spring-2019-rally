@@ -47,7 +47,7 @@ export const getRallyByID = (rallyID) => dispatch => {
   dispatch(setProfileLoading());
 
   axios
-      .get(`api/rally/rallyID/${rallyID}`)
+      .get(`/api/rally/rallyID/${rallyID}`)
       .then(res =>
           dispatch({
               type: GET_PROFILES,
@@ -103,11 +103,11 @@ export const addLocations = (locationData, history) => dispatch => {
             })
         )
         .catch(err =>
-
-            dispatch({
-                type: GET_ERRORS,
-                payload: err.response.data
-            })
+            console.log(err)
+            // dispatch({
+            //     type: GET_ERRORS,
+            //     payload: err.response.data
+            // })
         );
 }
 

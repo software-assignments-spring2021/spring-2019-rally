@@ -3,41 +3,58 @@ import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
 //import isEmpty from '../../validation/is-empty';
 
+import axios from 'axios';
+import { connect } from 'react-redux';
+
 class RallyItem extends Component {
+
+  constructor(props) {
+        super(props);
+
+        this.state = {
+
+            //put anything you want to keep track of here
+            //examples------------------
+            //stateVariable: '',
+            //stateVariable: [],
+            //stateVariable: new Date()
+        }
+
+        // any function you use this.setState() or
+        // this.state.variable in has to have a line like this
+        this.crossCompare = this.crossCompare.bind(this);
+        // this.onChange = this.onChange.bind(this); <-- these might be useful
+        // this.onSubmit = this.onSubmit.bind(this); <--
+        // this.componentDidMount = this.componentDidMount.bind(this); <--
+
+  }
+
+  crossCompare(){
+
+  }
 
 
   render() {
 
     //TODO: change "border-info" in div to "border-primary" based on
     //      Rally ownership
-
     const { rally } = this.props;
     return (
       <div>
-
-
-
         <div className="card border-info card-body bg-light mb-3 max-width: 18rem">
           <div className="row">
-
             <div className="col-md-10 d-md-block">
               <h2>{rally.name}</h2>
-
             </div>
             <div className="col-md-2 d-md-block">
               <Link to={{
                   state: {...this.state},
-                  pathname:`/${rally._id}`
+                  pathname:`myrally/${rally._id}`
               }}
-              className="btn btn-info" onClick={this.forceUpdate}>
-
+              className="btn btn-info" onClick={this.crossCompare}>
                 View Rally
-
-
               </Link>
-
             </div>
-
           </div>
 
           <div className="row">
@@ -76,9 +93,7 @@ class RallyItem extends Component {
                       voting option 3
                     </li>
               </div>
-
           </div>
-
         </div>
       </div>
     )
@@ -88,5 +103,9 @@ class RallyItem extends Component {
 RallyItem.propTypes = {
   rally: PropTypes.object.isRequired
 }
+const mapStateToProps = state => ({
 
-export default RallyItem;
+  rally: state.rally,
+
+})
+export default (RallyItem);

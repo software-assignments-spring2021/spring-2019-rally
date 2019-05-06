@@ -62,11 +62,7 @@ class App extends Component {
             <div className="container">
               <Route exact path="/register" component= {Register} />
               <Route exact path="/login" component= {Login} />
-
-
-
-
-
+              
               <Switch>
                 <PrivateRoute exact path="/rally" component= {Rallies} />
               </Switch>
@@ -74,7 +70,7 @@ class App extends Component {
                 <PrivateRoute exact path="/create-rally" component= {CreateRally} />
               </Switch>
               <Switch>
-                <PrivateRoute exact path="/:rallyID" component= {RallyEventPage} />
+                <PrivateRoute exact path="/myrally/:rallyID" component= {RallyEventPage} />
               </Switch>
 
               <Switch>
