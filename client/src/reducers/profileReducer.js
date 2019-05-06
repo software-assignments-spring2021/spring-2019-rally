@@ -1,4 +1,4 @@
-import {GET_PROFILE, PROFILE_LOADING, CLEAR_CURRENT_PROFILE, GET_PROFILES} from '../actions/types';
+import {GET_PROFILE, PROFILE_LOADING, CLEAR_CURRENT_PROFILE, GET_PROFILES, GET_TIMES} from '../actions/types';
 
 const initialState = {
     rally: null,
@@ -28,13 +28,19 @@ export default function(state = initialState, action) {
               rallies: action.payload,
               loading: false
             }
+        case GET_TIMES:
+            return {
+              ...state,
+              rallies: action.payload,
+              loading: false
+            }
         case CLEAR_CURRENT_PROFILE:
             return {
                 ...state,
                 rally: null,
                 rallies: null
             }
-    
+
         default:
             return state;
     }

@@ -1,3 +1,4 @@
+
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
@@ -5,6 +6,9 @@ const {google} = require('googleapis');
 const jwt = require('jsonwebtoken');
 //const keys = process.env;//const keys = require('../../config/keys');
 const passport = require('passport');
+
+const moment = require('moment');
+moment().format();
 
 
 //Load rally model
@@ -99,10 +103,18 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
 
       //sets the rally fields to be created
       const rallyFields = {};
+
+      rallyFields.confirmed = {};
+      rallyFields.confirmed.date = null;
+      rallyFields.confirmed.time = null;
+      rallyFields.confirmed.location = null;
+
+
       rallyFields.owners = [];
       rallyFields.ownerNames = [];
       rallyFields.voting = {};
       rallyFields.voting.locations = new Map();
+      rallyFields.timeSlot = new Map();
       if(req.body.locations) rallyFields.voting.locations.set(req.body.locations, 0);
       // rallyFields.owners.push(req.body.owners);
       rallyFields.owners.push(req.user.id);
@@ -267,7 +279,7 @@ router.get('/google/redirect', (req, res) => {
                         //TODO Ask Professor - Refer back to User.js in Models
 						User.findOneAndUpdate(
 							{_id: userId},
-							{ $push: {
+							{ $set: {
 								   calendar: {
 										 startTIme: start,
 										 endTime: end
@@ -570,7 +582,7 @@ router.post('/getLocations', passport.authenticate('jwt', { session: false }), (
 		if (rally) {
             if(rally.voting.locations){
                 if(rally.voting.locations.size > 0){
-                    
+
                     console.log("entries: ",Array.from(rally.voting.locations.entries()))
         			res.json(Array.from(rally.voting.locations.entries()));
                 }
@@ -587,6 +599,117 @@ router.post('/getLocations', passport.authenticate('jwt', { session: false }), (
 	.catch(err => res.status(404).json(err));
 
 
+});
+
+// @route    GET api/rally/returnCompare
+// @desc     Return top 5 timeslots
+// @access   Private
+router.get('/returnCompare', passport.authenticate('jwt', { session: false }), (req, res) => {
+    Rally.findOne({ _id: req.body.id }).then(rally => {
+        if (rally) {
+            console.log("in returncompare")
+            let bestTimes = [];
+            let discrepency = 0;
+            while (bestTimes.length < 5) {
+                for (let pair of rally.timeSlot) {
+                    if (pair[1] == discrepency && bestTimes.length < 5) {
+                        bestTimes.push(pair);
+                    }
+                }
+                discrepency++;
+            }
+            res.json(bestTimes)
+        }
+    }).catch(err => res.status(400).json(err));
+});
+
+// @route    GET api/rally/crossCompare
+// @desc     Compare all the calendars of the members of a Rally and push the comparison to the database
+// @access   Private
+router.post('/crossCompare', passport.authenticate('jwt', { session: false }), (req, res) => {
+    //find rally based on id
+    Rally.findOne({ _id: req.body.id }).then(rally => {
+        //database for each possible time slot
+        var timeslotDatabase = new Map();
+        //get the calendar of each member
+            User.find({ _id: rally.members }).then(users => {
+                //find the latest time for an event in all the user calendars
+                var latestTime = moment();
+                for (let user of users) {
+                    if (user.calendar.length > 0 && !((moment(user.calendar[user.calendar.length-1].startTime)).isBefore(latestTime))) {
+                        latestTime = moment(user.calendar[user.calendar.length-1].startTime);
+                    }
+                }
+
+                //add time slots for every day from the current date to the latest time based on the duration of the rally
+                for (var m = moment(); m.diff(latestTime, 'days') <= 0; m.add(1, 'days')) {
+                      for (var kk = 8; kk + rally.duration <= 24; kk++) {
+                        timeslotDatabase.set(m.format('YYYY-MM-DD') + ' ' + kk + '-' + (kk+rally.duration), 0);
+                    }
+                }
+
+                //find the time slots that overlap with the user calendar and increment the value of discrepency counter
+                for (let user of users) {
+                    for (var jj = 0; jj < user.calendar.length; jj++) {
+                        for (let pair of timeslotDatabase) {
+                            var allTimes = pair[0].split(/[\s-]+/)
+                            if (moment(user.calendar[jj].startTime).format('YYYY') == allTimes[0] && moment(user.calendar[jj].startTime).format('MM') == allTimes[1] && moment(user.calendar[jj].startTime).format('DD') == allTimes[2]) {
+                                if (parseInt(moment(user.calendar[jj].startTime).format('HH')) >= parseInt(allTimes[3]) && parseInt(moment(user.calendar[jj].startTime).format('HH')) <= parseInt(allTimes[4])) {
+                                    timeslotDatabase.set(pair[0], (timeslotDatabase.get(pair[0])+1));
+                                }
+                                else if (parseInt(moment(user.calendar[jj].endTime).format('HH')) >= parseInt(allTimes[3]) && parseInt(moment(user.calendar[jj].endTime).format('HH')) <= parseInt(allTimes[4])) {
+                                    timeslotDatabase.set(pair[0], (timeslotDatabase.get(pair[0])+1));
+                                }
+                            }
+                        }
+                    }
+                }
+                rally.update({ $set: {timeSlot: timeslotDatabase} }).then(res.json(rally));
+            })
+    });
+});
+
+// @route    POST api/rally/confirmRally
+// @desc     Confirm Rally details
+// @access   Private
+// this route is available through UI button on loaded rally page
+router.post('/confirm', passport.authenticate('jwt', { session: false }), (req, res) => {
+	const errors = {};
+	//gets the token
+	const usertoken = req.headers.authorization;
+	const token = usertoken.split(' ');
+	const decoded = jwt.verify(token[1], 'secret');
+
+    console.log("rallyid confrim",req.body._id);
+	//find a rally to change based on id
+	  Rally.findOne({ _id: req.body._id }).then(rally => {
+
+          console.log("rally from post",rally);
+	  	if (rally) {
+	  		//set rally fields to be changed
+			const rallyFields = {};
+            rallyFields.confirmed = {};
+            if(req.body.confirmed){
+                const {date, time, location} = req.body.confirmed;
+                rallyFields.confirmed.date = date;
+                rallyFields.confirmed.time = time;
+                rallyFields.confirmed.location = location;
+
+            }
+
+			//find rally and update it
+	  		Rally.findOneAndUpdate(
+			{ _id: rally._id },
+			{ $set: rallyFields },
+			{ new: true }
+			).then(rally => res.json(rally));
+	  		rally => res.json(rally);
+
+	  	} else {
+	  		errors.rallyexists = 'A rally with this id does not exist';
+	  		return res.status(400).json(errors);
+	  }
+  	})
 });
 
 

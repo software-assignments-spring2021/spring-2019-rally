@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getRallyByID, clearCurrentProfile, addLocations } from '../../actions/profileActions';
+import { getRallyByID, clearCurrentProfile, addLocations, getTimeslots } from '../../actions/profileActions';
 import { Link } from 'react-router-dom';
 import TextFieldGroup from '../common/TextFieldGroup';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
 import axios from 'axios';
-import Poll from 'react-polls';
+//import Poll from 'react-polls';
 
 class RallyEventPage extends Component {
 
@@ -23,6 +23,10 @@ class RallyEventPage extends Component {
         pollAnswerMap: new Map(),
         // Member addition fields
         addMembers: '',
+
+        incomingVoting: null,
+        topTimeslots: null,
+        rally: null
       }
 
       this.onChange = this.onChange.bind(this);
@@ -54,10 +58,6 @@ class RallyEventPage extends Component {
       console.log("addLoc.loc: ",toAdd.locations);
       console.log("addLoc.id: ",toAdd._id);
 
-      // this.props.addLocations(toAdd, this.props.history);
-      // //this.state.pollAnswers.push({ option: {locationSuggestion}, votes: 0});
-      // //console.log("poll answers on sub: ",pollAnswers);
-
       axios
           .post('/api/rally/addLocations', toAdd)
           .then(res => {
@@ -82,6 +82,19 @@ class RallyEventPage extends Component {
           this.setState({errors: nextProps.errors});
       }
       console.log("nextProps:", nextProps)
+
+      if(nextProps.rally && !nextProps.rally.loading){
+          if(nextProps.rally.rallies){
+              const { voting, timeSlot } = nextProps.rally.rallies;
+              console.log("timeSlot obj: ",timeSlot)
+              this.setState({
+                  incomingVoting: voting.locations,
+                  topTimeslots: timeSlot,
+                  rally: nextProps.rally
+              })
+          }
+      }
+
       // if(nextProps.rally){
       //     if(nextProps.rally.rallies){
       //         if(nextProps.rally.rallies.voting){
@@ -91,9 +104,64 @@ class RallyEventPage extends Component {
       //         }
       //     }
       // }
+//       console.log("willreceive rally: ", nextProps.rally);
+//       if(!nextProps.rally.loading){
+//         if(nextProps.rally.rallies){
+//           // const newPollAnswers = pollAnswers.map(answer => {
+//           //   if (answer.option === voteAnswer) answer.votes++
+//           //   return answer
+//           // })
+//           console.log("this.props.rally: ",nextProps.rally.rallies);
+//           if(nextProps.rally.rallies){
+//               const { voting } = nextProps.rally.rallies;
+//               console.log("in rally voting", voting);
+//               console.log("in rally locations", voting.locations);
+//               console.log("locations size", Object.keys(voting.locations).length);
+//               if(Object.keys(voting.locations).length > 0){
+//                   console.log("size greater than 0");
+//                   // let iterator = nextProps.rally.rallies.voting.locations.entries();
+//                   // for(let value of iterator){
+//                   //     console.log("iterator: ",value);
+//                   //
+//                   // }
 
-      //TODO: UPDATE PROPS W NEW LOCATIONS
+//                   console.log("b4 setstate: ",nextProps.rally.rallies.voting.locations);
+//                   this.setState({
+//                     pollAnswerMap: nextProps.rally.rallies.voting.locations
+//                   })
+//                   console.log("after setstate",this.state.pollAnswerMap);
+//               }
+//
+//
+//
+// //------------------------------------------------
+//               const data = {
+//                   _id: nextProps.rally.rallies._id
+//               }
+//               console.log(data._id);
+//               axios
+//                   .post('/api/rally/getLocations', data)
+//                   .then(res => {
+//
+//                       console.log("res: ",res.data)
+//                       this.setState({
+//
+//                         //this router call returns Array.from(iterable)
+//                         //result is array of {location, votes} pairs
+//                         pollAnswer: res.data
+//                       })
+//                   })
+//                   .catch(err => {
+//                       console.log(err)
+//               });
+//           }
+
   }
+
+
+
+
+
 
   // Handling user vote
   // Increments the votes count of answer when the user votes
@@ -166,49 +234,7 @@ class RallyEventPage extends Component {
             this.props.getRallyByID(this.props.match.params.rallyID);
             console.log("rallyID: ", this.props.match.params.rallyID);
 
-
-
-            if(!this.props.rally.loading){
-
-                // const newPollAnswers = pollAnswers.map(answer => {
-                //   if (answer.option === voteAnswer) answer.votes++
-                //   return answer
-                // })
-                //console.log(this.props.rally.voting)
-                if(this.props.rally.voting){
-                    let iterator = this.props.rally.rallies.voting.locations.entries();
-                    for(let value of iterator){
-                        console.log("iterator: ",value);
-
-                    }
-                    this.setState({
-                      pollAnswerMap: this.props.rally.rallies.voting.locations
-                    })
-                }
-            }
-
-
-            const data = {
-                _id: this.props.match.params.rallyID
-            }
-            console.log(data._id);
-            axios
-                .post('/api/rally/getLocations', data)
-                .then(res => {
-
-                    console.log("res: ",res.data)
-                    this.setState({
-
-                      //this router call returns Array.from(iterable)
-                      //result is array of {location, votes} pairs
-                      pollAnswer: res.data
-                    })
-                })
-                .catch(err => {
-                    console.log(err)
-            });
-
-            //add handle vote stuff with "answers"
+            this.props.getTimeslots(this.props.match.params.rallyID);
     }else{return;}
 
 
@@ -218,31 +244,92 @@ class RallyEventPage extends Component {
 
     const {loading} = this.props.rally;
 
+    console.log("props rally",this.props.rally)
+    console.log("userid: ",this.props.auth.user.id)
+
+    const {incomingVoting, topTimeslots} = this.state;
+    const {id} = this.props.auth.user;
+    let ownerCog;
+    if(this.props.rally && this.props.rally.rallies && this.props.rally.rallies.members){
+        const {members} = this.props.rally.rallies;
+        console.log("members len: ",members.length)
+        for(let i = 0; i < members.length; i++){
+
+            console.log("mem id: ", members[i], "userid:",id)
+            if(members[i] == id){
+                console.log("link state", this.state);
+                ownerCog = (
+                    <div>
+                    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossOrigin="anonymous"/>
+
+
+                    <Link to={{
+                        state: {...this.state},
+                        pathname:`/myrally/${this.props.rally.rallies._id}/confirm`
+                    }}
+                    className="btn btn-info" >
+                      <i style={{marginRight: 10 }} className="fas fa-tasks"></i>
+                    </Link>
+                    </div>
+                );
+                break;
+            }
+        }
+    }
+
+    let topTimes;
+
+    if(topTimeslots){
+
+        let times = [];
+        Object.keys(topTimeslots).forEach(function(key) {
+          console.log("time entry:",key, topTimeslots[key]);
+            times.push(key);
+        });
+        console.log("times array", times);
+        topTimes = (
+            <div>
+
+
+                {times.slice(0,5).map((key, index) => (
+                    <li key={index} className="list-group-item">
+                        <small className="text-muted">{moment(key).format("dddd, MMMM Do YYYY, h:mm a")}</small>
+                    </li>
+                ))}
+
+
+            </div>
+        )
+    }else{}
+
+    let voting;
+    if(incomingVoting){
+
+        Object.keys(incomingVoting).forEach(function(key) {
+          console.log("loc entry:",key, incomingVoting[key]);
+          // <li key={index} className="list-group-item">
+          //   <small className="text-muted">{person}</small>
+          // </li>
+        });
+
+
+        // {this.props.rally.rallies.owners.slice().map((key, index) => (
+        //   <small className="text-muted">{key}, </small>
+        // ))}
+    }else{
+        voting = <h5>No locations have been suggested yet. Add a location below!</h5>
+    }
+
+
     if( this.props.rally.rallies === null || loading ) {
       pageData = <h4>Loading...</h4>
     }else{
 
     }
-
     let pageData;
-
-    // TODO: THIS IS NOT WORKING RIGHT NOW.. is this checking that the url id matches rally ID?
     if(this.props.rally.rallies && this.props.match.params.rallyID){
 
-      // TODO:
-      // 1. Implement checking whether user has already voted
-      //    in order to determine which Voting card to display
-      // 2. Location Poll Vote buttons link to backend + CREATE SCHEMA
-      // 3. Backend for storing arrays from CSV entries for members
-      // 4. Add Member button hooked to backend
-      // 5. Displaying members names instead of IDs
 
-      const pollQuestion = null;
-
-      if(this.props.rally.rallies.voting){
-          const {locations} = this.props.rally.rallies.voting;//.pollAnswers;
-          console.log("incheck: ", locations);
-      }
 
       // Display restrictions if they exist
       let restrictions;
@@ -312,30 +399,28 @@ class RallyEventPage extends Component {
           )
       }else{ restrictionData = <h6>No restrictions set. Take the reigns!</h6>;}
 
-      let votingAnswers;
+
 
       pageData = (
 
         <div>
           <h1 className="display-4">{this.props.rally.rallies.name}</h1>
-          <div className="card card-body bg-light mb-12">
+
+
 
             {this.props.rally.rallies.owners ?
                 <div>
                   <div className="row">
-                    <div className="col-md-2">
-                      <h5>Organizers</h5>
-                    </div>
+                    <div className="col-md-5">
+                      <h3 className="text-muted" style={{marginLeft: 10}}>Organizer: {this.props.rally.rallies.ownerNames.slice().map((key, index) => (
+                        <font >{key} </font>
+                    ))} <span className="badge badge-light">{ownerCog}</span></h3>
 
-                    <div className="col-md-10">
-                      {this.props.rally.rallies.owners.slice().map((key, index) => (
-                        <small className="text-muted">{key}, </small>
-                      ))}
                     </div>
                   </div>
                 </div> : <h6>no owner array</h6>}
-          </div>
-          <br></br>
+
+
 
           <div className="row">
 
@@ -345,11 +430,11 @@ class RallyEventPage extends Component {
                   <h3>Details</h3>
                   <h5>Duration: ~ {this.props.rally.rallies.duration} hour(s)</h5>
                   <p>These are the scheduling details and restrictions we have from you so far.</p>
-                  <div className="hr"/>
-                  <br></br>
+                  <hr></hr>
                   <h5>Restrictions:</h5>
 
                   {restrictionData}
+                  <hr/>
 
                 </div>
               </div>
@@ -357,6 +442,27 @@ class RallyEventPage extends Component {
 
 
             <div className="col-md-8">
+
+            <div className="row">
+            <div className="col-md-12">
+              <div className="well">
+                <div className="card card-body bg-light mb-3">
+                <h5>Best Time Slots:</h5>
+                <div><small className="text-muted">The times below maximize member attendance.</small></div>
+
+                {topTimes ?
+                <div>
+                  {topTimes}
+                </div> : <div><h5>None of this Rally's members have synced their Google calendar yet.</h5></div> }
+
+
+                </div>
+                </div>
+                </div>
+            </div>
+
+
+
               <div className="row">
 
                 <div className="col-md-6">
@@ -364,8 +470,6 @@ class RallyEventPage extends Component {
                     <div className="card card-body bg-light mb-3">
                       <h3>Location Voting</h3>
                       <p>Vote on a location or suggest your own!</p>
-
-                      <Poll question='' answers={this.state.pollAnswers} onVote={this.handleVote} />
 
                       <TextFieldGroup
                                 placeholder="Location suggestion"
@@ -396,9 +500,9 @@ class RallyEventPage extends Component {
 
                       {this.props.rally.rallies.members
                           ? <div>
-                          {this.props.rally.rallies.members.slice().map((person, index) => (
+                          {this.props.rally.rallies.memberNames.slice().map((person, index) => (
                             <li key={index} className="list-group-item">
-                              <small className="text-muted">{person}</small>
+                              <font className="text-muted">{person}</font>
                             </li>
                           ))}
                           </div> : <h6>no member array</h6>}
@@ -421,7 +525,11 @@ class RallyEventPage extends Component {
                   </div>
                 </div>
 
+
+
               </div>
+
+
             </div>
           </div>
         </div>
@@ -431,6 +539,81 @@ class RallyEventPage extends Component {
       pageData = null
     }
 
+
+    let confirmedState;
+
+    if(this.props.rally && this.props.rally.rallies){
+        //const {confirmed} = this.props.rally.rallies;
+        console.log("check:",this.props.rally.rallies.confirmed);
+        if(this.props.rally.rallies.confirmed){
+            const { date, time, location } = this.props.rally.rallies.confirmed;
+
+            //------
+            confirmedState = (
+                <div>
+                    <div>
+                    <h1 className="display-4">{this.props.rally.rallies.name}</h1>
+                    <div className="card card-body bg-light mb-12">
+                        {this.props.rally.rallies.owners ?
+                        <div>
+                            <div className="row">
+                                <div className="col-md-2">
+                                    <h5>Organizers</h5>
+                                </div>
+                                <div className="col-md-10">
+                                  {this.props.rally.rallies.owners.slice().map((key, index) => (
+                                    <small className="text-muted">{key}, </small>
+                                  ))}
+                                </div>
+                            </div>
+                        </div> : <h6>no owner array</h6>}
+                    </div>
+                    <br></br>
+                    <div className="row">
+                        <div className="col-md-4">
+                            <div className="well">
+                                <div className="card card-body bg-light mb-3">
+                                    <h3>Confirmed Details</h3>
+                                    <h5>Duration: ~ {this.props.rally.rallies.duration} hour(s)</h5>
+                                    <p>These are the scheduling details confirmed by the organizer.</p>
+                                    <div className="hr"/>
+                                        <br></br>
+                                        <h5>Date: {date}</h5>
+                                        <h5>Time: {time}</h5>
+                                        <h5>Location: {location}</h5>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="well">
+                                <div className="card card-body bg-light mb-3">
+                                    <h3>Members</h3>
+                                    <p fontSize="20px">Those who can attend the number one time slot are italicized.</p>
+                                    {this.props.rally.rallies.members ?
+                                    <div>
+                                        {this.props.rally.rallies.members.slice().map((person, index) => (
+                                        <li key={index} className="list-group-item">
+                                            <small className="text-muted">{person}</small>
+                                        </li>
+                                        ))}
+                                    </div> : <h6>no member array</h6>}
+                                    <br></br>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+            //-------
+            if(date !== null && time !== null && location !== null){
+                pageData = confirmedState;
+            }
+
+        }
+    }
 
 
 
@@ -445,12 +628,13 @@ class RallyEventPage extends Component {
 RallyEventPage.propTypes = {
   getRallyByID: PropTypes.func.isRequired,
   clearCurrentProfile: PropTypes.func.isRequired,
+  getTimeslots: PropTypes.func.isRequired,
   //addLocations: PropTypes.func.isRequired,
   rally: PropTypes.object.isRequired,
 
   //locationSuggestion: PropTypes.object.isRequired,
   //
-  pollAnswers: PropTypes.object.isRequired
+  //pollAnswers: PropTypes.object.isRequired
   //auth: PropTypes.object.isRequired
 
 }
@@ -460,12 +644,14 @@ const mapStateToProps = state => ({
   rally: state.rally,
 
   //locationSuggestion: state.locationSuggestion,
-  pollAnswers: state.pollAnswers
+  pollAnswers: state.pollAnswers,
+  incomingVoting: state.incomingVoting,
 
-  //auth: state.auth
+  //topTimeslots: state.
+  auth: state.auth
 })
 
 // connects the props of the state returned from getRallyByID
 // and those in the component, then exports the component
 // with these props and state
-export default connect(mapStateToProps, {getRallyByID, addLocations, clearCurrentProfile})(withRouter(RallyEventPage));
+export default connect(mapStateToProps, {getRallyByID, getTimeslots,addLocations, clearCurrentProfile})(withRouter(RallyEventPage));

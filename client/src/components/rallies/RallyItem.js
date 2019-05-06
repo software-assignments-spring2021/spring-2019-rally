@@ -31,7 +31,35 @@ class RallyItem extends Component {
 
   crossCompare(){
 
-  }
+     console.log("xcompare: ",this.props.rally.rallies);
+
+     // EXAMPLES -----------------------------------------
+     // DO ANY POSTING OR GETTING LIKE THIS
+     const data = {
+         //variable : value
+         id: this.props.rally._id
+         // "variable" should be the name that you
+         // try to access from req.body in the Router request
+         // do this for all variables you access from req.body
+     }
+     axios
+       .post('/api/rally/crossCompare', data)
+       .then( res => {
+         console.log("xcompare res: ",res.data)
+       })
+       .catch( err => {
+           console.log(err)
+       })
+     ;
+
+     // DO ANY STATE SETTING LIKE THIS
+     // can be used in callback with "res"
+     this.setState({
+
+         //stateVariable: VAL
+
+     });
+ }
 
 
   render() {

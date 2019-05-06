@@ -33,6 +33,17 @@ const RallySchema = new Schema({
     dateExpires: {
         name: String
     },
+    confirmed: {
+        date: {
+            type: Date
+        },
+        time: {
+            type: Date
+        },
+        location: {
+            type: String
+        }
+    },
     restrictions: {
         earliestTime: {
             type: Date
@@ -61,6 +72,11 @@ const RallySchema = new Schema({
            type: Map,
            of: Number
        }
+   },
+
+    timeSlot: {
+        type: Map,
+        of: Number
     }
 });
 
