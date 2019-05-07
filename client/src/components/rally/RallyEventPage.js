@@ -269,9 +269,9 @@ class RallyEventPage extends Component {
     }
 
 
-    const {errors} = this.state; 
+    const {errors} = this.state;
     let err = errors.email;
-    const {loading} = this.props.rally;
+    //const {loading} = this.props.rally;
 
     if( this.props.rally.rallies === null || loading ) {
       pageData = <h4>Loading...</h4>
@@ -578,7 +578,7 @@ RallyEventPage.propTypes = {
 const mapStateToProps = state => ({
 
   rally: state.rally,
-  errors: state.errors
+  errors: state.errors,
   //locationSuggestion: state.locationSuggestion,
   pollAnswers: state.pollAnswers,
   incomingVoting: state.incomingVoting,
@@ -592,4 +592,3 @@ const mapStateToProps = state => ({
 // and those in the component, then exports the component
 // with these props and state
 export default connect(mapStateToProps, {getRallyByID, getTimeslots, addMembers, addLocations, clearCurrentProfile})(withRouter(RallyEventPage));
-
