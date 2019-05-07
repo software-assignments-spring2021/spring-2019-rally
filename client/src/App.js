@@ -9,6 +9,7 @@ import CreateRally from './components/create-rally/CreateRally';
 import Rallies from './components/rallies/Rallies';
 import RallyEventPage from './components/rally/RallyEventPage';
 import DeleteAccount from './components/auth/DeleteAccount';
+import ConfirmationPage from './components/rally/ConfirmationPage';
 
 
 
@@ -63,10 +64,6 @@ class App extends Component {
               <Route exact path="/register" component= {Register} />
               <Route exact path="/login" component= {Login} />
 
-
-
-
-
               <Switch>
                 <PrivateRoute exact path="/rally" component= {Rallies} />
               </Switch>
@@ -74,12 +71,17 @@ class App extends Component {
                 <PrivateRoute exact path="/create-rally" component= {CreateRally} />
               </Switch>
               <Switch>
-                <PrivateRoute exact path="/:rallyID" component= {RallyEventPage} />
+
+                <PrivateRoute exact path="/myrally/:rallyID" component= {RallyEventPage} />
 
               </Switch>
 
               <Switch>
                 <PrivateRoute exact path="/deleteAccount" component= {DeleteAccount} />
+              </Switch>
+
+              <Switch>
+                <PrivateRoute exact path="/myrally/:rallyID/confirm" component= {ConfirmationPage} />
               </Switch>
 
             </div>
