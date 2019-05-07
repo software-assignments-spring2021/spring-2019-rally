@@ -6,8 +6,6 @@ const jwt = require('jsonwebtoken');
 //const keys = process.env;//const keys = require('../../config/keys');
 const passport = require('passport');
 const moment = require('moment');
-moment().format();
-
 
 //Load rally model
 const Rally = require('../../models/Rally');
@@ -522,6 +520,67 @@ router.get('/getLocations', passport.authenticate('jwt', { session: false }), (r
 	.catch(err => res.status(404).json(err));
 });
 
+// @route    GET api/rally/returnCompare
+// @desc     Return the five best dates of the rally
+// @access   Private
+router.get('/returnCompare', passport.authenticate('jwt', { session: false }), (req, res) => {
+	Rally.findOne({ _id: req.body.id }).then(rally => {
+		if (rally) {
+			let bestTimes = [];
+			let discrepency = 0;
+			while (bestTimes.length < 5) {
+				for (let pair of rally.timeSlot) {
+					if (pair[1] == discrepency && bestTimes.length < 5) {
+						bestTimes.push(pair);
+					}
+				}
+				discrepency++;
+			}
+			res.json(bestTimes)
+		}
+	}).catch(err => res.status(400).json(err));
+});
+
+
+// @route    POST api/rally/confirmRally
+// @desc     Confirm Rally details
+// @access   Private
+// this route is available through UI button on loaded rally page
+router.post('/confirm', passport.authenticate('jwt', { session: false }), (req, res) => {
+	const errors = {};
+	//gets the token
+	const usertoken = req.headers.authorization;
+	const token = usertoken.split(' ');
+	const decoded = jwt.verify(token[1], 'secret');
+
+	//find a rally to change based on id
+	  Rally.findOne({ _id: req.body._id }).then(rally => {
+	  	if (rally) {
+	  		//set rally fields to be changed
+			const rallyFields = {};
+            rallyFields.confirmed = {};
+            if(req.body.confirmed){
+                console.log("request body has confirmed")
+                const {date, time, location} = req.body.confirmed;
+                rallyFields.confirmed.date = date;
+                rallyFields.confirmed.time = time;
+                rallyFields.confirmed.location = location;
+            }
+
+			//find rally and update it
+	  		Rally.findOneAndUpdate(
+			{ _id: rally._id },
+			{ $set: rallyFields },
+			{ new: true }
+			).then(rally => res.json(rally));
+	  		rally => res.json(rally);
+	  	} else {
+	  		errors.rallyexists = 'A rally with this id does not exist';
+	  		return res.status(400).json(errors);
+	  }
+  	})
+});
+
 // @route    GET api/rally/crossCompare
 // @desc     Compare all the calendars of the members of a Rally and push the comparison to the database
 // @access   Private
@@ -611,27 +670,5 @@ router.post('/crossCompare', passport.authenticate('jwt', { session: false }), (
 			});
 	});
 });
-
-// @route    GET api/rally/returnCompare
-// @desc     Return the five best dates of the rally
-// @access   Private
-router.get('/returnCompare', passport.authenticate('jwt', { session: false }), (req, res) => {
-	Rally.findOne({ _id: req.body.id }).then(rally => {
-		if (rally) {
-			let bestTimes = [];
-			let discrepency = 0;
-			while (bestTimes.length < 5) {
-				for (let pair of rally.timeSlot) {
-					if (pair[1] == discrepency && bestTimes.length < 5) {
-						bestTimes.push(pair);
-					}
-				}
-				discrepency++;
-			}
-			res.json(bestTimes)
-		}
-	}).catch(err => res.status(400).json(err));
-});
-
 
 module.exports = router;
