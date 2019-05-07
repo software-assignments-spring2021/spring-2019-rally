@@ -63,16 +63,17 @@ export const getRallyByID = (rallyID) => dispatch => {
       );
 }
 
-export const getTimeslots = (data) => dispatch => {
+export const getTimeslots = (data, history) => dispatch => {
   dispatch(setProfileLoading());
 
   axios
       .post(`/api/rally/returnCompare`, data)
       .then(res =>
-          dispatch({
-              type: GET_TIMES,
-              payload: res.data
-          })
+          console.log("res in getTimeslots", res.data),
+          // dispatch({
+          //     type: GET_TIMES,
+          //     payload: res
+          // })
 
       )
       .catch(err =>
@@ -116,8 +117,10 @@ export const addLocations = (locationData, history) => dispatch => {
 
 // add location
 export const addMembers = (data, history) => dispatch => {
+
+    console.log("addMembers data", data)
     axios
-        .post('api/rally/addMembers', data)
+        .post('/api/rally/addMembers', data)
         .then(res =>
             dispatch({
                 type: GET_PROFILES,
@@ -140,7 +143,7 @@ export const confirmDetails = (data, history) => dispatch => {
             dispatch({
                 type: GET_PROFILES,
                 payload: res.data
-            }),//(history.push('/rally'))
+            }),window.location.reload()
         )
         .catch(err =>
             console.log(err)

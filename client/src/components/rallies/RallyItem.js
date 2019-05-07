@@ -14,39 +14,47 @@ class RallyItem extends Component {
 
         this.state = {
 
-            //put anything you want to keep track of here
-            //examples------------------
-            //stateVariable: '',
-            //stateVariable: [],
-            //stateVariable: new Date()
+            topTimeslots: {}
         }
 
-        // any function you use this.setState() or
-        // this.state.variable in has to have a line like this
         this.crossCompare = this.crossCompare.bind(this);
         // this.onChange = this.onChange.bind(this); <-- these might be useful
         // this.onSubmit = this.onSubmit.bind(this); <--
         // this.componentDidMount = this.componentDidMount.bind(this); <--
+        this.componentWillReceiveProps = this.componentWillReceiveProps.bind(this);
 
+  }
+  componentWillReceiveProps(nextProps){
+      this.setState({
+          rally: nextProps.rally
+      })
   }
 
   crossCompare(){
 
      console.log("xcompare: ",this.props.rally.rallies);
 
-     // EXAMPLES -----------------------------------------
-     // DO ANY POSTING OR GETTING LIKE THIS
      const data = {
-         //variable : value
          id: this.props.rally._id
-         // "variable" should be the name that you
-         // try to access from req.body in the Router request
-         // do this for all variables you access from req.body
+     }
+     const data2 = {
+         _id: this.props.rally._id
      }
      axios
        .post('/api/rally/crossCompare', data)
        .then( res => {
-         console.log("xcompare res: ",res.data)
+         //console.log("xcompare res: ",res.data)
+         axios
+             .post(`/api/rally/returnCompare`, data2)
+             .then(res =>
+                 console.log("res in gettimeslots", res.data),
+                 // this.setState({
+                 //     topTimeslots:res.data
+                 // })
+             )
+             .catch(err =>
+                 console.log(err)
+         );
        })
        .catch( err => {
            console.log(err)
@@ -61,6 +69,30 @@ class RallyItem extends Component {
 
      });
  }
+ componentDidMount(){
+     const { rally } = this.props;
+     console.log("rally did mount",rally)
+     if(this.props.rally){
+
+             console.log("rallyID: ", this.props.rally._id);
+
+             let data = {
+                 _id: this.props.rally._id
+             }
+             axios
+                 .post(`/api/rally/returnCompare`, data)
+                 .then(res =>
+                     //console.log("res in gettimeslots", res.data),
+                     this.setState({
+                         topTimeslots:res.data
+                     })
+                 )
+                 .catch(err =>
+                     console.log(err)
+             );
+
+     }else{return;}
+ }
 
 
   render() {
@@ -68,22 +100,28 @@ class RallyItem extends Component {
     //TODO: change "border-info" in div to "border-primary" based on
     //      Rally ownership
     const { rally } = this.props;
-    //console.log("rally item props", rally.timeSlot);
-    let topTimes
-    if(rally && rally.timeSlot){
+    const {topTimeslots} = this.state;
+    console.log("rally in render: ",rally)
+    //let result = {};
+    //result = this.findTopTimeSlots(rally.id);
 
-        if(Object.keys(rally.timeSlot).length > 0){
+
+    console.log("top timeSlot", topTimeslots);
+    let topTimes
+    if(topTimeslots){
+
+        if(Object.keys(topTimeslots).length > 0){
             let timeSlotArr = [];
             //console.log("timeslot", timeSlotArr);
 
-            Object.keys(rally.timeSlot).forEach(function(key) {
-              timeSlotArr.push(key);
+            Object.keys(topTimeslots).forEach(function(key) {
+              timeSlotArr.push(topTimeslots[key]);
             });
             //console.log("TSArr",timeSlotArr)
 
             topTimes = (
                 <div>
-                    {timeSlotArr.slice(2,7).map((person, index) => (
+                    {timeSlotArr.slice(0,5).map((person, index) => (
                       <li key={index} className="list-group-item">
                         {moment(person).format('LLL')}
                       </li>
@@ -124,7 +162,10 @@ class RallyItem extends Component {
 
     return (
       <div>
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossOrigin="anonymous"/>
+
         <div className="card border-info card-body bg-light mb-3 max-width: 18rem">
+
           <div className="row">
             <div className="col-md-10 d-md-block">
               <h2>{rally.name}</h2>
@@ -139,12 +180,13 @@ class RallyItem extends Component {
               </Link>
             </div>
           </div>
+          <hr/>
 
           <div className="row">
               <div className="col-md-3 d-md-block">
-                  <h5>Members</h5>
+                  <h5 style = {{marginLeft: 5}}><i className="far fa-user" style = {{marginRight: 10}}></i>Members</h5>
 
-                  {rally.ownerNames.slice().map((person, index) => (
+                  {rally.memberNames.slice().map((person, index) => (
                     <li key={index} className="list-group-item">
                       {person}
                     </li>
@@ -152,13 +194,16 @@ class RallyItem extends Component {
               </div>
 
               <div className="col-md-5 d-md-block">
-                  <h5>Date/Time Leaderboard</h5>
+              <h5 style = {{marginLeft: 5}}><i className="far fa-clock" style = {{marginRight: 10}}></i>Date/Time Leaderboard</h5>
+
                   {topTimes}
 
               </div>
 
               <div className="col-md-4 d-md-block">
-                  <h5>Location</h5>
+
+                  <h5 style = {{marginLeft: 5}}><i className="fas fa-map-marker-alt" style = {{marginRight: 10}}></i>Location Poll</h5>
+
                   {locationPoll}
               </div>
           </div>
@@ -174,6 +219,6 @@ RallyItem.propTypes = {
 const mapStateToProps = state => ({
 
   rally: state.rally,
-
+  topTimeslots: state.topTimeslots
 })
 export default (RallyItem);
