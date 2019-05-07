@@ -97,11 +97,27 @@ export const createRally = (rallyData, history) => dispatch => {
 
 // add location
 export const addLocations = (locationData, history) => dispatch => {
-
-
-
     axios
         .post('api/rally/addLocations', locationData)
+        .then(res =>
+            dispatch({
+                type: GET_PROFILES,
+                payload: res.data
+            })
+        )
+        .catch(err =>
+
+            dispatch({
+                type: GET_ERRORS,
+                payload: err.response.data
+            })
+        );
+}
+
+// add location
+export const addMembers = (data, history) => dispatch => {
+    axios
+        .post('api/rally/addMembers', data)
         .then(res =>
             dispatch({
                 type: GET_PROFILES,

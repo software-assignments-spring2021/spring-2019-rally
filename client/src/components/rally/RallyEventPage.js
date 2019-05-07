@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getRallyByID, clearCurrentProfile, addLocations, getTimeslots } from '../../actions/profileActions';
+import { getRallyByID, clearCurrentProfile, addLocations, getTimeslots, addMembers } from '../../actions/profileActions';
 import { Link } from 'react-router-dom';
 import TextFieldGroup from '../common/TextFieldGroup';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
 import axios from 'axios';
-//import Poll from 'react-polls';
 
 class RallyEventPage extends Component {
 
@@ -22,12 +21,14 @@ class RallyEventPage extends Component {
         pollAnswers: [],
         pollAnswerMap: new Map(),
         // Member addition fields
+
         addMembers: '',
 
         incomingVoting: null,
         topTimeslots: null,
         rally: null,
         hasVoted: false,
+
         errors: {}
       }
 
@@ -35,7 +36,9 @@ class RallyEventPage extends Component {
       this.onSubmit = this.onSubmit.bind(this);
       this.handleVote = this.handleVote.bind(this);
       this.componentDidMount = this.componentDidMount.bind(this);
-
+      this.onMembersSubmit = this.onMembersSubmit.bind(this);
+      this.onMembersChange = this.onMembersChange.bind(this);
+      this.componentWillReceiveProps = this.componentWillReceiveProps.bind(this);
   }
 
   // Used for location submission
@@ -57,9 +60,6 @@ class RallyEventPage extends Component {
           _id: this.props.rally.rallies._id
       }
 
-      //console.log("addLoc.loc: ",toAdd.locations);
-      //console.log("addLoc.id: ",toAdd._id);
-
       axios
           .post('/api/rally/addLocations', toAdd)
           .then(res => {
@@ -73,9 +73,35 @@ class RallyEventPage extends Component {
           .catch(err => {
               console.log(err)
       });
-
-
   }
+
+  onMembersChange(e){
+
+    this.setState({
+      addMembers: e.target.value
+    })
+    console.log("member entered: ",this.state.addMembers)
+  }
+
+  onMembersSubmit(e){
+
+    e.preventDefault();
+
+    const {rallies}=this.props.rally;
+    console.log("rallies: ",rallies)
+
+    //an array that keeps track of members that were added
+    const {addMembers} = this.state;
+    // console.log("adding member: ", addMembers);
+
+    const data = {
+      email: addMembers,
+      _id: rallies._id
+    }
+
+    this.props.addMembers(data);
+  }
+
   componentWillUnmount() {
    this._ismounted = false;
   }
@@ -85,8 +111,7 @@ class RallyEventPage extends Component {
       if(nextProps.errors){
           this.setState({errors: nextProps.errors});
       }
-      console.log("nextProps:", nextProps)
-
+      //console.log("nextProps:", nextProps)
       if(nextProps.rally && !nextProps.rally.loading){
           if(nextProps.rally.rallies){
               const { voting, timeSlot } = nextProps.rally.rallies;
@@ -105,7 +130,6 @@ class RallyEventPage extends Component {
   // Handling user vote
   // Increments the votes count of answer when the user votes
   handleVote(voteAnswer){
-
 
     const { hasVoted, errors } = this.state;
     // console.log("has voted props", this.props.hasVoted)
@@ -136,17 +160,10 @@ class RallyEventPage extends Component {
      );
   }
 
-  onMembersChange(e){
-
-  }
-
   componentDidMount(){
 
     this.props.clearCurrentProfile();
     this.state.pollAnswers.push({option: 'Suggest locations below!', votes: 0});
-
-
-
     //console.log("rally params: ",this.props.match.params);
     if(this.props.match.params.rallyID){
             this.props.getRallyByID(this.props.match.params.rallyID);
@@ -154,8 +171,6 @@ class RallyEventPage extends Component {
 
             this.props.getTimeslots(this.props.match.params.rallyID);
     }else{return;}
-
-
   }
 
   render() {
@@ -254,6 +269,10 @@ class RallyEventPage extends Component {
     }
 
 
+    const {errors} = this.state; 
+    let err = errors.email;
+    const {loading} = this.props.rally;
+
     if( this.props.rally.rallies === null || loading ) {
       pageData = <h4>Loading...</h4>
     }else{
@@ -261,8 +280,6 @@ class RallyEventPage extends Component {
     }
     let pageData;
     if(this.props.rally.rallies && this.props.match.params.rallyID){
-
-
 
       // Display restrictions if they exist
       let restrictions;
@@ -449,10 +466,11 @@ class RallyEventPage extends Component {
                                 type="addMembers"
                                 value={this.state.addMembers}
                                 onChange={this.onMembersChange}
-                                info="Enter emails separated by commas."
+                                info="Enter email of member you want to add"
+                                error={err}
                       />
 
-                      <button type="button" onClick={this.onMemberSubmit} className="btn btn-info">
+                      <button type="button" onClick={this.onMembersSubmit} className="btn btn-info">
                         <span>Invite</span>
                       </button>
 
@@ -551,22 +569,16 @@ RallyEventPage.propTypes = {
   getRallyByID: PropTypes.func.isRequired,
   clearCurrentProfile: PropTypes.func.isRequired,
   getTimeslots: PropTypes.func.isRequired,
-  //addLocations: PropTypes.func.isRequired,
   rally: PropTypes.object.isRequired,
-
-  errors: PropTypes.object,
+  addMembers: PropTypes.func.isRequired,
+  errors: PropTypes.object.isRequired,
   hasVoted: PropTypes.bool.isRequired
-  //locationSuggestion: PropTypes.object.isRequired,
-  //
-  //pollAnswers: PropTypes.object.isRequired
-  //auth: PropTypes.object.isRequired
-
 }
 
 const mapStateToProps = state => ({
 
   rally: state.rally,
-
+  errors: state.errors
   //locationSuggestion: state.locationSuggestion,
   pollAnswers: state.pollAnswers,
   incomingVoting: state.incomingVoting,
@@ -579,4 +591,5 @@ const mapStateToProps = state => ({
 // connects the props of the state returned from getRallyByID
 // and those in the component, then exports the component
 // with these props and state
-export default connect(mapStateToProps, {getRallyByID, getTimeslots,addLocations, clearCurrentProfile})(withRouter(RallyEventPage));
+export default connect(mapStateToProps, {getRallyByID, getTimeslots, addMembers, addLocations, clearCurrentProfile})(withRouter(RallyEventPage));
+
