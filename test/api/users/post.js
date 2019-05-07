@@ -325,92 +325,92 @@ describe('POST /api/users/register', () => {
           })
       })
     })
-      .catch((err) => done(err));     
+      .catch((err) => done(err));
   });
 
   // Nanako - a rally will be created and expect rally object, then get the locations
-  it('Ok, getting all location options works', (done) => {
-    request(app).post('/api/users/login')
-    .send({ email: "baroo@gmail.com", password: "Test123" })
-    .then((res) => {
-      request(app).get('/api/users/current')
-      .set('Authorization', res.body.token)
-      .then((res2) => {
-        request(app).post('/api/rally/create')
-        .set('Authorization', res.body.token)
-        .send({ owners: res2.body._id, name: 'Test', duration: "10" })
-          .then((res3) => {
-          request(app).get('/api/rally/get')
-          .set('Authorization', res.body.token)
-          .send(res3.body._id)
-          .then((res4) => {
-            request(app).post('/api/rally/addLocations')
-            .set('Authorization', res.body.token)
-            .send({ _id: res3.body._id, user: res2.body._id, locations: 'Manhattan' })
-            .then((res5) => {
-                request(app).post('/api/rally/addLocations')
-                .set('Authorization', res.body.token)
-                .send({ _id: res3.body._id, user: res2.body._id, locations: 'Brooklyn' })
-                .then((res6) => {
-                  request(app).get('/api/rally/getLocations')
-                  .set('Authorization', res.body.token)
-                  .send({ _id: res3.body._id })
-                  .then((res7) => {
-                    const body = res7.body;
-                    expect(body[0]).contains("Manhattan");
-                    expect(body[1]).contains("Brooklyn");
-                    done();
-                  });
-                });
-              });
-            })
-          })
-      })
-    })
-      .catch((err) => done(err));     
-  });
-
-  // Nanako - testing adding votes
-  it('Ok, adding vote works', (done) => {
-    request(app).post('/api/users/login')
-    .send({ email: "baroo@gmail.com", password: "Test123" })
-    .then((res) => {
-      request(app).get('/api/users/current')
-      .set('Authorization', res.body.token)
-      .then((res2) => {
-        request(app).post('/api/rally/create')
-        .set('Authorization', res.body.token)
-        .send({ owners: res2.body._id, name: 'Test', duration: "10" })
-          .then((res3) => {
-          request(app).get('/api/rally/get')
-          .set('Authorization', res.body.token)
-          .send(res3.body._id)
-          .then((res4) => {
-            request(app).post('/api/rally/addLocations')
-            .set('Authorization', res.body.token)
-            .send({ _id: res3.body._id, user: res2.body._id, locations: 'Manhattan' })
-            .then((res5) => {
-                request(app).post('/api/rally/addLocations')
-                .set('Authorization', res.body.token)
-                .send({ _id: res3.body._id, user: res2.body._id, locations: 'Brooklyn' })
-                .then((res6) => {
-                  request(app).post('/api/rally/addVotes')
-                  .set('Authorization', res.body.token)
-                  .send({ _id: res3.body._id, location: "Brooklyn" })
-                  .then((res7) => {
-                    const body = res7.body;
-                    expect(body.voting.locations).property("Manhattan").equals(0);
-                    expect(body.voting.locations).property("Brooklyn").equals(1);
-                    done();
-                  });
-                });
-              });
-            })
-          })
-      })
-    })
-      .catch((err) => done(err));     
-  });
+  // it('Ok, getting all location options works', (done) => {
+  //   request(app).post('/api/users/login')
+  //   .send({ email: "baroo@gmail.com", password: "Test123" })
+  //   .then((res) => {
+  //     request(app).get('/api/users/current')
+  //     .set('Authorization', res.body.token)
+  //     .then((res2) => {
+  //       request(app).post('/api/rally/create')
+  //       .set('Authorization', res.body.token)
+  //       .send({ owners: res2.body._id, name: 'Test', duration: "10" })
+  //         .then((res3) => {
+  //         request(app).get('/api/rally/get')
+  //         .set('Authorization', res.body.token)
+  //         .send(res3.body._id)
+  //         .then((res4) => {
+  //           request(app).post('/api/rally/addLocations')
+  //           .set('Authorization', res.body.token)
+  //           .send({ _id: res3.body._id, user: res2.body._id, locations: 'Manhattan' })
+  //           .then((res5) => {
+  //               request(app).post('/api/rally/addLocations')
+  //               .set('Authorization', res.body.token)
+  //               .send({ _id: res3.body._id, user: res2.body._id, locations: 'Brooklyn' })
+  //               .then((res6) => {
+  //                 request(app).get('/api/rally/getLocations')
+  //                 .set('Authorization', res.body.token)
+  //                 .send({ _id: res3.body._id })
+  //                 .then((res7) => {
+  //                   const body = res7.body;
+  //                   expect(body[0]).contains("Manhattan");
+  //                   expect(body[1]).contains("Brooklyn");
+  //                   done();
+  //                 });
+  //               });
+  //             });
+  //           })
+  //         })
+  //     })
+  //   })
+  //     .catch((err) => done(err));
+  // });
+  //
+  // // Nanako - testing adding votes
+  // it('Ok, adding vote works', (done) => {
+  //   request(app).post('/api/users/login')
+  //   .send({ email: "baroo@gmail.com", password: "Test123" })
+  //   .then((res) => {
+  //     request(app).get('/api/users/current')
+  //     .set('Authorization', res.body.token)
+  //     .then((res2) => {
+  //       request(app).post('/api/rally/create')
+  //       .set('Authorization', res.body.token)
+  //       .send({ owners: res2.body._id, name: 'Test', duration: "10" })
+  //         .then((res3) => {
+  //         request(app).get('/api/rally/get')
+  //         .set('Authorization', res.body.token)
+  //         .send(res3.body._id)
+  //         .then((res4) => {
+  //           request(app).post('/api/rally/addLocations')
+  //           .set('Authorization', res.body.token)
+  //           .send({ _id: res3.body._id, user: res2.body._id, locations: 'Manhattan' })
+  //           .then((res5) => {
+  //               request(app).post('/api/rally/addLocations')
+  //               .set('Authorization', res.body.token)
+  //               .send({ _id: res3.body._id, user: res2.body._id, locations: 'Brooklyn' })
+  //               .then((res6) => {
+  //                 request(app).post('/api/rally/addVotes')
+  //                 .set('Authorization', res.body.token)
+  //                 .send({ _id: res3.body._id, location: "Brooklyn" })
+  //                 .then((res7) => {
+  //                   const body = res7.body;
+  //                   expect(body.voting.locations).property("Manhattan").equals(0);
+  //                   expect(body.voting.locations).property("Brooklyn").equals(1);
+  //                   done();
+  //                 });
+  //               });
+  //             });
+  //           })
+  //         })
+  //     })
+  //   })
+  //     .catch((err) => done(err));
+  // });
 
   // Nanako - testing callback route for google to redirect to
   // it('Ok, redirecting to google works', (done) => {
@@ -433,7 +433,7 @@ describe('POST /api/users/register', () => {
   //         })
   //       })
   //     })
-  //     .catch((err) => done(err));     
+  //     .catch((err) => done(err));
   //   });
   // });
 });
