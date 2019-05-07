@@ -124,7 +124,7 @@ export const confirmDetails = (data, history) => dispatch => {
             dispatch({
                 type: GET_PROFILES,
                 payload: res.data
-            }),(history.push('/rally'))
+            }),//(history.push('/rally'))
         )
         .catch(err =>
             console.log(err)

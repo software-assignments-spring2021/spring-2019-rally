@@ -26,7 +26,9 @@ class RallyEventPage extends Component {
 
         incomingVoting: null,
         topTimeslots: null,
-        rally: null
+        rally: null,
+        hasVoted: false,
+        errors: {}
       }
 
       this.onChange = this.onChange.bind(this);
@@ -41,22 +43,22 @@ class RallyEventPage extends Component {
       this.setState({[e.target.name]: e.target.value});
 
       // Debug location suggesting
-      console.log("location val: ",this.state.locationSuggestion);
+      //console.log("location val: ",this.state.locationSuggestion);
   }
 
   onSubmit(e) {
       e.preventDefault();
 
       const {locationSuggestion, pollAnswers} = this.state;
-      console.log("submitting: ", locationSuggestion);
+      //console.log("submitting: ", locationSuggestion);
 
       const toAdd = {
           locations: locationSuggestion,
           _id: this.props.rally.rallies._id
       }
 
-      console.log("addLoc.loc: ",toAdd.locations);
-      console.log("addLoc.id: ",toAdd._id);
+      //console.log("addLoc.loc: ",toAdd.locations);
+      //console.log("addLoc.id: ",toAdd._id);
 
       axios
           .post('/api/rally/addLocations', toAdd)
@@ -64,7 +66,9 @@ class RallyEventPage extends Component {
               // this.setState({
               //   pollAnswers: newPollAnswers
               // })
-              console.log(res);
+              window.location.reload()
+              // console.log(res)
+              // history.push('/rally')
           })
           .catch(err => {
               console.log(err)
@@ -86,137 +90,51 @@ class RallyEventPage extends Component {
       if(nextProps.rally && !nextProps.rally.loading){
           if(nextProps.rally.rallies){
               const { voting, timeSlot } = nextProps.rally.rallies;
-              console.log("timeSlot obj: ",timeSlot)
+              const { hasVoted } = nextProps;
+              //console.log("timeSlot obj: ",timeSlot)
               this.setState({
                   incomingVoting: voting.locations,
                   topTimeslots: timeSlot,
-                  rally: nextProps.rally
+                  rally: nextProps.rally,
+                  hasVoted: hasVoted
               })
           }
       }
-
-      // if(nextProps.rally){
-      //     if(nextProps.rally.rallies){
-      //         if(nextProps.rally.rallies.voting){
-      //             if(nextProps.rally.rallies.voting.locations){
-      //                 this.setState({pollAnswers: nextProps.rally.rallies.voting.locations})
-      //             }
-      //         }
-      //     }
-      // }
-//       console.log("willreceive rally: ", nextProps.rally);
-//       if(!nextProps.rally.loading){
-//         if(nextProps.rally.rallies){
-//           // const newPollAnswers = pollAnswers.map(answer => {
-//           //   if (answer.option === voteAnswer) answer.votes++
-//           //   return answer
-//           // })
-//           console.log("this.props.rally: ",nextProps.rally.rallies);
-//           if(nextProps.rally.rallies){
-//               const { voting } = nextProps.rally.rallies;
-//               console.log("in rally voting", voting);
-//               console.log("in rally locations", voting.locations);
-//               console.log("locations size", Object.keys(voting.locations).length);
-//               if(Object.keys(voting.locations).length > 0){
-//                   console.log("size greater than 0");
-//                   // let iterator = nextProps.rally.rallies.voting.locations.entries();
-//                   // for(let value of iterator){
-//                   //     console.log("iterator: ",value);
-//                   //
-//                   // }
-
-//                   console.log("b4 setstate: ",nextProps.rally.rallies.voting.locations);
-//                   this.setState({
-//                     pollAnswerMap: nextProps.rally.rallies.voting.locations
-//                   })
-//                   console.log("after setstate",this.state.pollAnswerMap);
-//               }
-//
-//
-//
-// //------------------------------------------------
-//               const data = {
-//                   _id: nextProps.rally.rallies._id
-//               }
-//               console.log(data._id);
-//               axios
-//                   .post('/api/rally/getLocations', data)
-//                   .then(res => {
-//
-//                       console.log("res: ",res.data)
-//                       this.setState({
-//
-//                         //this router call returns Array.from(iterable)
-//                         //result is array of {location, votes} pairs
-//                         pollAnswer: res.data
-//                       })
-//                   })
-//                   .catch(err => {
-//                       console.log(err)
-//               });
-//           }
-
   }
-
-
-
-
-
 
   // Handling user vote
   // Increments the votes count of answer when the user votes
   handleVote(voteAnswer){
 
 
-    const { pollAnswers } = this.state;
-    console.log("poll answers: ",pollAnswers); // this is an array of {location, vote} pairs
-
-    const data = {
-        location: voteAnswer,
-        id: this.props.rally.rallies._id
+    const { hasVoted, errors } = this.state;
+    // console.log("has voted props", this.props.hasVoted)
+    // console.log("has voted state", hasVoted)
+    if(hasVoted){
+        console.log("Already voted!")
+    }else{
+        console.log("Have not voted yet, approved")
     }
 
-
-    //iterate through locations and increment vote count where necessary
-    const newPollAnswers = pollAnswers.map(answer => {
-      if (answer.option === voteAnswer){
-          answer.votes++;
-
-          // set the poll answers to be the updated info
-          //make axios call, on .then(set state)
-          axios
-              .post('/api/rally/addVotes', data)
-              .then(res => {
-                  this.setState({
-                    pollAnswers: newPollAnswers
-                  })
-              })
-              .catch(err => {
-                  console.log(err)
-          });
-          return answer
-      }
-      this.setState({
-        pollAnswers: newPollAnswers
-      })
-    })
+    console.log("voteAnswer: ",voteAnswer); // this is an array of {location, vote} pairs
+    const data = {
+        location: voteAnswer,
+        hasVoted: hasVoted,
+        _id: this.props.rally.rallies._id
+    }
+    axios
+        .post('/api/rally/addVotes', data)
+        .then(res => {
+            this.setState({
+                hasVoted: true
+            })
+            window.location.reload()
+        })
+        .catch(err => {
+            console.log(err)
+         }
+     );
   }
-
-  // handleVote = voteAnswer => {
-  //   const { pollAnswers } = this.state; //pollAnswers is an array
-  //   const newPollAnswers = pollAnswers.map(answer => {
-  //     if (answer.option === voteAnswer){
-  //         answer.votes++;
-  //         return answer;
-  //     }
-  //
-  //   })
-  //
-  //   //instead of this, set the state as the res of the router request
-  //   this.setState({
-  //     pollAnswers: newPollAnswers
-  //   })
-  // }
 
   onMembersChange(e){
 
@@ -229,7 +147,7 @@ class RallyEventPage extends Component {
 
 
 
-    console.log("rally params: ",this.props.match.params);
+    //console.log("rally params: ",this.props.match.params);
     if(this.props.match.params.rallyID){
             this.props.getRallyByID(this.props.match.params.rallyID);
             console.log("rallyID: ", this.props.match.params.rallyID);
@@ -244,20 +162,21 @@ class RallyEventPage extends Component {
 
     const {loading} = this.props.rally;
 
-    console.log("props rally",this.props.rally)
-    console.log("userid: ",this.props.auth.user.id)
+    //console.log("props rally",this.props.rally)
+    //console.log("userid: ",this.props.auth.user.id)
+    //console.log("rally in eventpage render", this.props.rally);
 
     const {incomingVoting, topTimeslots} = this.state;
     const {id} = this.props.auth.user;
     let ownerCog;
     if(this.props.rally && this.props.rally.rallies && this.props.rally.rallies.members){
         const {members} = this.props.rally.rallies;
-        console.log("members len: ",members.length)
+        //console.log("members len: ",members.length)
         for(let i = 0; i < members.length; i++){
 
-            console.log("mem id: ", members[i], "userid:",id)
+            //console.log("mem id: ", members[i], "userid:",id)
             if(members[i] == id){
-                console.log("link state", this.state);
+                //console.log("link state", this.state);
                 ownerCog = (
                     <div>
                     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossOrigin="anonymous"/>
@@ -283,10 +202,10 @@ class RallyEventPage extends Component {
 
         let times = [];
         Object.keys(topTimeslots).forEach(function(key) {
-          console.log("time entry:",key, topTimeslots[key]);
+          //console.log("time entry:",key, topTimeslots[key]);
             times.push(key);
         });
-        console.log("times array", times);
+        //console.log("times array", times);
         topTimes = (
             <div>
 
@@ -305,17 +224,31 @@ class RallyEventPage extends Component {
     let voting;
     if(incomingVoting){
 
+        let locationPoll = [];
         Object.keys(incomingVoting).forEach(function(key) {
-          console.log("loc entry:",key, incomingVoting[key]);
-          // <li key={index} className="list-group-item">
-          //   <small className="text-muted">{person}</small>
-          // </li>
+          //console.log("loc entry:",key, incomingVoting[key]);
+          locationPoll.push({location: key, votes:incomingVoting[key]});
+
         });
+        console.log("location poll",locationPoll);
+
+        voting = (
+            <div>
+                {locationPoll.slice().map((key, index) => (
 
 
-        // {this.props.rally.rallies.owners.slice().map((key, index) => (
-        //   <small className="text-muted">{key}, </small>
-        // ))}
+                        <li key={index.votes} className="list-group-item">
+                        <button type="button" onClick={() => this.handleVote(key.location)}>
+                            <font className="text-muted">{key.location}</font>
+                        </button>
+                        <span style = {{marginLeft: 10}} className="badge badge-light">{key.votes}</span>
+                        </li>
+                ))}
+            </div>
+        );
+
+
+
     }else{
         voting = <h5>No locations have been suggested yet. Add a location below!</h5>
     }
@@ -429,12 +362,12 @@ class RallyEventPage extends Component {
                 <div className="card card-body bg-light mb-3">
                   <h3>Details</h3>
                   <h5>Duration: ~ {this.props.rally.rallies.duration} hour(s)</h5>
-                  <p>These are the scheduling details and restrictions we have from you so far.</p>
-                  <hr></hr>
+                  These are the scheduling details and restrictions we have from you so far.<hr/>
+
                   <h5>Restrictions:</h5>
 
                   {restrictionData}
-                  <hr/>
+
 
                 </div>
               </div>
@@ -447,9 +380,9 @@ class RallyEventPage extends Component {
             <div className="col-md-12">
               <div className="well">
                 <div className="card card-body bg-light mb-3">
-                <h5>Best Time Slots:</h5>
-                <div><small className="text-muted">The times below maximize member attendance.</small></div>
-
+                <h3>Best Time Slots:</h3>
+                <div>The times below maximize attendance of the Rally members.</div>
+                <br/>
                 {topTimes ?
                 <div>
                   {topTimes}
@@ -469,8 +402,10 @@ class RallyEventPage extends Component {
                   <div className="well">
                     <div className="card card-body bg-light mb-3">
                       <h3>Location Voting</h3>
-                      <p>Vote on a location or suggest your own!</p>
+                      <p>Vote on a location or suggest your own!<br/><small className="text-muted">Click a location to cast your vote!</small></p>
 
+                      {voting}
+                      <br></br>
                       <TextFieldGroup
                                 placeholder="Location suggestion"
                                 name="locationSuggestion"
@@ -544,64 +479,51 @@ class RallyEventPage extends Component {
 
     if(this.props.rally && this.props.rally.rallies){
         //const {confirmed} = this.props.rally.rallies;
-        console.log("check:",this.props.rally.rallies.confirmed);
+        //console.log("check:",this.props.rally.rallies.confirmed);
         if(this.props.rally.rallies.confirmed){
             const { date, time, location } = this.props.rally.rallies.confirmed;
-
+            console.log("confirmations:", date, time, location)
             //------
             confirmedState = (
-                <div>
-                    <div>
-                    <h1 className="display-4">{this.props.rally.rallies.name}</h1>
-                    <div className="card card-body bg-light mb-12">
-                        {this.props.rally.rallies.owners ?
-                        <div>
-                            <div className="row">
-                                <div className="col-md-2">
-                                    <h5>Organizers</h5>
-                                </div>
-                                <div className="col-md-10">
-                                  {this.props.rally.rallies.owners.slice().map((key, index) => (
-                                    <small className="text-muted">{key}, </small>
-                                  ))}
-                                </div>
-                            </div>
-                        </div> : <h6>no owner array</h6>}
-                    </div>
-                    <br></br>
-                    <div className="row">
-                        <div className="col-md-4">
-                            <div className="well">
-                                <div className="card card-body bg-light mb-3">
-                                    <h3>Confirmed Details</h3>
-                                    <h5>Duration: ~ {this.props.rally.rallies.duration} hour(s)</h5>
-                                    <p>These are the scheduling details confirmed by the organizer.</p>
-                                    <div className="hr"/>
-                                        <br></br>
-                                        <h5>Date: {date}</h5>
-                                        <h5>Time: {time}</h5>
-                                        <h5>Location: {location}</h5>
 
-                                    </div>
-                                </div>
+                <div>
+                    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossOrigin="anonymous"/>
+
+                    <h1 className="display-4">{this.props.rally.rallies.name}</h1>
+                    {this.props.rally.rallies.owners ?
+                    <h5 className="text-muted" style={{marginLeft: 5}}>Organizers:
+                        {this.props.rally.rallies.ownerNames.slice().map((key, index) => (
+                            <font >{key} </font>
+                        ))}
+                        </h5> : <h6>no owner array</h6>
+                    }
+
+                    <div className="row">
+                        <div className="col-md-6">
+                            <div className="card card-body bg-light mb-3">
+                                <h3>Confirmed Details</h3>
+                                <h5>Duration: ~ {this.props.rally.rallies.duration} hour(s)</h5>
+                                <p>These are the scheduling details confirmed by the organizer.</p>
+                                <div className="hr"/>
+                                <br></br>
+                                <h5> <i className="far fa-calendar-check" style={{marginRight: 10}}></i>Date: {moment(date).format('LL')}</h5>
+                                <h5><i className="far fa-clock" style={{marginRight: 10}}></i>Time: {moment(time).format('hh:mm a')}</h5>
+                                <h5><i className="fas fa-map-marker-alt" style={{marginRight: 10}}></i>Location: {location}</h5>
+
                             </div>
                         </div>
-
                         <div className="col-md-6">
-                            <div className="well">
-                                <div className="card card-body bg-light mb-3">
-                                    <h3>Members</h3>
-                                    <p fontSize="20px">Those who can attend the number one time slot are italicized.</p>
-                                    {this.props.rally.rallies.members ?
-                                    <div>
-                                        {this.props.rally.rallies.members.slice().map((person, index) => (
-                                        <li key={index} className="list-group-item">
-                                            <small className="text-muted">{person}</small>
-                                        </li>
-                                        ))}
-                                    </div> : <h6>no member array</h6>}
-                                    <br></br>
-                                </div>
+                            <div className="card card-body bg-light mb-3">
+                                <h3>Members</h3>
+
+                                {this.props.rally.rallies.members ?
+                                <div>
+                                    {this.props.rally.rallies.memberNames.slice().map((person, index) => (
+                                    <li key={index} className="list-group-item">
+                                        <small className="text-muted">{person}</small>
+                                    </li>
+                                    ))}
+                                </div> : <h6>no member array</h6>}
                             </div>
                         </div>
                     </div>
@@ -632,6 +554,8 @@ RallyEventPage.propTypes = {
   //addLocations: PropTypes.func.isRequired,
   rally: PropTypes.object.isRequired,
 
+  errors: PropTypes.object,
+  hasVoted: PropTypes.bool.isRequired
   //locationSuggestion: PropTypes.object.isRequired,
   //
   //pollAnswers: PropTypes.object.isRequired
@@ -646,9 +570,10 @@ const mapStateToProps = state => ({
   //locationSuggestion: state.locationSuggestion,
   pollAnswers: state.pollAnswers,
   incomingVoting: state.incomingVoting,
-
+  hasVoted: state.hasVoted,
   //topTimeslots: state.
-  auth: state.auth
+  auth: state.auth,
+  errors: state.errors
 })
 
 // connects the props of the state returned from getRallyByID

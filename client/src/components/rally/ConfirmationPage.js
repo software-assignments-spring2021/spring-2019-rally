@@ -38,14 +38,20 @@ class ConfirmationPage extends Component {
   onSubmit(e){
       e.preventDefault();
 
-      console.log("in on submit",this.props.rally.rallies._id)
+      console.log("onSubmit state:", this.state.timeSelection, this.state.locSelection)
+
+      let temptime = this.state.timeSelection;
+      temptime = temptime.substring(0,10);
+      console.log("temptime", temptime)
+      //let temploc = this.state.locSelection;//want first ten chars
       let data = {
-          id: this.props.rally.rallies._id,
+
           confirmed: {
-              date: this.state.timeSelection,
-              time: this.state.timeSelection,
+              date: temptime,
+              time: temptime,
               location: this.state.locSelection
-          }
+          },
+          _id: this.props.rally.rallies._id,
       }
       this.props.confirmDetails( data, this.props.history);
 
@@ -59,20 +65,22 @@ class ConfirmationPage extends Component {
     //const { rally } = this.props;
     console.log("rally in confirm",this.props)
     const timeOptions = [];
-    timeOptions.push({label: 'Confirm time slot', value: 0})
+    const locOptions = [];
+    timeOptions.push({label: 'Confirm time slot', value: null})
+    locOptions.push({label: 'Confirm location', value: null})
     if(this.props.rally && this.props.rally.rallies){
-        const {timeSlot} = this.props.rally.rallies;
+
+        const {timeSlot, voting} = this.props.rally.rallies;
+
+        //Push time slots into confirm time options
         Object.keys(timeSlot).forEach(function(key) {
           timeOptions.push({label: key, value: key});
         });
+        //Push locations into confirm location options
+        Object.keys(voting.locations).forEach(function(key) {
+          locOptions.push({label: key, value: key});
+        });
     }
-
-    const locOptions = [
-        {label: 'Confirm Location', value: 0},
-        {label: '15 minutes', value: .25},
-        {label: '30 minutes', value: '.5'},
-    ];
-    //let name;
 
     return (
         <div>

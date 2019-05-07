@@ -9,6 +9,7 @@ const passport = require('passport');
 
 const moment = require('moment');
 moment().format();
+const validateLoginInput = require('../../validation/login');
 
 
 //Load rally model
@@ -45,7 +46,7 @@ router.post('/get', passport.authenticate('jwt', { session: false }), (req, res)
 router.post('/information', passport.authenticate('jwt', { session: false }), (req, res) => {
 	const errors = {};
 
-  console.log("body in GET info",req.body);
+  //console.log("body in GET info",req.body);
 	Rally.findOne({ _id: req.body})
 		.then(rally => {
 			if(rally.owners===[]) {
@@ -62,7 +63,7 @@ router.post('/information', passport.authenticate('jwt', { session: false }), (r
 // @access   Private
 router.get('/rallyID/:rallyID', passport.authenticate('jwt', { session: false }), (req, res) => {
 	const errors = {};
-    console.log('in /myrally/api/rallyID');
+    //console.log('in /myrally/api/rallyID');
     if(req.params.rallyID === "rally" || req.params.rallyID === "create-rally" || req.params.rallyID === "deleteAccount"){
 
         return res.json();
@@ -85,11 +86,10 @@ router.get('/rallyID/:rallyID', passport.authenticate('jwt', { session: false })
 // @access   Private
 // route through which Rally Creation UI form connects to DB
 router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
-//    const {errors, isValid} = validateRallyInput(req.body);
-
-//    if(!isValid){
-//        return res.status(400).json(errors);
-//    }
+   // const {errors, isValid} = validateRallyInput(req.body);
+   // if(!isValid){
+   //     return res.status(400).json(errors);
+   // }
       //gets the token
       const usertoken = req.headers.authorization;
       const token = usertoken.split(' ');
@@ -122,10 +122,9 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
 
       if(req.body.name) rallyFields.name = req.body.name;
       rallyFields.members = [];
-      rallyFields.memberNames = [];
-
-      //TODO: put array of members from form into this array
       rallyFields.members.push(req.user.id);
+
+      rallyFields.memberNames = [];
       rallyFields.memberNames.push(req.user.name);
 
       rallyFields.restrictions = {};
@@ -233,14 +232,14 @@ router.get('/google/redirect', (req, res) => {
     const clientSecret = process.env.clientSecret;
 	const clientId = process.env.clientId;
     const redirectUris =['http://localhost:5000/api/rally/google/redirect'];
-    console.log("state: ",JSON.parse(req.query.state));//from authurl
+    //console.log("state: ",JSON.parse(req.query.state));//from authurl
 
     //Use the bearer token to find user_id so that we can store calendars into databse.
     const {jwtTok} = JSON.parse(req.query.state);
     const decoded = jwt.verify(jwtTok, 'secret');
     const userId = decoded.id;
 
-    console.log("userid: ",userId);
+    //console.log("userid: ",userId);
 
     //Create oAutClient
 	const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUris[0]);
@@ -342,6 +341,7 @@ router.post('/addMembers', passport.authenticate('jwt', {session: false}), (req,
 		        rallyFields.owners = rally.owners.slice();
 			  	rallyFields.owners.push(user._id);
 			  	rallyFields.members.push(user._id);
+
 			  	}
 
 		      // find rally and update it
@@ -452,7 +452,7 @@ router.post('/addLocations', passport.authenticate('jwt', { session: false }), (
         .then(rally => {
 	  	    if (rally) {
 				//set rally fields to be changed
-				console.log("locations map: ",rally.voting.locations === null);
+				//console.log("locations map: ",rally.voting.locations === null);
 
                 // Make a placeholder object to put poll updates
 				const rallyFields = {};
@@ -522,45 +522,47 @@ router.post('/addVotes', passport.authenticate('jwt', { session: false }), (req,
 	const token = usertoken.split(' ');
 	const decoded = jwt.verify(token[1], 'secret');
 
-	//checks if the id from the jwt and the owner of the rally id matches
-	// if(decoded.id!==req.body.user ) {
-	// 	errors.nologin = 'Please log in.';
-	// 	return res.status(400).json(errors);
-	// }
-
 	//find a rally to change based on id
 	  Rally.findOne({ _id: req.body._id }).then(rally => {
+          console.log("rally addvotes", rally)
 	  	if (rally) {
-				//set rally fields to be changed
-				//console.log(rally.voting.locations)
-				const rallyFields = {};
-				rallyFields.voting={};
-				rallyFields.voting.locations= new Map();
-				let it=rally.voting.locations.entries();
-				let result = it.next();
-				//this while populates the locations map with the current locations
-				while (!result.done) {
-					//console.log(result.value); // 1 3 5 7 9
-					rallyFields.voting.locations.set(result.value[0],result.value[1]);
-					result = it.next();
 
-				 }
-				//adds vote to specified location
-				console.log("HELLO");
-		  	if(rally.voting.locations.has(req.body.location) && req.body.location!==null) {
-				//	rallyFields.voting.locations = rally.voting.locations.slice();
-					// rallyFields.voting.locations.set(req.body.locations,0);
-					//console.log("HI",req.body.location)
-					rallyFields.voting.locations.set(req.body.location, rallyFields.voting.locations.get(req.body.location)+1);
-				}
+                if(req.body.hasVoted){
+                    errors.hasVoted = 'Sorry, you may only vote once!';
+                    return res.status(400).json(errors);
+                }else{
+                    //set rally fields to be changed
+    				//console.log(rally.voting.locations)
+    				const rallyFields = {};
+    				rallyFields.voting={};
+    				rallyFields.voting.locations= new Map();
+    				let it=rally.voting.locations.entries();
+    				let result = it.next();
+    				//this while populates the locations map with the current locations
+    				while (!result.done) {
+    					//console.log(result.value); // 1 3 5 7 9
+    					rallyFields.voting.locations.set(result.value[0],result.value[1]);
+    					result = it.next();
 
-			//find rally and update it
-	  		Rally.findOneAndUpdate(
-			{ _id: rally._id },
-			{ $set: rallyFields },
-			{ new: true }
-			).then(rally => res.json(rally));
-	  		rally => res.json(rally);
+    				 }
+    				//adds vote to specified location
+    				//console.log("HELLO");
+    		  	    if(rally.voting.locations.has(req.body.location) && req.body.location!==null) {
+    				//	rallyFields.voting.locations = rally.voting.locations.slice();
+    					// rallyFields.voting.locations.set(req.body.locations,0);
+    					//console.log("HI",req.body.location)
+    					rallyFields.voting.locations.set(req.body.location, rallyFields.voting.locations.get(req.body.location)+1);
+    				}
+
+    			//find rally and update it
+    	  		Rally.findOneAndUpdate(
+    			{ _id: rally._id },
+    			{ $set: rallyFields },
+    			{ new: true }
+    			).then(rally => res.json(rally));
+    	  		rally => res.json(rally);
+                }
+
 
 	  	} else {
 	  		//throw an error that a rally with name does not exist
@@ -583,11 +585,11 @@ router.post('/getLocations', passport.authenticate('jwt', { session: false }), (
             if(rally.voting.locations){
                 if(rally.voting.locations.size > 0){
 
-                    console.log("entries: ",Array.from(rally.voting.locations.entries()))
+                    //console.log("entries: ",Array.from(rally.voting.locations.entries()))
         			res.json(Array.from(rally.voting.locations.entries()));
                 }
             }else{
-                console.log("rally.voting.locations does not exist (/getLocations)")
+                //console.log("rally.voting.locations does not exist (/getLocations)")
                 errors.doesntexist = "locations doesnt exist"
             }
 
@@ -607,7 +609,7 @@ router.post('/getLocations', passport.authenticate('jwt', { session: false }), (
 router.get('/returnCompare', passport.authenticate('jwt', { session: false }), (req, res) => {
     Rally.findOne({ _id: req.body.id }).then(rally => {
         if (rally) {
-            console.log("in returncompare")
+            //console.log("in returncompare")
             let bestTimes = [];
             let discrepency = 0;
             while (bestTimes.length < 5) {
@@ -680,16 +682,17 @@ router.post('/confirm', passport.authenticate('jwt', { session: false }), (req, 
 	const token = usertoken.split(' ');
 	const decoded = jwt.verify(token[1], 'secret');
 
-    console.log("rallyid confrim",req.body._id);
+    //console.log("rallyid confrim",req.body._id);
 	//find a rally to change based on id
 	  Rally.findOne({ _id: req.body._id }).then(rally => {
 
-          console.log("rally from post",rally);
+          //console.log("rally from post",rally);
 	  	if (rally) {
 	  		//set rally fields to be changed
 			const rallyFields = {};
             rallyFields.confirmed = {};
             if(req.body.confirmed){
+                console.log("request body has confirmed")
                 const {date, time, location} = req.body.confirmed;
                 rallyFields.confirmed.date = date;
                 rallyFields.confirmed.time = time;
