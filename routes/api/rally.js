@@ -232,7 +232,7 @@ router.get('/google/redirect', (req, res) => {
 			const calendar = google.calendar({version: 'v3', oauth2Client});
 			const arrayToSet = [];
 			const currentDate = moment().format();
-			
+
 			calendar.events.list({
 				calendarId: 'primary',
 				timeMin: (new Date()).toISOString(),
@@ -297,11 +297,18 @@ router.post('/addMembers', passport.authenticate('jwt', {session: false}), (req,
 		  Rally.findOne({_id: req.body._id}).then((rally) => {
 		  	if (rally) {
 		  		// set rally fields to be changed
-		      const rallyFields = {}
+		        const rallyFields = {}
+                rallyFields.memberNames = rally.memberNames.slice();
 		  		rallyFields.members = rally.members.slice();
-		  		if (!rally.members.includes(user._id) && !rally.members.includes(user._id)) {
-		        rallyFields.members.push(user._id);
-			  	}
+
+                if (!rally.members.includes(user._id) && !rally.members.includes(user._id)) {
+		            rallyFields.members.push(user._id);
+                    rallyFields.memberNames.push(user.name);
+			  	}else{
+                    errors.email = 'Rally member is already added';
+					console.log(errors.email);
+					return res.status(400).json(errors);
+                }
 
 		      // find rally and update it
 		  		Rally.findOneAndUpdate(
@@ -312,12 +319,13 @@ router.post('/addMembers', passport.authenticate('jwt', {session: false}), (req,
 		  		(rally) => res.json(rally);
 		  	} else {
 		  		// throw an error that a rally with name does not exist
-		  		errors.rallyexists = 'A rally with this id does not exist';
-		  		return res.status(400).json(errors);
+		  		errors.email = 'A rally with this id does not exist';
+                console.log(errors.email)
+		  		//return res.status(400).json(errors);
 		    }
 		  });
 	  } else {
-	  	errors.usersexists = 'Please create a rally account';
+	  	errors.email = 'Member to add must have a Rally account';
 	  	return res.status(400).json(errors);
 	  }
   	})
@@ -523,22 +531,28 @@ router.get('/getLocations', passport.authenticate('jwt', { session: false }), (r
 // @route    GET api/rally/returnCompare
 // @desc     Return the five best dates of the rally
 // @access   Private
-router.get('/returnCompare', passport.authenticate('jwt', { session: false }), (req, res) => {
-	Rally.findOne({ _id: req.body.id }).then(rally => {
-		if (rally) {
-			let bestTimes = [];
-			let discrepency = 0;
-			while (bestTimes.length < 5) {
-				for (let pair of rally.timeSlot) {
-					if (pair[1] == discrepency && bestTimes.length < 5) {
-						bestTimes.push(pair);
-					}
-				}
-				discrepency++;
-			}
-			res.json(bestTimes)
-		}
-	}).catch(err => res.status(400).json(err));
+router.post('/returnCompare', passport.authenticate('jwt', { session: false }), (req, res) => {
+	Rally.findOne({ _id: req.body._id })
+        .then(rally => {
+    		if (rally) {
+                //console.log("inside rallu")
+    			let bestTimes = [];
+    			let discrepency = 0;
+    			while (bestTimes.length < 5) {
+
+    				for (let pair of rally.timeSlot) {
+                        //console.log("pair timeslot", pair[0])
+    					if (pair[1] == discrepency && bestTimes.length < 5) {
+    						bestTimes.push(pair[0]);
+    					}
+    				}
+    				discrepency++;
+    			}
+                console.log("bestTimes", bestTimes)
+    			res.json(bestTimes)
+    		}
+	     })
+         .catch(err => res.status(400).json(err));
 });
 
 
@@ -620,7 +634,7 @@ router.post('/crossCompare', passport.authenticate('jwt', { session: false }), (
 					if (rally.restrictions.latestTime !== 'undefined' && moment(rally.restrictions.latestTime).isBefore(backset)) {
 						backset = moment(rally.restrictions.latestTime);
 					}
-					
+
 					//add the day and hour slots
 					var changeDay = firstDay.clone();
 					while (moment(changeDay.add(.5, 'h')).isBefore(moment(firstDay).endOf('day'))) {

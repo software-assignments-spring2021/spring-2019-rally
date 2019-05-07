@@ -41,7 +41,7 @@ class ConfirmationPage extends Component {
       console.log("onSubmit state:", this.state.timeSelection, this.state.locSelection)
 
       let temptime = this.state.timeSelection;
-      temptime = temptime.substring(0,10);
+      //temptime = temptime.substring(0,10);
       console.log("temptime", temptime)
       //let temploc = this.state.locSelection;//want first ten chars
       let data = {
