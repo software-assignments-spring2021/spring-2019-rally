@@ -279,9 +279,8 @@ router.get('/google/redirect', (req, res) => {
                                 }else{
                                     console.log(docs);
                                 }
-
                             });
-						console.log(`${start} - ${end}`);
+						//console.log(`${start} - ${end}`);
 					})
 
 				}
@@ -540,7 +539,7 @@ router.post('/addVotes', passport.authenticate('jwt', { session: false }), (req,
 
 });
 
-// @route    GET api/rally
+// @route    GET api/rally/getLocations
 // @desc     Return locations associated with voting in a Rally
 // @access   Private
 router.get('/getLocations', passport.authenticate('jwt', { session: false }), (req, res) => {
@@ -558,6 +557,43 @@ router.get('/getLocations', passport.authenticate('jwt', { session: false }), (r
 		.catch(err => res.status(404).json(err));
 });
 
+// @route    GET api/rally/crossCompare
+// @desc     Compare all the calendars of the members of a Rally and return the best dates
+// @access   Private
+router.post('/crossCompare', passport.authenticate('jwt', { session: false }), (req, res) => {
+	//find rally based on id
+	Rally.findOne({ _id: req.body.id }).then(rally => {
+		//database for each possible time slot
+		var timeslotDatabase = new Map();
+		//get the calendar of each member
+			User.find({ _id: rally.members }).then(users => {
+				for (let user of users) {
+					//create time slots for each day based on the user calendar and the duration of the rally
+					for (var jj = 0; jj < user.calendar.length; jj++) {
+						if (!timeslotDatabase.has(moment(user.calendar[jj].startTime).format('YYYY-MM-DD') + ' ' + kk + '-' + (kk+rally.duration)) && moment(user.calendar[jj].startTime).format() > moment().format()) {
+							for (var kk = 8; kk + rally.duration <= 24; kk++) {
+								timeslotDatabase.set(moment(user.calendar[jj].startTime).format('YYYY-MM-DD') + ' ' + kk + '-' + (kk+rally.duration), 0);
+							}
+						}
+						//find the time slots that overlap with the user calendar and increment the value of discrepencies
+						for (let pair of timeslotDatabase) {
+							var allTimes = pair[0].split(/[\s-]+/)
+							if (moment(user.calendar[jj].startTime).format('YYYY') == allTimes[0] && moment(user.calendar[jj].startTime).format('MM') == allTimes[1] && moment(user.calendar[jj].startTime).format('DD') == allTimes[2]) {
+								if (parseInt(moment(user.calendar[jj].startTime).format('HH')) >= parseInt(allTimes[3]) && parseInt(moment(user.calendar[jj].startTime).format('HH')) <= parseInt(allTimes[4])) {
+									timeslotDatabase.set(pair[0], (timeslotDatabase.get(pair[0])+1));
+								}
+								if (parseInt(moment(user.calendar[jj].endTime).format('HH')) >= parseInt(allTimes[3]) && parseInt(moment(user.calendar[jj].endTime).format('HH')) <= parseInt(allTimes[4])) {
+									timeslotDatabase.set(pair[0], (timeslotDatabase.get(pair[0])+1));
+								}
+							}
+						}
+					}
+				}
+				console.log(timeslotDatabase)
+			})
+		res.json(timeslotDatabase);
+	});
 
+});
 
 module.exports = router;
