@@ -685,4 +685,11 @@ router.post('/crossCompare', passport.authenticate('jwt', { session: false }), (
 	});
 });
 
+// @route    GET api/rally/deleteRally
+// @desc     Deletes a rally from the database 
+// @access   Private
+router.post('/deleteRally', passport.authenticate('jwt', { session: false }), (req, res) => {
+	Rally.remove({ _id: req.body.id }).then(res.json("Success"));
+});
+
 module.exports = router;
