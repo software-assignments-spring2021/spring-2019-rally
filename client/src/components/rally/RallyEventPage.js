@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getRallyByID, clearCurrentProfile, addLocations, getTimeslots, addMembers } from '../../actions/profileActions';
+import { getRallyByID, clearCurrentProfile, addLocations, /*getTimeslots,*/ addMembers } from '../../actions/profileActions';
 import { Link } from 'react-router-dom';
 import TextFieldGroup from '../common/TextFieldGroup';
 import moment from 'moment';
@@ -39,6 +39,7 @@ class RallyEventPage extends Component {
       this.onMembersSubmit = this.onMembersSubmit.bind(this);
       this.onMembersChange = this.onMembersChange.bind(this);
       this.componentWillReceiveProps = this.componentWillReceiveProps.bind(this);
+      this.deleteRally = this.deleteRally.bind(this);
   }
 
   // Used for location submission
@@ -166,6 +167,25 @@ class RallyEventPage extends Component {
      );
   }
 
+  deleteRally(){
+      const {rallies} = this.props.rally;
+      if(rallies){
+          let data = {
+              id: this.props.rally.rallies._id
+          }
+
+          axios
+            .post('/api/rally/deleteRally', data)
+            .then(res => {
+                this.props.history.push('/rally')
+            })
+            .catch(err => {
+                console.log(err)
+            })
+      }
+
+  }
+
   componentDidMount(){
 
     this.props.clearCurrentProfile();
@@ -180,22 +200,22 @@ class RallyEventPage extends Component {
             }
             //this.props.getTimeslots(data, this.props.history);
 
-            axios
-                .post(`/api/rally/returnCompare`, data)
-                .then(res =>
-                    //console.log("res in getmeslots", res.data),
-                    this.setState({
-                        topTimeslots:res.data
-                    })
-                    // dispatch({
-                    //     type: GET_TIMES,
-                    //     payload: res
-                    // })
-
-                )
-                .catch(err =>
-                    console.log(err)
-            );
+            // axios
+            //     .post(`/api/rally/returnCompare`, data)
+            //     .then(res =>
+            //         //console.log("res in getmeslots", res.data),
+            //         this.setState({
+            //             topTimeslots:res.data
+            //         })
+            //         // dispatch({
+            //         //     type: GET_TIMES,
+            //         //     payload: res
+            //         // })
+            //
+            //     )
+            //     .catch(err =>
+            //         console.log(err)
+            // );
 
     }else{return;}
   }
@@ -204,35 +224,65 @@ class RallyEventPage extends Component {
 
     const {loading} = this.props.rally;
 
-    //console.log("props rally",this.props.rally)
+    console.log("RALLY",this.props.rally)
     //console.log("userid: ",this.props.auth.user.id)
     //console.log("rally in eventpage render", this.props.rally);
 
     const {incomingVoting, topTimeslots} = this.state;
+
     //console.log("topTimeslots from state", topTimeslots)
     const {id} = this.props.auth.user;
+    console.log("logged in user id:", id)
     let ownerCog;
-    if(this.props.rally && this.props.rally.rallies && this.props.rally.rallies.members){
-        const {members} = this.props.rally.rallies;
+    if(!loading && this.props.rally && this.props.rally.rallies && this.props.rally.rallies.members){
+        const {owners} = this.props.rally.rallies;
         //console.log("members len: ",members.length)
-        for(let i = 0; i < members.length; i++){
+        for(let i = 0; i < owners.length; i++){
 
             //console.log("mem id: ", members[i], "userid:",id)
-            if(members[i] == id){
+            if(owners[i] == id){
                 //console.log("link state", this.state);
                 ownerCog = (
-                    <div>
+
+                    <div className="btn-group mr-2" role="group" aria-label="First group">
+
                     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossOrigin="anonymous"/>
 
+                        <Link to={{
+                            state: {...this.state},
+                            pathname:`/myrally/${this.props.rally.rallies._id}/confirm`}}
+                            className="btn btn-outline-info" >
+                            <i style={{marginRight: 10 }} className="fas fa-tasks"></i>
+                            Confirm Rally
+                        </Link>
+                        <button
+                            className="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal">
 
-                    <Link to={{
-                        state: {...this.state},
-                        pathname:`/myrally/${this.props.rally.rallies._id}/confirm`
-                    }}
-                    className="btn btn-info" >
-                      <i style={{marginRight: 10 }} className="fas fa-tasks"></i>
-                    </Link>
+                            <i style={{marginRight: 10 }} className="far fa-file-excel"></i>
+                            Delete
+                        </button>
+                        <div className="modal fade" id="deleteModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div className="modal-dialog" role="document">
+                            <div className="modal-content">
+                              <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalLabel">Are you sure you want to delete this Rally?</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div className="modal-body">
+                                This cannot be undone.
+                              </div>
+                              <div className="modal-footer">
+                                <button type="button" className="btn btn-info" data-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-danger" data-dismiss="modal" onClick={this.deleteRally}>Delete Rally</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
                     </div>
+
                 );
                 break;
             }
@@ -240,29 +290,61 @@ class RallyEventPage extends Component {
     }
 
     let topTimes;
+    let noConflicts = [];
+    if(this.props.rally && this.props.rally.rallies){
+        const {timeSlot} = this.props.rally.rallies;
 
-    if(topTimeslots){
-        //console.log("ifTopTimeslots", topTimeslots)
-        let times = [];
-        Object.keys(topTimeslots).forEach(function(key) {
-          //console.log("time entry:",key, topTimeslots[key]);
-            times.push(topTimeslots[key]);
-        });
-        //console.log("times array", times);
-        topTimes = (
-            <div>
+        if(timeSlot){
+            //console.log("timeslot object", timeSlot)
+            Object.keys(timeSlot).forEach(function(key) {
+                //console.log("time key:",key);
+                //console.log("time val:",timeSlot[key]);
+              //console.log("key type",typeof timeSlot[key]);
+              if(timeSlot[key] === 0){
+                  //console.log("key was 0")
+                  noConflicts.push(key);
+              }
+
+            });
+            console.log("no conflict arr", noConflicts);
+            topTimes = (
+                <div>
 
 
-                {times.slice(0,5).map((key, index) => (
-                    <li key={index} className="list-group-item">
-                        <small className="text-muted">{moment(key).format("LLL")}</small>
-                    </li>
-                ))}
+                    {noConflicts.slice(0,5).map((key, index) => (
+                        <li key={index} className="list-group-item">
+                            <small className="text-muted">{moment(key).format("LLL")}</small>
+                        </li>
+                    ))}
 
 
-            </div>
-        )
-    }else{}
+                </div>
+            )
+        }
+    }
+
+    // if(topTimeslots){
+    //     //console.log("ifTopTimeslots", topTimeslots)
+    //     let times = [];
+    //     Object.keys(topTimeslots).forEach(function(key) {
+    //       //console.log("time entry:",key, topTimeslots[key]);
+    //         times.push(topTimeslots[key]);
+    //     });
+    //     //console.log("times array", times);
+    //     topTimes = (
+    //         <div>
+    //
+    //
+    //             {times.slice(0,5).map((key, index) => (
+    //                 <li key={index} className="list-group-item">
+    //                     <small className="text-muted">{moment(key).format("LLL")}</small>
+    //                 </li>
+    //             ))}
+    //
+    //
+    //         </div>
+    //     )
+    // }else{}
 
     let voting;
     if(incomingVoting){
@@ -355,7 +437,7 @@ class RallyEventPage extends Component {
                       <i className="far fa-clock"></i>
                     </div>
                     <div className="col-md-10">
-                      <p>Earliest Start Time: <br/><b>{moment(restrictions.earliestTime).format('HH:mm A')}</b></p>
+                      <p>Earliest Start Time: <br/><b>{moment(restrictions.earliestTime).format('LT')}</b></p>
                     </div>
                   </div>
                 </div> : null}
@@ -367,7 +449,7 @@ class RallyEventPage extends Component {
                       <i className="far fa-clock"></i>
                     </div>
                     <div className="col-md-10">
-                      <p>Latest End Time: <br/><b>{moment(restrictions.latestTime).format('HH:mm A')}</b></p>
+                      <p>Latest End Time: <br/><b>{moment(restrictions.latestTime).format('LT')}</b></p>
                     </div>
                   </div>
 
@@ -401,11 +483,14 @@ class RallyEventPage extends Component {
             {this.props.rally.rallies.owners ?
                 <div>
                   <div className="row">
-                    <div className="col-md-5">
+                    <div className="col-md-8">
                       <h3 className="text-muted" style={{marginLeft: 10}}>Organizer: {this.props.rally.rallies.ownerNames.slice().map((key, index) => (
                         <font >{key} </font>
-                    ))} <span className="badge badge-light">{ownerCog}</span></h3>
+                    ))} </h3>
 
+                    </div>
+                    <div className="col-md-4">
+                        {ownerCog}
                     </div>
                   </div>
                 </div> : <h6>no owner array</h6>}
@@ -567,7 +652,7 @@ class RallyEventPage extends Component {
                                 <div className="hr"/>
                                 <br></br>
                                 <h5> <i className="far fa-calendar-check" style={{marginRight: 10}}></i>Date: {moment(date).format('LL')}</h5>
-                                <h5><i className="far fa-clock" style={{marginRight: 10}}></i>Time: {moment(time).format('hh:mm a')}</h5>
+                                <h5><i className="far fa-clock" style={{marginRight: 10}}></i>Time: {moment(time).format('LT')}</h5>
                                 <h5><i className="fas fa-map-marker-alt" style={{marginRight: 10}}></i>Location: {location}</h5>
 
                             </div>
@@ -587,6 +672,35 @@ class RallyEventPage extends Component {
                             </div>
                         </div>
                     </div>
+                    <div className="row">
+                    <div className="col-md-4">
+                        <button
+                            className="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal">
+
+                            <i style={{marginRight: 10 }} className="far fa-file-excel"></i>
+                            Delete Rally
+                        </button>
+                        <div className="modal fade" id="deleteModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div className="modal-dialog" role="document">
+                            <div className="modal-content">
+                              <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalLabel">Are you sure you want to delete this Rally?</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div className="modal-body">
+                                This cannot be undone.
+                              </div>
+                              <div className="modal-footer">
+                                <button type="button" className="btn btn-info" data-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-danger" data-dismiss="modal" onClick={this.deleteRally}>Delete Rally</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
                 </div>
             )
             //-------
@@ -633,4 +747,4 @@ const mapStateToProps = state => ({
 // connects the props of the state returned from getRallyByID
 // and those in the component, then exports the component
 // with these props and state
-export default connect(mapStateToProps, {getRallyByID, getTimeslots, addMembers, addLocations, clearCurrentProfile})(withRouter(RallyEventPage));
+export default connect(mapStateToProps, {getRallyByID, /*getTimeslots,*/ addMembers, addLocations, clearCurrentProfile})(withRouter(RallyEventPage));

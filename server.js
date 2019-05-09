@@ -9,7 +9,7 @@ const rally = require('./routes/api/rally');
 const app = express();
 
 //Body parser middleware
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 if(!(process.env.NODE_ENV === "test")) {

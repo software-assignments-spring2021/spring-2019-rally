@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
 //import isEmpty from '../../validation/is-empty';
-
+import moment from 'moment'
 import axios from 'axios';
 import { connect } from 'react-redux';
 import SelectListGroup from '../common/SelectListGroup';
@@ -66,15 +66,19 @@ class ConfirmationPage extends Component {
     console.log("rally in confirm",this.props)
     const timeOptions = [];
     const locOptions = [];
-    timeOptions.push({label: 'Confirm time slot', value: null})
-    locOptions.push({label: 'Confirm location', value: null})
+    timeOptions.push({label: 'Confirm time slot', value: 'Confirm time slot'})
+    locOptions.push({label: 'Confirm location', value: 'Confirm location'})
     if(this.props.rally && this.props.rally.rallies){
 
         const {timeSlot, voting} = this.props.rally.rallies;
 
         //Push time slots into confirm time options
         Object.keys(timeSlot).forEach(function(key) {
-          timeOptions.push({label: key, value: key});
+
+            if(timeSlot[key] === 0){
+                timeOptions.push({label: moment(key).format('LLL'), value: key});
+            }
+
         });
         //Push locations into confirm location options
         Object.keys(voting.locations).forEach(function(key) {

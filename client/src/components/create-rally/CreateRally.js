@@ -283,7 +283,8 @@ class CreateRally extends Component {
                             Fill in the information below to get started! </p>
                             <small className="d-block pb-3">* = required fields</small>
 
-                            <form onSubmit={this.onSubmit}>
+                            <form onSubmit={this.onSubmit} autocomplete="off">
+                            
                                 <TextFieldGroup
                                     placeholder="Rally event title"
                                     name="name"

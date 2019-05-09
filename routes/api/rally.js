@@ -532,6 +532,7 @@ router.get('/getLocations', passport.authenticate('jwt', { session: false }), (r
 // @desc     Return the five best dates of the rally
 // @access   Private
 router.post('/returnCompare', passport.authenticate('jwt', { session: false }), (req, res) => {
+    console.log("IN RETURNCOMPARE");
 	Rally.findOne({ _id: req.body._id })
         .then(rally => {
     		if (rally) {
@@ -599,7 +600,9 @@ router.post('/confirm', passport.authenticate('jwt', { session: false }), (req, 
 // @desc     Compare all the calendars of the members of a Rally and push the comparison to the database
 // @access   Private
 router.post('/crossCompare', passport.authenticate('jwt', { session: false }), (req, res) => {
-	//find rally based on id
+
+    console.log("IN CROSSCOMPARE");
+    //find rally based on id
 	Rally.findOne({ _id: req.body.id }).then(rally => {
 		//database for each possible time slot
 		var timeslotDatabase = new Map();
@@ -619,6 +622,9 @@ router.post('/crossCompare', passport.authenticate('jwt', { session: false }), (
 					lastDay = moment(rally.restrictions.endDate);
 				}
 				var firstDay = moment();
+                const remainder = 30 - (firstDay.minute() % 30);
+                firstDay = moment(firstDay).add(remainder, "minutes");
+
 				if (rally.restrictions.startDate !== 'undefined' && moment(rally.restrictions.startDate).isAfter(firstDay)) {
 					firstDay = moment(rally.restrictions.startDate);
 				}
@@ -686,7 +692,7 @@ router.post('/crossCompare', passport.authenticate('jwt', { session: false }), (
 });
 
 // @route    GET api/rally/deleteRally
-// @desc     Deletes a rally from the database 
+// @desc     Deletes a rally from the database
 // @access   Private
 router.post('/deleteRally', passport.authenticate('jwt', { session: false }), (req, res) => {
 	Rally.remove({ _id: req.body.id }).then(res.json("Success"));

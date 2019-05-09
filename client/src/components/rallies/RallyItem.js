@@ -32,7 +32,8 @@ class RallyItem extends Component {
 
   crossCompare(){
 
-     console.log("xcompare: ",this.props.rally.rallies);
+
+     console.log("xcompare: ",this.props.rally);
 
      const data = {
          id: this.props.rally._id
@@ -43,19 +44,20 @@ class RallyItem extends Component {
      axios
        .post('/api/rally/crossCompare', data)
        .then( res => {
-         //console.log("xcompare res: ",res.data)
-         axios
-             .post(`/api/rally/returnCompare`, data2)
-             .then(res =>
-                 console.log("res in gettimeslots", res.data),
-                 // this.setState({
-                 //     topTimeslots:res.data
-                 // })
-             )
-             .catch(err =>
-                 console.log(err)
-         );
-       })
+         console.log("RESPONSE FROM XCOMPARE")
+         // axios
+         //     .post(`/api/rally/returnCompare`, data2)
+         //     .then(res =>
+         //         console.log("res in gettimeslots", res.data),
+         //         // this.setState({
+         //         //     topTimeslots:res.data
+         //         // })
+         //     )
+         //     .catch(err =>
+         //         console.log(err)
+         // );
+
+     })
        .catch( err => {
            console.log(err)
        })
@@ -79,17 +81,17 @@ class RallyItem extends Component {
              let data = {
                  _id: this.props.rally._id
              }
-             axios
-                 .post(`/api/rally/returnCompare`, data)
-                 .then(res =>
-                     //console.log("res in gettimeslots", res.data),
-                     this.setState({
-                         topTimeslots:res.data
-                     })
-                 )
-                 .catch(err =>
-                     console.log(err)
-             );
+             // axios
+             //     .post(`/api/rally/returnCompare`, data)
+             //     .then(res =>
+             //         //console.log("res in gettimeslots", res.data),
+             //         this.setState({
+             //             topTimeslots:res.data
+             //         })
+             //     )
+             //     .catch(err =>
+             //         console.log(err)
+             // );
 
      }else{return;}
  }
@@ -105,33 +107,86 @@ class RallyItem extends Component {
     //let result = {};
     //result = this.findTopTimeSlots(rally.id);
 
+//console.log("top timeSlot", topTimeslots);
+    let topTimes;
+    let noConflicts = [];
+    if(rally){
+        console.log("CONFIRMED?", rally.confirmed)
 
-    console.log("top timeSlot", topTimeslots);
-    let topTimes
-    if(topTimeslots){
 
-        if(Object.keys(topTimeslots).length > 0){
-            let timeSlotArr = [];
-            //console.log("timeslot", timeSlotArr);
-
-            Object.keys(topTimeslots).forEach(function(key) {
-              timeSlotArr.push(topTimeslots[key]);
-            });
-            //console.log("TSArr",timeSlotArr)
-
+        if(rally.confirmed && Object.keys(rally.confirmed).length > 0){
+            const { date, location, time} = rally.confirmed;
+            console.log("CONFIRMATION:", date, location, time);
             topTimes = (
                 <div>
-                    {timeSlotArr.slice(0,5).map((person, index) => (
-                      <li key={index} className="list-group-item">
-                        {moment(person).format('LLL')}
-                      </li>
-                    ))}
+                <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossOrigin="anonymous"/>
+
+                <li className="list-group-item"><h3>Confirmed Details</h3>
+
+                <h5> <i className="far fa-calendar-check" style={{marginRight: 10}}></i>Date: {moment(date).format('LL')}</h5>
+                <h5><i className="far fa-clock" style={{marginRight: 10}}></i>Time: {moment(time).format('LT')}</h5>
+                <h5><i className="fas fa-map-marker-alt" style={{marginRight: 10}}></i>Location: {location}</h5>
+</li>
                 </div>
             )
         }else{
-            topTimes = <li className="list-group-item"><h5><i>Members of this Rally have not synced their Google calendars.</i></h5></li>
+            const {timeSlot} = rally;
+            if(timeSlot){
+                console.log("timeslot IN RENDER", timeSlot)
+                Object.keys(timeSlot).forEach(function(key) {
+                  if(timeSlot[key] === 0){
+                      noConflicts.push(key);
+                  }
+
+                });
+                console.log("no conflict arr", noConflicts);
+                topTimes = (
+                    <div>
+                        {noConflicts.slice(0,5).map((key, index) => (
+                            <li key={index} className="list-group-item">
+                                <small className="text-muted">{moment(key).format("LLL")}</small>
+                            </li>
+                        ))}
+                    </div>
+                )
+            }else{
+                topTimes = <li className="list-group-item"><h5><i>Members of this Rally have not synced their Google calendars.</i></h5></li>
+
+            }
+
         }
+
+
+    }else if(rally && rally.loading){
+        topTimes = <h5><i>Loading</i></h5>
+    }else{
+        topTimes = <h5><i>Please refresh</i></h5>
+
     }
+
+    // if(topTimeslots){
+    //
+    //     if(Object.keys(topTimeslots).length > 0){
+    //         let timeSlotArr = [];
+    //         //console.log("timeslot", timeSlotArr);
+    //
+    //         Object.keys(topTimeslots).forEach(function(key) {
+    //           timeSlotArr.push(topTimeslots[key]);
+    //         });
+    //         //console.log("TSArr",timeSlotArr)
+    //
+    //         topTimes = (
+    //             <div>
+    //                 {timeSlotArr.slice(0,5).map((person, index) => (
+    //                   <li key={index} className="list-group-item">
+    //                     {moment(person).format('LLL')}
+    //                   </li>
+    //                 ))}
+    //             </div>
+    //         )
+    //     }
+
+
     let locationPoll;
     if(rally && rally.voting){
         if(Object.keys(rally.voting.locations).length > 0){

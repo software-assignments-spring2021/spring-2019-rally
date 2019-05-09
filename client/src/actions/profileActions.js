@@ -69,19 +69,21 @@ export const getTimeslots = (data, history) => dispatch => {
   axios
       .post(`/api/rally/returnCompare`, data)
       .then(res =>
-          console.log("res in getTimeslots", res.data),
-          // dispatch({
-          //     type: GET_TIMES,
-          //     payload: res
-          // })
-
-      )
-      .catch(err =>
+          //console.log("res in getTimeslots", res.data),
           dispatch({
               type: GET_TIMES,
-              payload: null
+              payload: res
           })
-      );
+
+      )
+      .catch(err => {
+
+          // dispatch({
+          //     type: GET_TIMES,
+          //     payload: null
+          // }),
+          console.log(err)
+      });
 }
 
 export const createRally = (rallyData, history) => dispatch => {
